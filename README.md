@@ -128,6 +128,15 @@ Core features first, polish iteratively. Optimistic updates with server confirma
 - **HTTP** - RESTful API communication
 - **Provider** - State management
 
+## Documentation
+
+### 📚 Product Documentation
+- **[USER_PERSONAS.md](USER_PERSONAS.md)** - 6 detailed user personas representing target audience
+- **[USER_STORIES.md](USER_STORIES.md)** - Comprehensive user stories organized as Epics, Features, and Tasks
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Technical architecture and implementation analysis
+- **[VALIDATION.md](VALIDATION.md)** - Implementation validation checklist
+- **[VOTING_SYSTEM.md](VOTING_SYSTEM.md)** - Game voting system documentation
+
 ## Project Structure
 
 ```
@@ -148,6 +157,8 @@ mind-wars/
 │   └── main.dart            # Main app entry point
 ├── test/                    # Test files
 ├── pubspec.yaml             # Dependencies
+├── USER_PERSONAS.md         # User personas documentation
+├── USER_STORIES.md          # User stories (Epics/Features/Tasks)
 └── README.md
 ```
 
