@@ -394,3 +394,131 @@ class VoteToSkip {
         required: json['required'],
       );
 }
+
+/// Game vote model - represents a player's vote for a game
+class GameVote {
+  final String playerId;
+  final String gameId;
+  final int points;
+  final DateTime timestamp;
+
+  GameVote({
+    required this.playerId,
+    required this.gameId,
+    required this.points,
+    required this.timestamp,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'playerId': playerId,
+        'gameId': gameId,
+        'points': points,
+        'timestamp': timestamp.toIso8601String(),
+      };
+
+  factory GameVote.fromJson(Map<String, dynamic> json) => GameVote(
+        playerId: json['playerId'],
+        gameId: json['gameId'],
+        points: json['points'],
+        timestamp: DateTime.parse(json['timestamp']),
+      );
+}
+
+/// Voting session model - manages voting for games across multiple rounds
+class VotingSession {
+  final String id;
+  final String lobbyId;
+  final int pointsPerPlayer;
+  final int totalRounds;
+  final int currentRound;
+  final List<String> availableGames;
+  final Map<String, Map<String, int>> votes; // playerId -> gameId -> points
+  final Map<String, int> remainingPoints; // playerId -> remaining points
+  final List<String> selectedGames; // Games selected for each round
+  final bool completed;
+  final DateTime createdAt;
+
+  VotingSession({
+    required this.id,
+    required this.lobbyId,
+    required this.pointsPerPlayer,
+    required this.totalRounds,
+    required this.currentRound,
+    required this.availableGames,
+    required this.votes,
+    required this.remainingPoints,
+    required this.selectedGames,
+    required this.completed,
+    required this.createdAt,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'lobbyId': lobbyId,
+        'pointsPerPlayer': pointsPerPlayer,
+        'totalRounds': totalRounds,
+        'currentRound': currentRound,
+        'availableGames': availableGames,
+        'votes': votes,
+        'remainingPoints': remainingPoints,
+        'selectedGames': selectedGames,
+        'completed': completed,
+        'createdAt': createdAt.toIso8601String(),
+      };
+
+  factory VotingSession.fromJson(Map<String, dynamic> json) => VotingSession(
+        id: json['id'],
+        lobbyId: json['lobbyId'],
+        pointsPerPlayer: json['pointsPerPlayer'],
+        totalRounds: json['totalRounds'],
+        currentRound: json['currentRound'],
+        availableGames: List<String>.from(json['availableGames']),
+        votes: (json['votes'] as Map<String, dynamic>).map(
+          (playerId, playerVotes) => MapEntry(
+            playerId,
+            Map<String, int>.from(playerVotes as Map),
+          ),
+        ),
+        remainingPoints: Map<String, int>.from(json['remainingPoints']),
+        selectedGames: List<String>.from(json['selectedGames']),
+        completed: json['completed'],
+        createdAt: DateTime.parse(json['createdAt']),
+      );
+
+  /// Calculate total points for each game
+  Map<String, int> calculateGameTotals() {
+    final totals = <String, int>{};
+    for (var playerVotes in votes.values) {
+      for (var entry in playerVotes.entries) {
+        totals[entry.key] = (totals[entry.key] ?? 0) + entry.value;
+      }
+    }
+    return totals;
+  }
+
+  /// Get the winning game (game with most points)
+  String? getWinningGame() {
+    final totals = calculateGameTotals();
+    if (totals.isEmpty) return null;
+    
+    var maxPoints = 0;
+    String? winner;
+    for (var entry in totals.entries) {
+      if (entry.value > maxPoints) {
+        maxPoints = entry.value;
+        winner = entry.key;
+      }
+    }
+    return winner;
+  }
+
+  /// Check if all players have used their points
+  bool get allPlayersVoted {
+    return remainingPoints.values.every((points) => points == 0);
+  }
+
+  /// Check if voting is open for current round
+  bool get isVotingOpen {
+    return !completed && currentRound <= totalRounds;
+  }
+}
