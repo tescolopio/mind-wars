@@ -46,7 +46,7 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 8. **The Office Team Builder** (Jennifer, 35) - Team-building & morale
 
 ### Backlog Statistics
-- **Total Epics**: 11 (9 active in Phases 1-3, 2 future)
+- **Total Epics**: 12 (9 active in Phases 1-3, 3 future)
 - **Total Features**: 40+ (35 in Phases 1-3)
 - **Total Tasks**: 150+
 - **Total Story Points**: 385 (Phase 1: 183, Phase 2: 112, Phase 3: 90)
@@ -937,18 +937,18 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 
 ## Phase 4: Advanced Features (Future)
 
-### Epic 9: Advanced Social Features
+### Epic 10: Advanced Social Features
 **Epic Priority**: P3 - Low (Future)  
 **Story Points**: TBD
 
-#### Feature 9.1: Voice Chat ⭐ P3
+#### Feature 10.1: Voice Chat ⭐ P3
 **Story**: As a player, I want voice chat during games so that I can communicate naturally
 - Real-time voice communication
 - Mute/unmute controls
 - Voice quality optimization
 - Low latency requirements
 
-#### Feature 9.2: Friend System ⭐ P3
+#### Feature 10.2: Friend System ⭐ P3
 **Story**: As a player, I want to add friends so that I can easily find and play with them
 - Send/accept friend requests
 - Friends list management
@@ -956,7 +956,7 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 - Invite friends to lobbies
 - Friends-only leaderboards
 
-#### Feature 9.3: Clans/Teams ⭐ P3
+#### Feature 10.3: Clans/Teams ⭐ P3
 **Story**: As a player, I want to join a clan so that I can be part of a community
 - Create/join clans
 - Clan chat
@@ -965,25 +965,25 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 
 ---
 
-### Epic 10: Advanced Progression
+### Epic 11: Advanced Progression
 **Epic Priority**: P3 - Low (Future)  
 **Story Points**: TBD
 
-#### Feature 10.1: Tournaments ⭐ P3
+#### Feature 11.1: Tournaments ⭐ P3
 **Story**: As a competitive player, I want to enter tournaments so that I can win prizes
 - Weekly/monthly tournaments
 - Tournament brackets
 - Prize pools
 - Tournament history
 
-#### Feature 10.2: Seasonal Content ⭐ P3
+#### Feature 11.2: Seasonal Content ⭐ P3
 **Story**: As a player, I want seasonal events so that I have fresh content
 - Holiday-themed games
 - Seasonal badges
 - Limited-time events
 - Seasonal leaderboards
 
-#### Feature 10.3: AI Practice Mode ⭐ P2
+#### Feature 11.3: AI Practice Mode ⭐ P2
 **Story**: As a player, I want to practice against AI so that I can improve my skills
 - Single-player practice mode
 - AI difficulty levels (Easy, Medium, Hard)
@@ -997,11 +997,11 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 
 ---
 
-### Epic 11: Monetization
+### Epic 12: Monetization
 **Epic Priority**: P3 - Low (Future)  
 **Story Points**: TBD
 
-#### Feature 11.1: Premium Teaser ⭐ P2
+#### Feature 12.1: Premium Teaser ⭐ P2
 **Story**: As a player, I want to see premium features so that I understand the value proposition
 
 **Story Points**: 5  
@@ -1015,11 +1015,11 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 - Non-intrusive placement
 
 **Tasks**:
-- [ ] **Task 11.1.1**: Design premium teaser UI (2 pts)
-- [ ] **Task 11.1.2**: Implement locked badge display (2 pts)
-- [ ] **Task 11.1.3**: Add premium benefits modal (1 pt)
+- [ ] **Task 12.1.1**: Design premium teaser UI (2 pts)
+- [ ] **Task 12.1.2**: Implement locked badge display (2 pts)
+- [ ] **Task 12.1.3**: Add premium benefits modal (1 pt)
 
-#### Feature 11.2: Premium Subscription ⭐ P3
+#### Feature 12.2: Premium Subscription ⭐ P3
 **Story**: As a player, I want premium features so that I get enhanced experience
 - Ad-free experience
 - Exclusive badges and avatars
@@ -1027,7 +1027,7 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 - Advanced statistics
 - Family/group plans
 
-#### Feature 11.3: Cosmetic Store ⭐ P3
+#### Feature 12.3: Cosmetic Store ⭐ P3
 **Story**: As a player, I want to customize my profile so that I express my personality
 - Avatar customization
 - Profile themes
@@ -1064,8 +1064,9 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 - Epic 9: User Feedback & Quality - **Could**
 
 **Phase 4 (Won't Have - Post-Launch)**:
-- Epic 10: Advanced Progression - **Won't**
-- Epic 11: Monetization - **Won't**
+- Epic 10: Advanced Social Features - **Won't**
+- Epic 11: Advanced Progression - **Won't**
+- Epic 12: Monetization - **Won't**
 
 ---
 
