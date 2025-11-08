@@ -17,10 +17,12 @@ This document provides a prioritized, actionable backlog of work for the Mind Wa
 3. [Development Phases](#development-phases)
 4. [Phase 1: MVP - Core Experience (Months 1-2)](#phase-1-mvp---core-experience-months-1-2)
 5. [Phase 2: Social & Progression (Months 3-4)](#phase-2-social--progression-months-3-4)
-6. [Phase 3: Offline & Polish (Months 5-6)](#phase-3-offline--polish-months-5-6)
+6. [Phase 3: Polish & Scale (Months 5-6)](#phase-3-polish--scale-months-5-6)
 7. [Phase 4: Advanced Features (Future)](#phase-4-advanced-features-future)
-8. [Backlog Grooming Guidelines](#backlog-grooming-guidelines)
-9. [Sprint Planning Recommendations](#sprint-planning-recommendations)
+8. [MoSCoW Tagging](#moscow-tagging)
+9. [Final Recommendations](#final-recommendations)
+10. [Backlog Grooming Guidelines](#backlog-grooming-guidelines)
+11. [Sprint Planning Recommendations](#sprint-planning-recommendations)
 
 ---
 
@@ -44,11 +46,12 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 8. **The Office Team Builder** (Jennifer, 35) - Team-building & morale
 
 ### Backlog Statistics
-- **Total Epics**: 8
-- **Total Features**: 32
-- **Total Tasks**: 128+
-- **Estimated MVP Duration**: 2 months
-- **Estimated Full v1.0**: 6 months
+- **Total Epics**: 12 (9 active in Phases 1-3, 3 future)
+- **Total Features**: 40+ (35 in Phases 1-3)
+- **Total Tasks**: 150+
+- **Total Story Points**: 385 (Phase 1: 183, Phase 2: 112, Phase 3: 90)
+- **Estimated MVP Duration**: 2-2.5 months (Phase 1)
+- **Estimated Full v1.0**: 5-6 months (Phases 1-3)
 
 ---
 
@@ -94,22 +97,26 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 ## Development Phases
 
 ### Phase 1: MVP - Core Experience (Months 1-2)
-**Goal**: Launch-ready core multiplayer cognitive games platform  
+**Goal**: Launch-ready core multiplayer cognitive games platform with offline support  
 **Team Velocity Target**: 40-50 story points per 2-week sprint  
-**Total Story Points**: ~160-200 points
+**Total Story Points**: 183 points  
+**MoSCoW**: Must Have
 
 ### Phase 2: Social & Progression (Months 3-4)
-**Goal**: Rich social experience with retention hooks  
+**Goal**: Rich social experience with retention hooks and enhanced scoring  
 **Team Velocity Target**: 40-50 story points per 2-week sprint  
-**Total Story Points**: ~120-150 points
+**Total Story Points**: 112 points  
+**MoSCoW**: Should Have
 
-### Phase 3: Offline & Polish (Months 5-6)
-**Goal**: Production-grade reliability and optimization  
+### Phase 3: Polish & Scale (Months 5-6)
+**Goal**: Production-grade reliability, analytics, and optimization  
 **Team Velocity Target**: 40-50 story points per 2-week sprint  
-**Total Story Points**: ~100-120 points
+**Total Story Points**: 90 points  
+**MoSCoW**: Could Have
 
 ### Phase 4: Advanced Features (Future)
 **Goal**: Competitive differentiation and scaling  
+**MoSCoW**: Won't Have (Post-Launch)  
 **Total Story Points**: TBD
 
 ---
@@ -408,52 +415,59 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 - [ ] **Task 3.5.3**: Implement state synchronization (2 pts)
 - [ ] **Task 3.5.4**: Add state recovery (1 pt)
 
+#### Feature 3.6: Game Content Seed ⭐ P0
+**Story**: As a player, I want 12+ launch games so MVP is playable
+
+**Story Points**: 13  
+**MoSCoW**: Must  
+**Acceptance Criteria**:
+- 3 Word, 3 Logic, 3 Math, 3 Puzzle games ready
+- Local generation for offline play
+- Difficulty tiers (Easy, Medium, Hard)
+- Games validated and tested
+
+**Tasks**:
+- [ ] **Task 3.6.1**: Generate 12 puzzles across categories (5 pts) `[TDD §5.2]`
+- [ ] **Task 3.6.2**: Implement hint system with penalties (5 pts)
+- [ ] **Task 3.6.3**: Add daily challenge rotation (3 pts)
+
 ---
 
-### Epic 7: Cross-Platform Support (Basic)
+### Epic 4: Cross-Platform & Reliability
 **Epic Priority**: P0 - Critical  
-**Business Value**: Market reach and cross-platform multiplayer  
+**Business Value**: Market reach, reliability, and offline support  
+**MoSCoW**: Must  
 **Personas**: All personas - mixed device families/groups  
-**Epic Story Points**: 34 points
+**Epic Story Points**: 48 points  
+*(Replaces old Epic 7 + parts of 6)*
 
-#### Feature 7.1: iOS Platform Support ⭐ P0
-**Story**: As an iOS user, I want full feature parity so that I get the complete Mind Wars experience
+#### Feature 4.1: iOS/Android Parity ⭐ P0
+**Story**: As a user, I want full feature parity across iOS and Android so that I get the complete Mind Wars experience on any device
 
-**Story Points**: 13  
+**Story Points**: 26 points (13 iOS + 13 Android)  
+**MoSCoW**: Must  
 **Acceptance Criteria**:
-- Supports iOS 14.0+
-- Native iOS design patterns
-- iOS-specific optimizations
-- App Store compliant
-- No feature gaps vs. Android
+- iOS supports 14.0+, Android supports 8.0+ (API 26)
+- Native platform design patterns (iOS: Human Interface Guidelines, Android: Material Design 3)
+- Platform-specific optimizations
+- App Store and Google Play compliant
+- No feature gaps between platforms
+- Cross-platform multiplayer works seamlessly
 
 **Tasks**:
-- [ ] **Task 7.1.1**: Configure iOS build (2 pts)
-- [ ] **Task 7.1.2**: Implement iOS-specific features (5 pts)
-- [ ] **Task 7.1.3**: Optimize for iOS devices (3 pts)
-- [ ] **Task 7.1.4**: Prepare for App Store (3 pts)
+- [ ] **Task 4.1.1**: Configure iOS build and deployment (2 pts)
+- [ ] **Task 4.1.2**: Implement iOS-specific features and optimizations (5 pts)
+- [ ] **Task 4.1.3**: Optimize for iOS devices and prepare for App Store (3 pts)
+- [ ] **Task 4.1.4**: Configure Android build and deployment (2 pts)
+- [ ] **Task 4.1.5**: Implement Android-specific features and optimizations (5 pts)
+- [ ] **Task 4.1.6**: Optimize for Android fragmentation and prepare for Google Play (3 pts)
+- [ ] **Task 4.1.7**: Test cross-platform compatibility (3 pts)
 
-#### Feature 7.2: Android Platform Support ⭐ P0
-**Story**: As an Android user, I want full feature parity so that I get the complete Mind Wars experience
-
-**Story Points**: 13  
-**Acceptance Criteria**:
-- Supports Android 8.0+ (API 26)
-- Material Design 3
-- Android-specific optimizations
-- Google Play compliant
-- No feature gaps vs. iOS
-
-**Tasks**:
-- [ ] **Task 7.2.1**: Configure Android build (2 pts)
-- [ ] **Task 7.2.2**: Implement Android-specific features (5 pts)
-- [ ] **Task 7.2.3**: Optimize for Android fragmentation (3 pts)
-- [ ] **Task 7.2.4**: Prepare for Google Play (3 pts)
-
-#### Feature 7.4: Responsive UI Design ⭐ P1
+#### Feature 4.2: Responsive UI ⭐ P1
 **Story**: As a player, I want the app to work well on different screen sizes so that I have a good experience
 
 **Story Points**: 8  
+**MoSCoW**: Must  
 **Personas**: Critical for Grandparent Gamer (accessibility), multi-device families  
 **Acceptance Criteria**:
 - Supports 5" to 12" screens
@@ -463,34 +477,55 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 - Adaptive font sizes
 
 **Tasks**:
-- [ ] **Task 7.4.1**: Implement responsive layouts (3 pts)
-- [ ] **Task 7.4.2**: Test on various device sizes (2 pts)
-- [ ] **Task 7.4.3**: Optimize touch targets (2 pts)
-- [ ] **Task 7.4.4**: Handle orientation changes (1 pt)
+- [ ] **Task 4.2.1**: Implement responsive layouts (3 pts)
+- [ ] **Task 4.2.2**: Test on various device sizes (2 pts)
+- [ ] **Task 4.2.3**: Optimize touch targets (2 pts)
+- [ ] **Task 4.2.4**: Handle orientation changes (1 pt)
+
+#### Feature 4.3: Offline Core ⭐ P1
+**Story**: As a player, I want core turns to work offline so that I can play without reliable internet
+
+**Story Points**: 14  
+**MoSCoW**: Must  
+**Acceptance Criteria**:
+- Queue moves locally when offline
+- Sync automatically on reconnect
+- Conflict resolution: server wins
+- Offline indicator clearly visible
+- Local puzzle solver for single-player practice
+
+**Tasks**:
+- [ ] **Task 4.3.1**: Implement SQLite turn queue (5 pts)
+- [ ] **Task 4.3.2**: Add sync on reconnect with conflict resolution (3 pts)
+- [ ] **Task 4.3.3**: Create offline mode indicator UI (3 pts)
+- [ ] **Task 4.3.4**: Implement local puzzle solver (3 pts)
+
+---
 
 ---
 
 ### Phase 1 Summary
-**Total Story Points**: 170 points  
+**Total Story Points**: 183 points  
 **Estimated Duration**: 8-9 weeks (4-5 sprints)  
-**Key Deliverable**: Functional multiplayer cognitive games app with core gameplay
+**Key Deliverable**: Functional multiplayer cognitive games app with core gameplay and offline support
 
 **Critical Path**:
 1. Authentication & Onboarding (Week 1-2)
 2. Lobby Management & Multiplayer (Week 3-4)
 3. Core Gameplay & Game Catalog (Week 5-6)
-4. Cross-Platform Support & Polish (Week 7-8)
+4. Cross-Platform Support & Offline Core (Week 7-8)
 5. Testing & Bug Fixes (Week 9)
 
 ---
 
-## Phase 2: Social & Progression (Months 3-4)
+## Phase 2: Social & Progression → **112 pts** (was 96)
 
-### Epic 4: Social Features & Communication
+### Epic 5: Social Features → **50 pts** (was 42 pts)
 **Epic Priority**: P1 - High  
 **Business Value**: Increases engagement and creates social bonds  
+**MoSCoW**: Should  
 **Personas**: Social Player, College Student, Competitive Gamer, Teen Squad Leader  
-**Epic Story Points**: 42 points
+**Epic Story Points**: 50 points
 
 #### Feature 4.1: In-Game Chat ⭐ P1
 **Story**: As a player, I want to chat with other players so that I can communicate during games
@@ -510,7 +545,7 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 - [ ] **Task 4.1.3**: Add real-time chat updates (3 pts)
 - [ ] **Task 4.1.4**: Implement profanity filter (3 pts)
 
-#### Feature 4.2: Emoji Reactions ⭐ P1
+#### Feature 5.2: Emoji Reactions ⭐ P1
 **Story**: As a player, I want to send quick emoji reactions so that I can express emotions easily
 
 **Story Points**: 8  
@@ -523,29 +558,34 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 - Reaction count visible
 
 **Tasks**:
-- [ ] **Task 4.2.1**: Implement reaction system (COMPLETED ✅)
-- [ ] **Task 4.2.2**: Create reaction UI (3 pts)
-- [ ] **Task 4.2.3**: Add real-time animations (3 pts)
-- [ ] **Task 4.2.4**: Handle reaction contexts (2 pts)
+- [ ] **Task 5.2.1**: Implement reaction system (COMPLETED ✅)
+- [ ] **Task 5.2.2**: Create reaction UI (3 pts)
+- [ ] **Task 5.2.3**: Add real-time animations (3 pts)
+- [ ] **Task 5.2.4**: Handle reaction contexts (2 pts)
 
-#### Feature 4.3: Vote-to-Skip Mechanics ⭐ P1
+#### Feature 5.3: Vote-to-Skip+ ⭐ P1
 **Story**: As a player, I want to vote to skip inactive players so that games progress smoothly
 
-**Story Points**: 8  
-**Acceptance Criteria**:
+**Story Points**: 13 (enhanced from 8)  
+**Acceptance Criteria** (enhanced):
 - Any player can initiate skip vote
 - Requires majority (50%+1) to pass
-- Idle player is auto-skipped after timeout
+- Auto-skip after 48h idle
+- Skipped player loses 10 pts penalty
+- Max 3 skips per game
 - Vote status visible to all players
 - Countdown timer shown
+- Emoji vote animation
 
 **Tasks**:
-- [ ] **Task 4.3.1**: Implement vote-to-skip (COMPLETED ✅)
-- [ ] **Task 4.3.2**: Create skip vote UI (3 pts)
-- [ ] **Task 4.3.3**: Add Socket.io vote events (2 pts)
-- [ ] **Task 4.3.4**: Implement idle detection (3 pts)
+- [ ] **Task 5.3.1**: Implement vote-to-skip (COMPLETED ✅)
+- [ ] **Task 5.3.2**: Create skip vote UI with emoji animations (3 pts)
+- [ ] **Task 5.3.3**: Add Socket.io vote events (2 pts)
+- [ ] **Task 5.3.4**: Implement idle detection and auto-skip (3 pts)
+- [ ] **Task 5.3.5**: Add skip penalty system (3 pts)
+- [ ] **Task 5.3.6**: Implement max skip limit tracking (2 pts)
 
-#### Feature 4.4: Player Blocking & Reporting ⭐ P2
+#### Feature 5.4: Player Blocking & Reporting ⭐ P2
 **Story**: As a player, I want to block or report disruptive players so that I maintain a positive experience
 
 **Story Points**: 13  
@@ -558,20 +598,37 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 - Reports reviewed by moderation team
 
 **Tasks**:
-- [ ] **Task 4.4.1**: Implement blocking API (3 pts)
-- [ ] **Task 4.4.2**: Create blocking UI (3 pts)
-- [ ] **Task 4.4.3**: Implement reporting system (5 pts)
-- [ ] **Task 4.4.4**: Create reporting UI (2 pts)
+- [ ] **Task 5.4.1**: Implement blocking API (3 pts)
+- [ ] **Task 5.4.2**: Create blocking UI (3 pts)
+- [ ] **Task 5.4.3**: Implement reporting system (5 pts)
+- [ ] **Task 5.4.4**: Create reporting UI (2 pts)
+
+#### Feature 5.5: Daily Challenge ⭐ P1
+**Story**: As a player, I want a daily puzzle so I return regularly
+
+**Story Points**: 5  
+**MoSCoW**: Should  
+**Acceptance Criteria**:
+- Shared daily puzzle across all lobbies
+- Available for 24 hours
+- Streak bonus for consecutive days
+- Leaderboard for daily challenge scores
+- Notification for new daily challenge
+
+**Tasks**:
+- [ ] **Task 5.5.1**: Implement daily challenge generator (2 pts)
+- [ ] **Task 5.5.2**: Create daily challenge UI (2 pts)
+- [ ] **Task 5.5.3**: Add streak tracking and notifications (1 pt)
 
 ---
 
-### Epic 5: Progression & Achievement System
+### Epic 6: Progression & Achievement System
 **Epic Priority**: P1 - High  
 **Business Value**: Increases retention and long-term motivation  
 **Personas**: Competitive Gamer, Brain Trainer, Middle Schooler  
-**Epic Story Points**: 54 points
+**Epic Story Points**: 62 points (was 54 points)
 
-#### Feature 5.1: Weekly Leaderboards ⭐ P1
+#### Feature 6.1: Weekly Leaderboards ⭐ P1
 **Story**: As a player, I want to compete on leaderboards so that I can see my rank among other players
 
 **Story Points**: 13  
@@ -584,12 +641,12 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 - Friends' ranks highlighted
 
 **Tasks**:
-- [ ] **Task 5.1.1**: Implement leaderboard API (COMPLETED ✅)
-- [ ] **Task 5.1.2**: Create leaderboard UI (5 pts)
-- [ ] **Task 5.1.3**: Add filtering (3 pts)
-- [ ] **Task 5.1.4**: Implement rewards (3 pts)
+- [ ] **Task 6.1.1**: Implement leaderboard API (COMPLETED ✅)
+- [ ] **Task 6.1.2**: Create leaderboard UI (5 pts)
+- [ ] **Task 6.1.3**: Add filtering (3 pts)
+- [ ] **Task 6.1.4**: Implement rewards (3 pts)
 
-#### Feature 5.2: Badge & Achievement System ⭐ P1
+#### Feature 6.2: Badge & Achievement System ⭐ P1
 **Story**: As a player, I want to earn badges for accomplishments so that I can showcase my achievements
 
 **Story Points**: 13  
@@ -602,12 +659,12 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 - Notification when badge earned
 
 **Tasks**:
-- [ ] **Task 5.2.1**: Implement badge system (COMPLETED ✅)
-- [ ] **Task 5.2.2**: Create badge UI grid (5 pts)
-- [ ] **Task 5.2.3**: Add badge categories (3 pts)
-- [ ] **Task 5.2.4**: Implement unlock notifications (3 pts)
+- [ ] **Task 6.2.1**: Implement badge system (COMPLETED ✅)
+- [ ] **Task 6.2.2**: Create badge UI grid (5 pts)
+- [ ] **Task 6.2.3**: Add badge categories (3 pts)
+- [ ] **Task 6.2.4**: Implement unlock notifications (3 pts)
 
-#### Feature 5.3: Streak Tracking System ⭐ P1
+#### Feature 6.3: Streak Tracking System ⭐ P1
 **Story**: As a player, I want to maintain daily play streaks so that I stay motivated to play regularly
 
 **Story Points**: 8  
@@ -620,12 +677,12 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 - Loss of streak sends notification
 
 **Tasks**:
-- [ ] **Task 5.3.1**: Implement streak tracking (COMPLETED ✅)
-- [ ] **Task 5.3.2**: Create streak UI (3 pts)
-- [ ] **Task 5.3.3**: Add progressive multipliers (2 pts)
-- [ ] **Task 5.3.4**: Implement notifications (3 pts)
+- [ ] **Task 6.3.1**: Implement streak tracking (COMPLETED ✅)
+- [ ] **Task 6.3.2**: Create streak UI (3 pts)
+- [ ] **Task 6.3.3**: Add progressive multipliers (2 pts)
+- [ ] **Task 6.3.4**: Implement notifications (3 pts)
 
-#### Feature 5.4: Level & XP System ⭐ P2
+#### Feature 6.4: Level & XP System ⭐ P2
 **Story**: As a player, I want to level up based on my performance so that I see my overall progress
 
 **Story Points**: 13  
@@ -637,12 +694,12 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 - Level-up celebration
 
 **Tasks**:
-- [ ] **Task 5.4.1**: Implement XP calculation (3 pts)
-- [ ] **Task 5.4.2**: Create level UI (3 pts)
-- [ ] **Task 5.4.3**: Add XP rewards (5 pts)
-- [ ] **Task 5.4.4**: Implement level-up animations (2 pts)
+- [ ] **Task 6.4.1**: Implement XP calculation (3 pts)
+- [ ] **Task 6.4.2**: Create level UI (3 pts)
+- [ ] **Task 6.4.3**: Add XP rewards (5 pts)
+- [ ] **Task 6.4.4**: Implement level-up animations (2 pts)
 
-#### Feature 5.5: Personal Statistics Dashboard ⭐ P2
+#### Feature 6.5: Personal Statistics Dashboard ⭐ P2
 **Story**: As a player, I want detailed statistics about my performance so that I can track improvement
 
 **Story Points**: 13  
@@ -655,32 +712,55 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 - Performance trends over time
 
 **Tasks**:
-- [ ] **Task 5.5.1**: Implement statistics backend (5 pts)
-- [ ] **Task 5.5.2**: Create statistics dashboard (5 pts)
-- [ ] **Task 5.5.3**: Add detailed analytics (3 pts)
-- [ ] **Task 5.5.4**: Implement data export (2 pts)
+- [ ] **Task 6.5.1**: Implement statistics backend (5 pts)
+- [ ] **Task 6.5.2**: Create statistics dashboard (5 pts)
+- [ ] **Task 6.5.3**: Add detailed analytics (3 pts)
+- [ ] **Task 6.5.4**: Implement data export (2 pts)
+
+#### Feature 6.6: Enhanced Scoring System ⭐ P0
+**Story**: As a player, I want a unified, fair scoring formula across all games so that I can track my performance consistently
+
+**Story Points**: 8 (moved and enhanced from Feature 3.4)  
+**MoSCoW**: Must  
+**Acceptance Criteria**:
+- Unified scoring formula: `Score = (90 - seconds) + (20 × noHints) + (15 × perfect) - (5 × hints) + (streak × 0.1)`
+- Applied consistently across all game types
+- Time bonus: max 90 points (completed in <90 seconds)
+- Hint penalty: -5 points per hint used
+- Perfect bonus: +15 points for flawless completion
+- No-hint bonus: +20 points
+- Streak multiplier: +0.1 points per current streak day
+- Server-side score calculation to prevent cheating
+- Real-time score updates
+
+**Tasks**:
+- [ ] **Task 6.6.1**: Implement unified scoring algorithm (3 pts)
+- [ ] **Task 6.6.2**: Create scoring API with validation (3 pts)
+- [ ] **Task 6.6.3**: Update score display UI with formula breakdown (2 pts)
 
 ---
 
 ### Phase 2 Summary
-**Total Story Points**: 96 points  
+**Total Story Points**: 112 points (was 96 points)  
 **Estimated Duration**: 5-6 weeks (3 sprints)  
-**Key Deliverable**: Rich social experience with long-term progression hooks
+**Key Deliverable**: Rich social experience with long-term progression hooks and enhanced scoring
 
 ---
 
-## Phase 3: Offline & Polish (Months 5-6)
+## Phase 3: Polish & Scale → **90 pts** (was 89)
 
-### Epic 6: Offline Mode & Data Sync
-**Epic Priority**: P1 - High  
-**Business Value**: Critical for users with unreliable connections  
+### Epic 7: Offline & Analytics → **52 pts**
+**Epic Priority**: P2 - Medium  
+**Business Value**: Critical for users with unreliable connections and data-driven decisions  
+**MoSCoW**: Could  
 **Personas**: Brain Trainer, Busy Parent, Remote Worker, Grandparent Gamer  
-**Epic Story Points**: 42 points
+**Epic Story Points**: 52 points  
+*(Merged: Offline Mode features + Analytics)*
 
-#### Feature 6.1: Offline Game Storage ⭐ P1
+#### Feature 7.1: Offline Game Storage ⭐ P1
 **Story**: As a player, I want to save games locally so that I can play without internet
 
-**Story Points**: 13  
+**Story Points**: 8 (reduced from 13)  
 **Personas**: Critical for Parent-Child Builder, Grandparent Gamer - unreliable connectivity  
 **Acceptance Criteria**:
 - All game data stored in SQLite
@@ -690,15 +770,15 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 - No feature loss when offline
 
 **Tasks**:
-- [ ] **Task 6.1.1**: Implement SQLite schema (COMPLETED ✅)
-- [ ] **Task 6.1.2**: Create offline service layer (3 pts)
-- [ ] **Task 6.1.3**: Implement local puzzle generation (5 pts)
-- [ ] **Task 6.1.4**: Add offline mode indicators (3 pts)
+- [ ] **Task 7.1.1**: Implement SQLite schema (COMPLETED ✅)
+- [ ] **Task 7.1.2**: Create offline service layer (3 pts)
+- [ ] **Task 7.1.3**: Implement local puzzle generation (3 pts)
+- [ ] **Task 7.1.4**: Add offline mode indicators (2 pts)
 
-#### Feature 6.2: Automatic Data Sync ⭐ P1
+#### Feature 7.2: Automatic Data Sync ⭐ P1
 **Story**: As a player, I want my offline progress synced automatically so that I don't lose data
 
-**Story Points**: 13  
+**Story Points**: 8 (reduced from 13)  
 **Acceptance Criteria**:
 - Auto-sync on network reconnection
 - Sync queue processes failed requests
@@ -707,15 +787,15 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 - Conflict resolution: server wins
 
 **Tasks**:
-- [ ] **Task 6.2.1**: Implement sync queue (COMPLETED ✅)
-- [ ] **Task 6.2.2**: Create auto-sync on reconnection (3 pts)
-- [ ] **Task 6.2.3**: Add sync API endpoints (COMPLETED ✅)
-- [ ] **Task 6.2.4**: Implement conflict resolution (3 pts)
+- [ ] **Task 7.2.1**: Implement sync queue (COMPLETED ✅)
+- [ ] **Task 7.2.2**: Create auto-sync on reconnection (3 pts)
+- [ ] **Task 7.2.3**: Add sync API endpoints (COMPLETED ✅)
+- [ ] **Task 7.2.4**: Implement conflict resolution (3 pts)
 
-#### Feature 6.3: Offline Caching Strategy ⭐ P2
+#### Feature 7.3: Offline Caching Strategy ⭐ P2
 **Story**: As a player, I want frequently used data cached so that the app works smoothly offline
 
-**Story Points**: 8  
+**Story Points**: 6 (reduced from 8)  
 **Acceptance Criteria**:
 - Game definitions cached locally
 - User profile cached
@@ -724,15 +804,15 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 - Cache refreshes on app launch (if online)
 
 **Tasks**:
-- [ ] **Task 6.3.1**: Implement cache management (3 pts)
-- [ ] **Task 6.3.2**: Add cache refresh logic (2 pts)
-- [ ] **Task 6.3.3**: Optimize cache performance (2 pts)
-- [ ] **Task 6.3.4**: Handle cache failures (1 pt)
+- [ ] **Task 7.3.1**: Implement cache management (2 pts)
+- [ ] **Task 7.3.2**: Add cache refresh logic (2 pts)
+- [ ] **Task 7.3.3**: Optimize cache performance (1 pt)
+- [ ] **Task 7.3.4**: Handle cache failures (1 pt)
 
-#### Feature 6.4: Network State Management ⭐ P2
+#### Feature 7.4: Network State Management ⭐ P2
 **Story**: As a player, I want clear indication of network status so that I understand app behavior
 
-**Story Points**: 8  
+**Story Points**: 6 (reduced from 8)  
 **Acceptance Criteria**:
 - Network status visible in UI
 - Smooth transition online ↔ offline
@@ -741,43 +821,12 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 - Connectivity tests performed
 
 **Tasks**:
-- [ ] **Task 6.4.1**: Implement network detection (3 pts)
-- [ ] **Task 6.4.2**: Create network status UI (2 pts)
-- [ ] **Task 6.4.3**: Add smooth transitions (2 pts)
-- [ ] **Task 6.4.4**: Implement data-saving mode (1 pt)
+- [ ] **Task 7.4.1**: Implement network detection (2 pts)
+- [ ] **Task 7.4.2**: Create network status UI (2 pts)
+- [ ] **Task 7.4.3**: Add smooth transitions (1 pt)
+- [ ] **Task 7.4.4**: Implement data-saving mode (1 pt)
 
----
-
-### Epic 7: Cross-Platform Support (Complete)
-**Epic Priority**: P1 - High  
-**Story Points**: 13 points
-
-#### Feature 7.3: Cross-Platform Multiplayer ⭐ P1
-**Story**: As a player, I want to play with friends regardless of their device
-
-**Story Points**: 13  
-**Personas**: Essential for all group types - mixed device families/friend groups  
-**Acceptance Criteria**:
-- iOS and Android users in same lobbies
-- Feature parity between platforms
-- Consistent game experience
-- Cross-platform friend lists
-- Synced data across devices
-
-**Tasks**:
-- [ ] **Task 7.3.1**: Ensure protocol compatibility (3 pts)
-- [ ] **Task 7.3.2**: Test iOS-Android lobbies (3 pts)
-- [ ] **Task 7.3.3**: Handle platform UI differences (5 pts)
-- [ ] **Task 7.3.4**: Add platform indicators (2 pts)
-
----
-
-### Epic 8: Analytics & Optimization
-**Epic Priority**: P2 - Medium  
-**Business Value**: Data-driven decisions improve retention  
-**Epic Story Points**: 34 points
-
-#### Feature 8.1: Event Tracking ⭐ P2
+#### Feature 7.5: Event Tracking ⭐ P2
 **Story**: As a product manager, I want to track user events so that I can understand user behavior
 
 **Story Points**: 8  
@@ -790,15 +839,15 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 - Opt-out available for users
 
 **Tasks**:
-- [ ] **Task 8.1.1**: Implement analytics service (COMPLETED ✅)
-- [ ] **Task 8.1.2**: Add event tracking calls (3 pts)
-- [ ] **Task 8.1.3**: Implement event properties (2 pts)
-- [ ] **Task 8.1.4**: Add privacy controls (2 pts)
+- [ ] **Task 7.5.1**: Implement analytics service (COMPLETED ✅)
+- [ ] **Task 7.5.2**: Add event tracking calls (3 pts)
+- [ ] **Task 7.5.3**: Implement event properties (2 pts)
+- [ ] **Task 7.5.4**: Add privacy controls (2 pts)
 
-#### Feature 8.2: A/B Testing Framework ⭐ P2
+#### Feature 7.6: A/B Testing Framework ⭐ P2
 **Story**: As a product manager, I want to run A/B tests so that I can validate feature changes
 
-**Story Points**: 13  
+**Story Points**: 8 (reduced from 13)  
 **Acceptance Criteria**:
 - Support for multiple concurrent tests
 - Random assignment to variants
@@ -807,12 +856,12 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 - Easy test configuration
 
 **Tasks**:
-- [ ] **Task 8.2.1**: Implement A/B test service (COMPLETED ✅)
-- [ ] **Task 8.2.2**: Create test configuration (5 pts)
-- [ ] **Task 8.2.3**: Add variant handling (5 pts)
-- [ ] **Task 8.2.4**: Analyze test results (3 pts)
+- [ ] **Task 7.6.1**: Implement A/B test service (COMPLETED ✅)
+- [ ] **Task 7.6.2**: Create test configuration (3 pts)
+- [ ] **Task 7.6.3**: Add variant handling (3 pts)
+- [ ] **Task 7.6.4**: Analyze test results (2 pts)
 
-#### Feature 8.3: Performance Monitoring ⭐ P2
+#### Feature 7.7: Performance Monitoring ⭐ P2
 **Story**: As a developer, I want to monitor app performance so that I can identify and fix issues
 
 **Story Points**: 8  
@@ -824,12 +873,43 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 - Alert on performance degradation
 
 **Tasks**:
-- [ ] **Task 8.3.1**: Implement performance tracking (3 pts)
-- [ ] **Task 8.3.2**: Add error tracking (2 pts)
-- [ ] **Task 8.3.3**: Create performance dashboard (2 pts)
-- [ ] **Task 8.3.4**: Optimize based on data (1 pt)
+- [ ] **Task 7.7.1**: Implement performance tracking (3 pts)
+- [ ] **Task 7.7.2**: Add error tracking (2 pts)
+- [ ] **Task 7.7.3**: Create performance dashboard (2 pts)
+- [ ] **Task 7.7.4**: Optimize based on data (1 pt)
 
-#### Feature 8.4: User Feedback System ⭐ P3
+---
+
+### Epic 8: Cross-Platform Support (Complete)
+**Epic Priority**: P1 - High  
+**Story Points**: 13 points
+
+#### Feature 8.1: Cross-Platform Multiplayer ⭐ P1
+**Story**: As a player, I want to play with friends regardless of their device
+
+**Story Points**: 13  
+**Personas**: Essential for all group types - mixed device families/friend groups  
+**Acceptance Criteria**:
+- iOS and Android users in same lobbies
+- Feature parity between platforms
+- Consistent game experience
+- Cross-platform friend lists
+- Synced data across devices
+
+**Tasks**:
+- [ ] **Task 8.1.1**: Ensure protocol compatibility (3 pts)
+- [ ] **Task 8.1.2**: Test iOS-Android lobbies (3 pts)
+- [ ] **Task 8.1.3**: Handle platform UI differences (5 pts)
+- [ ] **Task 8.1.4**: Add platform indicators (2 pts)
+
+---
+
+### Epic 9: User Feedback & Quality
+**Epic Priority**: P3 - Low  
+**Business Value**: Direct user insights improve retention  
+**Epic Story Points**: 5 points
+
+#### Feature 9.1: User Feedback System ⭐ P3
 **Story**: As a user, I want to provide feedback so that I can help improve the app
 
 **Story Points**: 5  
@@ -841,34 +921,34 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 - Response from team (for bugs)
 
 **Tasks**:
-- [ ] **Task 8.4.1**: Create feedback UI (2 pts)
-- [ ] **Task 8.4.2**: Implement feedback API (1 pt)
-- [ ] **Task 8.4.3**: Add smart rating prompt (1 pt)
-- [ ] **Task 8.4.4**: Create feedback dashboard (1 pt)
+- [ ] **Task 9.1.1**: Create feedback UI (2 pts)
+- [ ] **Task 9.1.2**: Implement feedback API (1 pt)
+- [ ] **Task 9.1.3**: Add smart rating prompt (1 pt)
+- [ ] **Task 9.1.4**: Create feedback dashboard (1 pt)
 
 ---
 
 ### Phase 3 Summary
-**Total Story Points**: 89 points  
+**Total Story Points**: 90 points (was 89 points)  
 **Estimated Duration**: 5 weeks (3 sprints)  
-**Key Deliverable**: Production-ready app with offline capabilities and analytics
+**Key Deliverable**: Production-ready app with offline capabilities, analytics, and cross-platform support
 
 ---
 
 ## Phase 4: Advanced Features (Future)
 
-### Epic 9: Advanced Social Features
+### Epic 10: Advanced Social Features
 **Epic Priority**: P3 - Low (Future)  
 **Story Points**: TBD
 
-#### Feature 9.1: Voice Chat ⭐ P3
+#### Feature 10.1: Voice Chat ⭐ P3
 **Story**: As a player, I want voice chat during games so that I can communicate naturally
 - Real-time voice communication
 - Mute/unmute controls
 - Voice quality optimization
 - Low latency requirements
 
-#### Feature 9.2: Friend System ⭐ P3
+#### Feature 10.2: Friend System ⭐ P3
 **Story**: As a player, I want to add friends so that I can easily find and play with them
 - Send/accept friend requests
 - Friends list management
@@ -876,7 +956,7 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 - Invite friends to lobbies
 - Friends-only leaderboards
 
-#### Feature 9.3: Clans/Teams ⭐ P3
+#### Feature 10.3: Clans/Teams ⭐ P3
 **Story**: As a player, I want to join a clan so that I can be part of a community
 - Create/join clans
 - Clan chat
@@ -885,38 +965,61 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 
 ---
 
-### Epic 10: Advanced Progression
+### Epic 11: Advanced Progression
 **Epic Priority**: P3 - Low (Future)  
 **Story Points**: TBD
 
-#### Feature 10.1: Tournaments ⭐ P3
+#### Feature 11.1: Tournaments ⭐ P3
 **Story**: As a competitive player, I want to enter tournaments so that I can win prizes
 - Weekly/monthly tournaments
 - Tournament brackets
 - Prize pools
 - Tournament history
 
-#### Feature 10.2: Seasonal Content ⭐ P3
+#### Feature 11.2: Seasonal Content ⭐ P3
 **Story**: As a player, I want seasonal events so that I have fresh content
 - Holiday-themed games
 - Seasonal badges
 - Limited-time events
 - Seasonal leaderboards
 
-#### Feature 10.3: AI Practice Mode ⭐ P3
+#### Feature 11.3: AI Practice Mode ⭐ P2
 **Story**: As a player, I want to practice against AI so that I can improve my skills
 - Single-player practice mode
-- AI difficulty levels
-- Practice statistics
+- AI difficulty levels (Easy, Medium, Hard)
+- Practice statistics dashboard
 - No impact on competitive stats
+- Available offline
+
+**Story Points**: 13  
+**Priority**: P2 (moved from P3)  
+**Phase**: Phase 3 (added to Polish & Scale)
 
 ---
 
-### Epic 11: Monetization
+### Epic 12: Monetization
 **Epic Priority**: P3 - Low (Future)  
 **Story Points**: TBD
 
-#### Feature 11.1: Premium Subscription ⭐ P3
+#### Feature 12.1: Premium Teaser ⭐ P2
+**Story**: As a player, I want to see premium features so that I understand the value proposition
+
+**Story Points**: 5  
+**Priority**: P2  
+**Phase**: Phase 2 (added to Social & Progression)  
+**Acceptance Criteria**:
+- Locked premium badge visible in profile
+- "Premium" tag on exclusive features
+- Preview of premium benefits
+- Clear call-to-action for upgrade
+- Non-intrusive placement
+
+**Tasks**:
+- [ ] **Task 12.1.1**: Design premium teaser UI (2 pts)
+- [ ] **Task 12.1.2**: Implement locked badge display (2 pts)
+- [ ] **Task 12.1.3**: Add premium benefits modal (1 pt)
+
+#### Feature 12.2: Premium Subscription ⭐ P3
 **Story**: As a player, I want premium features so that I get enhanced experience
 - Ad-free experience
 - Exclusive badges and avatars
@@ -924,13 +1027,117 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 - Advanced statistics
 - Family/group plans
 
-#### Feature 11.2: Cosmetic Store ⭐ P3
+#### Feature 12.3: Cosmetic Store ⭐ P3
 **Story**: As a player, I want to customize my profile so that I express my personality
 - Avatar customization
 - Profile themes
 - Badge frames
 - Chat emojis
 - Victory animations
+
+---
+
+## MoSCoW Tagging
+
+| Tag | Meaning | Priority Level |
+|-----|---------|---------------|
+| **Must** | MVP blocker - required for launch | P0-P1 |
+| **Should** | High ROI - important for success | P1-P2 |
+| **Could** | Polish - enhances experience | P2-P3 |
+| **Won't** | Post-v1 - future consideration | P3 |
+
+### MoSCoW Applied to Epics
+
+**Phase 1 (Must Have)**:
+- Epic 1: User Onboarding & Authentication - **Must**
+- Epic 2: Game Lobby & Multiplayer Management - **Must**
+- Epic 3: Core Gameplay Experience - **Must**
+- Epic 4: Cross-Platform & Reliability - **Must**
+
+**Phase 2 (Should Have)**:
+- Epic 5: Social Features - **Should**
+- Epic 6: Progression & Achievement System - **Should**
+
+**Phase 3 (Could Have)**:
+- Epic 7: Offline & Analytics - **Could**
+- Epic 8: Cross-Platform Support (Complete) - **Should**
+- Epic 9: User Feedback & Quality - **Could**
+
+**Phase 4 (Won't Have - Post-Launch)**:
+- Epic 10: Advanced Social Features - **Won't**
+- Epic 11: Advanced Progression - **Won't**
+- Epic 12: Monetization - **Won't**
+
+---
+
+## Final Recommendations
+
+### 1. Next Grooming Focus
+**Priority Items for Next Sprint Planning**:
+- **Feature 3.6: Game Content Seed** (13 pts) - Critical for MVP playability
+  - Ensure 12+ puzzles across 4 categories are ready
+  - Test difficulty tiers with target personas
+  - Validate hint system penalties don't frustrate casual players
+  
+- **Feature 6.6: Enhanced Scoring Formula** (8 pts) - Unified scoring essential
+  - Formula: `Score = (90 - seconds) + (20 × noHints) + (15 × perfect) - (5 × hints) + (streak × 0.1)`
+  - Validate formula with Competitive Sibling persona
+  - Ensure server-side calculation prevents cheating
+
+### 2. Spike Needed
+**Technical Research Required**:
+- **"Go Board Async Sync"** (8 pts) - Spike story
+  - Research board state compression techniques
+  - Evaluate real-time sync vs. turn-based sync trade-offs
+  - Test with 10-player lobbies for performance
+  - Deliverable: Technical design document with recommendation
+
+### 3. Import to Tool
+**Jira/Azure DevOps Setup**:
+- Use Epic → Feature → Task hierarchy
+- Tag all items with MoSCoW priority
+- Link features to personas in description
+- Set up custom fields: Story Points, MoSCoW Tag, Phase
+- Create sprint boards for each phase
+
+### 4. Beta Plan
+**After Phase 1 (Week 9)**:
+- Test with 3 family groups (your nieces/nephews)
+- Focus on multi-generational play (ages 11-70+)
+- Collect feedback on:
+  - Lobby creation and invite flow
+  - Game selection and voting experience
+  - Async play patterns
+  - Cross-platform compatibility
+- Run for 2 weeks minimum
+- Success metrics:
+  - 70%+ lobby completion rate
+  - 3+ sessions per user per week
+  - <1% crash rate
+  - 4.0+ user satisfaction rating
+
+### 5. Risk Mitigation
+**High-Risk Items Requiring Extra Attention**:
+- **Feature 4.3: Offline Core** - Sync conflicts can be complex
+  - Add buffer: multiply estimate by 1.5x
+  - Pair programming recommended
+  - Early testing with poor network conditions
+  
+- **Feature 4.1: iOS/Android Parity** - Platform differences challenging
+  - Start early in Phase 1
+  - Dedicate specialist per platform
+  - Weekly cross-platform testing
+
+### 6. Velocity Tracking
+**Expected Sprint Velocity**:
+- Sprint 1-2: 30-40 pts (team ramping up)
+- Sprint 3+: 40-50 pts (full velocity)
+- Adjust for holidays, team changes
+
+**Phase Estimates**:
+- Phase 1: 183 pts = 4-5 sprints (9-10 weeks)
+- Phase 2: 112 pts = 3 sprints (6 weeks)
+- Phase 3: 90 pts = 2-3 sprints (5-6 weeks)
 
 ---
 
