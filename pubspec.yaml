@@ -1,0 +1,54 @@
+name: mind_wars
+description: Mind Wars - Async Multiplayer Cognitive Games Platform
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # UI & Navigation
+  cupertino_icons: ^1.0.2
+  flutter_svg: ^2.0.7
+  
+  # State Management
+  provider: ^6.0.5
+  get_it: ^7.6.0
+  
+  # Networking & Multiplayer
+  socket_io_client: ^2.0.3
+  http: ^1.1.0
+  
+  # Local Storage
+  shared_preferences: ^2.2.0
+  sqflite: ^2.3.0
+  path_provider: ^2.1.0
+  
+  # Utilities
+  uuid: ^3.0.7
+  intl: ^0.18.1
+  equatable: ^2.0.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+  mockito: ^5.4.2
+  build_runner: ^2.4.6
+
+flutter:
+  uses-material-design: true
+  
+  # Assets
+  # assets:
+  #   - images/
+  #   - icons/
+  
+  # Fonts
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
