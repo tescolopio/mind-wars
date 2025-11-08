@@ -7,9 +7,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'services/api_service.dart';
+import 'services/auth_service.dart';
 import 'services/multiplayer_service.dart';
 import 'services/offline_service.dart';
 import 'services/progression_service.dart';
+import 'screens/splash_screen.dart';
+import 'screens/login_screen.dart';
+import 'screens/registration_screen.dart';
+import 'screens/onboarding_screen.dart';
+import 'screens/profile_setup_screen.dart';
 
 void main() {
   runApp(const MindWarsApp());
@@ -25,6 +31,7 @@ class MindWarsApp extends StatelessWidget {
       baseUrl: 'https://api.mindwars.app', // Configure your API endpoint
     );
     
+    final authService = AuthService(apiService: apiService);
     final multiplayerService = MultiplayerService();
     final offlineService = OfflineService();
     final progressionService = ProgressionService(apiService: apiService);
@@ -32,6 +39,7 @@ class MindWarsApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider<ApiService>.value(value: apiService),
+        Provider<AuthService>.value(value: authService),
         Provider<MultiplayerService>.value(value: multiplayerService),
         Provider<OfflineService>.value(value: offlineService),
         Provider<ProgressionService>.value(value: progressionService),
@@ -104,9 +112,16 @@ class MindWarsApp extends StatelessWidget {
         
         themeMode: ThemeMode.system,
         
-        home: const HomeScreen(),
+        // Initial route - splash screen handles navigation
+        initialRoute: '/',
         
         routes: {
+          '/': (context) => const SplashScreen(),
+          '/login': (context) => const LoginScreen(),
+          '/register': (context) => const RegistrationScreen(),
+          '/onboarding': (context) => const OnboardingScreen(),
+          '/profile-setup': (context) => const ProfileSetupScreen(),
+          '/home': (context) => const HomeScreen(),
           '/lobby-list': (context) => const LobbyListScreen(),
           '/leaderboard': (context) => const LeaderboardScreen(),
           '/profile': (context) => const ProfileScreen(),

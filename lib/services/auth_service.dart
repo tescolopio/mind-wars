@@ -1,0 +1,232 @@
+/**
+ * Authentication Service
+ * Manages user authentication state, token storage, and session management
+ * Security-First: JWT tokens stored securely, auto-login support
+ */
+
+import 'package:shared_preferences/shared_preferences.dart';
+import 'api_service.dart';
+import '../models/models.dart';
+
+class AuthService {
+  final ApiService _apiService;
+  static const String _tokenKey = 'auth_token';
+  static const String _userIdKey = 'user_id';
+  static const String _usernameKey = 'username';
+  static const String _emailKey = 'email';
+  static const String _autoLoginKey = 'auto_login';
+  
+  User? _currentUser;
+  
+  AuthService({required ApiService apiService}) : _apiService = apiService;
+  
+  /// Get current authenticated user
+  User? get currentUser => _currentUser;
+  
+  /// Check if user is authenticated
+  bool get isAuthenticated => _currentUser != null;
+  
+  /// Register a new user
+  /// Validates email, password strength, and handles errors
+  Future<AuthResult> register({
+    required String username,
+    required String email,
+    required String password,
+  }) async {
+    try {
+      // Client-side validation before API call
+      final validationError = _validateRegistration(username, email, password);
+      if (validationError != null) {
+        return AuthResult(success: false, error: validationError);
+      }
+      
+      // Call API
+      final response = await _apiService.register(username, email, password);
+      
+      // Store token and user info
+      if (response['token'] != null && response['user'] != null) {
+        final token = response['token'] as String;
+        final userData = response['user'] as Map<String, dynamic>;
+        
+        await _storeAuthData(token, userData);
+        _currentUser = User.fromJson(userData);
+        
+        return AuthResult(success: true, user: _currentUser);
+      }
+      
+      return AuthResult(success: false, error: 'Registration failed');
+    } catch (e) {
+      return AuthResult(success: false, error: _handleError(e));
+    }
+  }
+  
+  /// Login user with email and password
+  Future<AuthResult> login({
+    required String email,
+    required String password,
+    bool autoLogin = false,
+  }) async {
+    try {
+      // Call API
+      final response = await _apiService.login(email, password);
+      
+      // Store token and user info
+      if (response['token'] != null && response['user'] != null) {
+        final token = response['token'] as String;
+        final userData = response['user'] as Map<String, dynamic>;
+        
+        await _storeAuthData(token, userData, autoLogin: autoLogin);
+        _currentUser = User.fromJson(userData);
+        
+        return AuthResult(success: true, user: _currentUser);
+      }
+      
+      return AuthResult(success: false, error: 'Login failed');
+    } catch (e) {
+      return AuthResult(success: false, error: _handleError(e));
+    }
+  }
+  
+  /// Logout user and clear stored data
+  Future<void> logout() async {
+    try {
+      await _apiService.logout();
+    } catch (e) {
+      // Continue with local logout even if API call fails
+    }
+    
+    await _clearAuthData();
+    _currentUser = null;
+  }
+  
+  /// Attempt to restore session from stored token
+  /// Used for auto-login on app launch
+  Future<bool> restoreSession() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final autoLogin = prefs.getBool(_autoLoginKey) ?? false;
+      
+      if (!autoLogin) {
+        return false;
+      }
+      
+      final token = prefs.getString(_tokenKey);
+      final userId = prefs.getString(_userIdKey);
+      final username = prefs.getString(_usernameKey);
+      final email = prefs.getString(_emailKey);
+      
+      if (token != null && userId != null) {
+        _apiService.setAuthToken(token);
+        _currentUser = User(
+          id: userId,
+          username: username ?? '',
+          email: email ?? '',
+        );
+        return true;
+      }
+      
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+  
+  /// Store authentication data securely
+  Future<void> _storeAuthData(
+    String token,
+    Map<String, dynamic> userData, {
+    bool autoLogin = false,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_tokenKey, token);
+    await prefs.setString(_userIdKey, userData['id']);
+    await prefs.setString(_usernameKey, userData['username']);
+    await prefs.setString(_emailKey, userData['email']);
+    await prefs.setBool(_autoLoginKey, autoLogin);
+    
+    _apiService.setAuthToken(token);
+  }
+  
+  /// Clear stored authentication data
+  Future<void> _clearAuthData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_tokenKey);
+    await prefs.remove(_userIdKey);
+    await prefs.remove(_usernameKey);
+    await prefs.remove(_emailKey);
+    await prefs.remove(_autoLoginKey);
+  }
+  
+  /// Validate registration inputs
+  String? _validateRegistration(String username, String email, String password) {
+    if (username.isEmpty || username.length < 3) {
+      return 'Username must be at least 3 characters';
+    }
+    
+    if (!_isValidEmail(email)) {
+      return 'Please enter a valid email address';
+    }
+    
+    final passwordError = _validatePassword(password);
+    if (passwordError != null) {
+      return passwordError;
+    }
+    
+    return null;
+  }
+  
+  /// Validate email format
+  bool _isValidEmail(String email) {
+    final emailRegex = RegExp(
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+    );
+    return emailRegex.hasMatch(email);
+  }
+  
+  /// Validate password strength
+  /// Requirements: 8+ chars, mixed case, numbers
+  String? _validatePassword(String password) {
+    if (password.length < 8) {
+      return 'Password must be at least 8 characters';
+    }
+    
+    if (!password.contains(RegExp(r'[A-Z]'))) {
+      return 'Password must contain at least one uppercase letter';
+    }
+    
+    if (!password.contains(RegExp(r'[a-z]'))) {
+      return 'Password must contain at least one lowercase letter';
+    }
+    
+    if (!password.contains(RegExp(r'[0-9]'))) {
+      return 'Password must contain at least one number';
+    }
+    
+    return null;
+  }
+  
+  /// Handle and format errors
+  String _handleError(dynamic error) {
+    if (error.toString().contains('duplicate')) {
+      return 'Email already registered';
+    } else if (error.toString().contains('invalid')) {
+      return 'Invalid email or password';
+    } else if (error.toString().contains('network')) {
+      return 'Network error. Please check your connection';
+    }
+    return 'An error occurred. Please try again';
+  }
+}
+
+/// Authentication result wrapper
+class AuthResult {
+  final bool success;
+  final User? user;
+  final String? error;
+  
+  AuthResult({
+    required this.success,
+    this.user,
+    this.error,
+  });
+}

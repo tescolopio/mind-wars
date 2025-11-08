@@ -224,6 +224,19 @@ class ApiService {
     return _handleResponse(response);
   }
 
+  /// Update profile (convenience method for profile setup)
+  Future<Map<String, dynamic>> updateProfile({
+    required String userId,
+    String? displayName,
+    String? avatar,
+  }) async {
+    final updates = <String, dynamic>{};
+    if (displayName != null) updates['displayName'] = displayName;
+    if (avatar != null) updates['avatar'] = avatar;
+    
+    return updateUserProfile(userId, updates);
+  }
+
   /// Get user progress
   Future<UserProgress> getUserProgress(String userId) async {
     final response = await http.get(

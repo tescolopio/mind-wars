@@ -1,0 +1,338 @@
+/**
+ * Registration Screen
+ * Feature 1.1: User Registration
+ * - Email input with validation
+ * - Password input with strength indicator
+ * - Confirm password field
+ * - Register button with loading state
+ * - Client-side validation
+ * - Error handling
+ */
+
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../services/auth_service.dart';
+import '../utils/validators.dart';
+
+class RegistrationScreen extends StatefulWidget {
+  const RegistrationScreen({super.key});
+
+  @override
+  State<RegistrationScreen> createState() => _RegistrationScreenState();
+}
+
+class _RegistrationScreenState extends State<RegistrationScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  
+  bool _isLoading = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
+  int _passwordStrength = 0;
+  String? _errorMessage;
+  
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+  
+  void _onPasswordChanged(String value) {
+    setState(() {
+      _passwordStrength = Validators.calculatePasswordStrength(value);
+    });
+  }
+  
+  Future<void> _handleRegistration() async {
+    // Clear previous error
+    setState(() {
+      _errorMessage = null;
+    });
+    
+    // Validate form
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    
+    setState(() {
+      _isLoading = true;
+    });
+    
+    try {
+      final authService = Provider.of<AuthService>(context, listen: false);
+      
+      final result = await authService.register(
+        username: _usernameController.text.trim(),
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+      
+      if (!mounted) return;
+      
+      if (result.success) {
+        // Registration successful - navigate to onboarding or home
+        Navigator.of(context).pushReplacementNamed('/onboarding');
+      } else {
+        setState(() {
+          _errorMessage = result.error;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Registration failed. Please try again.';
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Create Account'),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Header
+                const Icon(
+                  Icons.person_add,
+                  size: 64,
+                  color: Color(0xFF6200EE),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Join Mind Wars',
+                  style: theme.textTheme.displaySmall,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Create your account to start playing',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: Colors.grey[600],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                
+                const SizedBox(height: 32),
+                
+                // Error message
+                if (_errorMessage != null)
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    margin: const EdgeInsets.only(bottom: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.red[50],
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.red[300]!),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.error_outline, color: Colors.red[700]),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            _errorMessage!,
+                            style: TextStyle(color: Colors.red[700]),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                
+                // Username field
+                TextFormField(
+                  controller: _usernameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Username',
+                    hintText: 'Enter your username',
+                    prefixIcon: Icon(Icons.person),
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: Validators.validateUsername,
+                  enabled: !_isLoading,
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // Email field
+                TextFormField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    hintText: 'Enter your email',
+                    prefixIcon: Icon(Icons.email),
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: Validators.validateEmail,
+                  enabled: !_isLoading,
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // Password field with strength indicator
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: _obscurePassword,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    hintText: 'Enter your password',
+                    prefixIcon: const Icon(Icons.lock),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
+                    border: const OutlineInputBorder(),
+                  ),
+                  validator: Validators.validatePassword,
+                  onChanged: _onPasswordChanged,
+                  enabled: !_isLoading,
+                ),
+                
+                const SizedBox(height: 8),
+                
+                // Password strength indicator
+                if (_passwordController.text.isNotEmpty)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: LinearProgressIndicator(
+                              value: _passwordStrength / 4,
+                              backgroundColor: Colors.grey[300],
+                              color: Color(
+                                Validators.getPasswordStrengthColor(_passwordStrength),
+                              ),
+                              minHeight: 6,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            Validators.getPasswordStrengthLabel(_passwordStrength),
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Color(
+                                Validators.getPasswordStrengthColor(_passwordStrength),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '8+ chars, uppercase, lowercase, numbers',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                
+                const SizedBox(height: 16),
+                
+                // Confirm password field
+                TextFormField(
+                  controller: _confirmPasswordController,
+                  obscureText: _obscureConfirmPassword,
+                  decoration: InputDecoration(
+                    labelText: 'Confirm Password',
+                    hintText: 'Re-enter your password',
+                    prefixIcon: const Icon(Icons.lock_outline),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscureConfirmPassword = !_obscureConfirmPassword;
+                        });
+                      },
+                    ),
+                    border: const OutlineInputBorder(),
+                  ),
+                  validator: (value) => Validators.validateConfirmPassword(
+                    value,
+                    _passwordController.text,
+                  ),
+                  enabled: !_isLoading,
+                ),
+                
+                const SizedBox(height: 24),
+                
+                // Register button
+                ElevatedButton(
+                  onPressed: _isLoading ? null : _handleRegistration,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6200EE),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : const Text('Create Account'),
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // Login link
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Already have an account? ',
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                    TextButton(
+                      onPressed: _isLoading
+                          ? null
+                          : () {
+                              Navigator.of(context).pushReplacementNamed('/login');
+                            },
+                      child: const Text('Login'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

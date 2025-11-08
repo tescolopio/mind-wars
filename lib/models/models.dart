@@ -5,6 +5,63 @@
 /// Player status enum
 enum PlayerStatus { active, idle, disconnected }
 
+/// User model - represents authenticated user
+class User {
+  final String id;
+  final String username;
+  final String email;
+  final String? displayName;
+  final String? avatar;
+  final DateTime? createdAt;
+  
+  User({
+    required this.id,
+    required this.username,
+    required this.email,
+    this.displayName,
+    this.avatar,
+    this.createdAt,
+  });
+  
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'username': username,
+        'email': email,
+        'displayName': displayName,
+        'avatar': avatar,
+        'createdAt': createdAt?.toIso8601String(),
+      };
+  
+  factory User.fromJson(Map<String, dynamic> json) => User(
+        id: json['id'],
+        username: json['username'],
+        email: json['email'],
+        displayName: json['displayName'],
+        avatar: json['avatar'],
+        createdAt: json['createdAt'] != null 
+            ? DateTime.parse(json['createdAt']) 
+            : null,
+      );
+  
+  User copyWith({
+    String? id,
+    String? username,
+    String? email,
+    String? displayName,
+    String? avatar,
+    DateTime? createdAt,
+  }) {
+    return User(
+      id: id ?? this.id,
+      username: username ?? this.username,
+      email: email ?? this.email,
+      displayName: displayName ?? this.displayName,
+      avatar: avatar ?? this.avatar,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+}
+
 /// Cognitive category enum
 enum CognitiveCategory { memory, logic, attention, spatial, language }
 
