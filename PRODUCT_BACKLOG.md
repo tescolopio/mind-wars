@@ -1,0 +1,1212 @@
+# Mind Wars - Product Backlog 📋
+
+## Document Purpose
+
+This document provides a prioritized, actionable backlog of work for the Mind Wars mobile application development. It is organized by priority levels and development phases, with clear links to user personas and their needs.
+
+**Last Updated**: November 2025  
+**Version**: 1.0  
+**Status**: Active Development
+
+---
+
+## Table of Contents
+
+1. [Backlog Overview](#backlog-overview)
+2. [Priority Definitions](#priority-definitions)
+3. [Development Phases](#development-phases)
+4. [Phase 1: MVP - Core Experience (Months 1-2)](#phase-1-mvp---core-experience-months-1-2)
+5. [Phase 2: Social & Progression (Months 3-4)](#phase-2-social--progression-months-3-4)
+6. [Phase 3: Offline & Polish (Months 5-6)](#phase-3-offline--polish-months-5-6)
+7. [Phase 4: Advanced Features (Future)](#phase-4-advanced-features-future)
+8. [Backlog Grooming Guidelines](#backlog-grooming-guidelines)
+9. [Sprint Planning Recommendations](#sprint-planning-recommendations)
+
+---
+
+## Backlog Overview
+
+### Core Philosophy
+Mind Wars is designed for private group competitions called **"Mind Wars"** - multi-game, multi-round, async competitions between specific groups:
+1. **Family Mind Wars**: Multi-generational family competitions (Grade 6+, ages 11-70+)
+2. **Friends Mind Wars**: Social competitions with close friends
+3. **Office/Colleagues Mind Wars**: Team-building and competitive challenges at work
+4. **Mixed Mind Wars**: Any combination of family, friends, and colleagues
+
+### Key Personas (8 Total)
+1. **The Competitive Sibling** (Alex, 24) - Family rivalry & bragging rights
+2. **The Family Connector** (Maria, 42) - Extended family bonding
+3. **The Grandparent Gamer** (Dr. James, 68) - Intergenerational connection & cognitive health
+4. **The Parent-Child Bond Builder** (Sarah, 38) - Quality time across schedules
+5. **The Teen Squad Leader** (Emma, 16) - Friend groups & family games
+6. **The Middle Schooler** (Jordan, 12) - Cousin groups & skill building
+7. **The Friend Circle Competitor** (Marcus, 28) - Friends staying connected
+8. **The Office Team Builder** (Jennifer, 35) - Team-building & morale
+
+### Backlog Statistics
+- **Total Epics**: 8
+- **Total Features**: 32
+- **Total Tasks**: 128+
+- **Estimated MVP Duration**: 2 months
+- **Estimated Full v1.0**: 6 months
+
+---
+
+## Priority Definitions
+
+### Priority Levels
+
+**P0 - Critical (Launch Blockers)**
+- Must have for initial launch
+- Blocks other high-priority work
+- Core user flows depend on it
+- Affects all personas
+
+**P1 - High (Launch Important)**
+- Important for launch quality
+- Enhances core value proposition
+- Affects majority of personas
+- Should be in MVP if possible
+
+**P2 - Medium (Post-Launch)**
+- Nice to have for launch
+- Enhances user experience
+- Affects specific personas
+- Can be delivered after MVP
+
+**P3 - Low (Future Enhancement)**
+- Future improvement
+- Optimization or polish
+- Affects niche use cases
+- Backlog for later phases
+
+### Story Point Scale (Fibonacci)
+- **1 point**: Trivial change (< 2 hours)
+- **2 points**: Simple task (2-4 hours)
+- **3 points**: Small feature (1 day)
+- **5 points**: Medium feature (2-3 days)
+- **8 points**: Large feature (1 week)
+- **13 points**: Complex feature (2 weeks)
+- **21 points**: Epic-level work (break down further)
+
+---
+
+## Development Phases
+
+### Phase 1: MVP - Core Experience (Months 1-2)
+**Goal**: Launch-ready core multiplayer cognitive games platform  
+**Team Velocity Target**: 40-50 story points per 2-week sprint  
+**Total Story Points**: ~160-200 points
+
+### Phase 2: Social & Progression (Months 3-4)
+**Goal**: Rich social experience with retention hooks  
+**Team Velocity Target**: 40-50 story points per 2-week sprint  
+**Total Story Points**: ~120-150 points
+
+### Phase 3: Offline & Polish (Months 5-6)
+**Goal**: Production-grade reliability and optimization  
+**Team Velocity Target**: 40-50 story points per 2-week sprint  
+**Total Story Points**: ~100-120 points
+
+### Phase 4: Advanced Features (Future)
+**Goal**: Competitive differentiation and scaling  
+**Total Story Points**: TBD
+
+---
+
+## Phase 1: MVP - Core Experience (Months 1-2)
+
+### Epic 1: User Onboarding & Authentication
+**Epic Priority**: P0 - Critical  
+**Business Value**: Enable user acquisition and secure account management  
+**Personas**: All personas  
+**Epic Story Points**: 34 points
+
+#### Feature 1.1: User Registration ⭐ P0
+**Story**: As a new user, I want to quickly create an account so that I can start playing Mind Wars
+
+**Story Points**: 8  
+**Acceptance Criteria**:
+- User can register with email and password
+- Email validation is performed
+- Password meets security requirements (8+ chars, mixed case, numbers)
+- Account creation takes < 60 seconds
+- User receives confirmation email
+
+**Tasks**:
+- [ ] **Task 1.1.1**: Implement registration API endpoint (3 pts)
+  - Server-side validation of email format
+  - Password strength validation
+  - Check for duplicate emails
+  - Generate JWT token on success
+  
+- [ ] **Task 1.1.2**: Create registration UI screen (3 pts)
+  - Email input field with validation
+  - Password input with strength indicator
+  - Confirm password field
+  - Register button with loading state
+  
+- [ ] **Task 1.1.3**: Implement client-side validation (1 pt)
+  - Real-time email format validation
+  - Password strength meter
+  - Form validation before submission
+  
+- [ ] **Task 1.1.4**: Add error handling (1 pt)
+  - Display server error messages
+  - Network error retry logic
+
+#### Feature 1.2: User Login ⭐ P0
+**Story**: As a returning user, I want to securely log into my account so that I can access my game progress and data
+
+**Story Points**: 5  
+**Acceptance Criteria**:
+- User can login with email/password
+- JWT token is stored securely
+- Auto-login on app relaunch (if enabled)
+- Login takes < 5 seconds
+
+**Tasks**:
+- [ ] **Task 1.2.1**: Implement login API endpoint (2 pts)
+- [ ] **Task 1.2.2**: Create login UI screen (2 pts)
+- [ ] **Task 1.2.3**: Implement secure token storage (1 pt)
+
+#### Feature 1.3: Onboarding Tutorial ⭐ P1
+**Story**: As a new user, I want a quick tutorial so that I understand how to play Mind Wars
+
+**Story Points**: 13  
+**Personas**: Especially important for Grandparent Gamer, Parent-Child Builder  
+**Acceptance Criteria**:
+- Tutorial is shown only once for new users
+- Tutorial can be skipped
+- Tutorial covers: lobby creation, game selection, taking turns, chat
+- Tutorial takes < 2 minutes
+
+**Tasks**:
+- [ ] **Task 1.3.1**: Design tutorial flow (3 pts)
+- [ ] **Task 1.3.2**: Implement tutorial UI (5 pts)
+- [ ] **Task 1.3.3**: Add tutorial state management (2 pts)
+- [ ] **Task 1.3.4**: Create interactive demo (3 pts)
+
+#### Feature 1.4: Profile Setup ⭐ P1
+**Story**: As a new user, I want to set up my profile so that I can personalize my gaming experience
+
+**Story Points**: 8  
+**Personas**: Especially important for Middle Schooler, Teen Squad Leader  
+**Acceptance Criteria**:
+- User can set display name
+- User can choose avatar (from preset options)
+- Profile is visible to other players
+- Changes sync across devices
+
+**Tasks**:
+- [ ] **Task 1.4.1**: Create profile setup UI (3 pts)
+- [ ] **Task 1.4.2**: Implement profile API endpoints (2 pts)
+- [ ] **Task 1.4.3**: Add profile validation (2 pts)
+- [ ] **Task 1.4.4**: Implement profile sync (1 pt)
+
+---
+
+### Epic 2: Game Lobby & Multiplayer Management
+**Epic Priority**: P0 - Critical  
+**Business Value**: Core multiplayer experience driving engagement  
+**Personas**: All personas  
+**Epic Story Points**: 47 points
+
+#### Feature 2.1: Lobby Creation ⭐ P0
+**Story**: As a user, I want to create a private game lobby so that I can invite family and friends to play together
+
+**Story Points**: 13  
+**Personas**: Critical for all "Mind War" organizers (Family Connector, Friend Circle Competitor, Office Team Builder)  
+**Acceptance Criteria**:
+- User can create lobby with 2-10 players
+- Lobby has unique shareable code for easy family invites
+- Creator is designated as host
+- Private lobbies are default (public is optional)
+- Easy sharing of lobby code via family group chats
+
+**Tasks**:
+- [ ] **Task 2.1.1**: Implement lobby creation API (3 pts)
+  - Generate memorable lobby code (e.g., "FAMILY42")
+  - Default to private lobby
+  - Return shareable lobby details
+  
+- [ ] **Task 2.1.2**: Create lobby creation UI (5 pts)
+  - Max players selector (2-10)
+  - Lobby name input (e.g., "Smith Family Game Night")
+  - Privacy toggle: Private (default) / Public (optional)
+  - Prominent display of lobby code
+  - "Share Code" button for messaging apps
+  
+- [ ] **Task 2.1.3**: Implement Socket.io connection (3 pts)
+  - Connect to multiplayer server
+  - Emit `create-lobby` event
+  - Handle connection errors
+  
+- [ ] **Task 2.1.4**: Add lobby configuration options (2 pts)
+  - Number of rounds selector
+  - Voting points per player
+
+#### Feature 2.2: Lobby Discovery & Joining ⭐ P0
+**Story**: As a user, I want to find and join lobbies so that I can play with family/friends or explore public games
+
+**Story Points**: 13  
+**Acceptance Criteria**:
+- User can join private lobbies via invite code (primary use case)
+- User can view list of public lobbies (alternative/optional)
+- User can search lobbies by code
+- Real-time updates of lobby status
+- Private/family lobbies are prominent
+
+**Tasks**:
+- [ ] **Task 2.2.1**: Implement lobby list API (3 pts)
+  - Filter by status and privacy
+  - Prioritize private lobby joining via code
+  
+- [ ] **Task 2.2.2**: Create lobby browser UI (5 pts)
+  - Prominent "Join with Code" input
+  - Optional public lobby list (secondary section)
+  - Scrollable list of lobbies
+  
+- [ ] **Task 2.2.3**: Implement join lobby functionality (3 pts)
+  - Emit `join-lobby` Socket.io event
+  - Validate lobby capacity
+  
+- [ ] **Task 2.2.4**: Add real-time lobby updates (2 pts)
+  - Listen for player-joined/left events
+
+#### Feature 2.3: Lobby Management ⭐ P0
+**Story**: As a lobby host, I want to manage my lobby so that I can control the game experience
+
+**Story Points**: 13  
+**Personas**: Critical for Family Connector, Friend Circle Competitor, Office Team Builder  
+**Acceptance Criteria**:
+- Host can start the game when ready
+- Host can kick players if needed
+- Host can change lobby settings
+- Host can close the lobby
+- Host role can be transferred
+
+**Tasks**:
+- [ ] **Task 2.3.1**: Implement lobby management APIs (3 pts)
+- [ ] **Task 2.3.2**: Create host controls UI (5 pts)
+- [ ] **Task 2.3.3**: Implement lobby state management (3 pts)
+- [ ] **Task 2.3.4**: Add Socket.io events (2 pts)
+
+#### Feature 2.4: Player Presence & Status ⭐ P1
+**Story**: As a player, I want to see who is online and active so that I know who I'm playing with
+
+**Story Points**: 8  
+**Personas**: Especially important for Family Connector, Office Team Builder  
+**Acceptance Criteria**:
+- Players show as active/idle/disconnected
+- Real-time status updates
+- Last seen timestamp for offline players
+- Active turn indicator
+- Typing indicators in chat
+
+**Tasks**:
+- [ ] **Task 2.4.1**: Implement presence tracking (3 pts)
+- [ ] **Task 2.4.2**: Create presence UI components (2 pts)
+- [ ] **Task 2.4.3**: Add real-time presence updates (2 pts)
+- [ ] **Task 2.4.4**: Implement typing indicators (1 pt)
+
+---
+
+### Epic 3: Core Gameplay Experience
+**Epic Priority**: P0 - Critical  
+**Business Value**: Core product value proposition  
+**Personas**: All personas  
+**Epic Story Points**: 55 points
+
+#### Feature 3.1: Game Catalog & Selection ⭐ P0
+**Story**: As a player, I want to choose from a variety of cognitive games so that I can enjoy diverse challenges
+
+**Story Points**: 13  
+**Personas**: All personas, especially important for multi-generational play  
+**Acceptance Criteria**:
+- 12+ games available across 5 categories
+- Games organized by cognitive category
+- Game descriptions and rules available
+- Difficulty indicators shown
+- Games suitable for current player count
+
+**Tasks**:
+- [ ] **Task 3.1.1**: Implement game catalog system (COMPLETED ✅)
+- [ ] **Task 3.1.2**: Create game selection UI (5 pts)
+- [ ] **Task 3.1.3**: Implement game filtering (3 pts)
+- [ ] **Task 3.1.4**: Add game preview/demo (3 pts)
+
+#### Feature 3.2: Democratic Game Voting ⭐ P0
+**Story**: As a player, I want to vote on which games to play so that everyone enjoys the session
+
+**Story Points**: 13  
+**Personas**: Critical for Family Connector, Office Team Builder - ensures inclusive experience  
+**Acceptance Criteria**:
+- Players receive voting points (configurable by host)
+- Can allocate points across multiple games
+- Can change votes before voting ends
+- Top voted games are selected
+- Real-time vote count updates
+
+**Tasks**:
+- [ ] **Task 3.2.1**: Implement voting service (COMPLETED ✅)
+- [ ] **Task 3.2.2**: Create voting UI with point allocation (5 pts)
+- [ ] **Task 3.2.3**: Add voting Socket.io events (3 pts)
+- [ ] **Task 3.2.4**: Implement multi-round voting logic (3 pts)
+
+#### Feature 3.3: Turn-Based Gameplay ⭐ P0
+**Story**: As a player, I want to take my turn when convenient so that I can play on my schedule
+
+**Story Points**: 13  
+**Personas**: Critical for Parent-Child Builder, Friend Circle Competitor - async is core value  
+**Acceptance Criteria**:
+- Clear indication of whose turn it is
+- Turn can be taken anytime (async)
+- Turn data validated server-side
+- Other players notified of turn completion
+- Turn history visible
+
+**Tasks**:
+- [ ] **Task 3.3.1**: Implement turn management system (5 pts)
+- [ ] **Task 3.3.2**: Create turn UI components (3 pts)
+- [ ] **Task 3.3.3**: Add server-side turn validation (3 pts)
+- [ ] **Task 3.3.4**: Implement turn notifications (2 pts)
+
+#### Feature 3.4: Game Scoring System ⭐ P0
+**Story**: As a player, I want fair and transparent scoring so that I know how I'm performing
+
+**Story Points**: 8  
+**Personas**: Critical for Competitive Sibling - prevents cheating  
+**Acceptance Criteria**:
+- Unified scoring system across all games
+- Base score + time bonus + accuracy
+- Streak multipliers applied (up to 2.0x)
+- Server-side score calculation
+- Real-time score updates
+
+**Tasks**:
+- [ ] **Task 3.4.1**: Implement unified scoring algorithm (COMPLETED ✅)
+- [ ] **Task 3.4.2**: Create scoring API (3 pts)
+- [ ] **Task 3.4.3**: Design score display UI (3 pts)
+- [ ] **Task 3.4.4**: Add anti-cheating validation (2 pts)
+
+#### Feature 3.5: Game State Management ⭐ P1
+**Story**: As a player, I want my game state saved automatically so that I can resume anytime
+
+**Story Points**: 8  
+**Personas**: Important for Parent-Child Builder - resume across interruptions  
+**Acceptance Criteria**:
+- Game state saved after each action
+- State persists across app restarts
+- Synchronized across devices
+- Handles offline state changes
+- Conflict resolution (server wins)
+
+**Tasks**:
+- [ ] **Task 3.5.1**: Implement game state models (2 pts)
+- [ ] **Task 3.5.2**: Create state persistence in SQLite (3 pts)
+- [ ] **Task 3.5.3**: Implement state synchronization (2 pts)
+- [ ] **Task 3.5.4**: Add state recovery (1 pt)
+
+---
+
+### Epic 7: Cross-Platform Support (Basic)
+**Epic Priority**: P0 - Critical  
+**Business Value**: Market reach and cross-platform multiplayer  
+**Personas**: All personas - mixed device families/groups  
+**Epic Story Points**: 34 points
+
+#### Feature 7.1: iOS Platform Support ⭐ P0
+**Story**: As an iOS user, I want full feature parity so that I get the complete Mind Wars experience
+
+**Story Points**: 13  
+**Acceptance Criteria**:
+- Supports iOS 14.0+
+- Native iOS design patterns
+- iOS-specific optimizations
+- App Store compliant
+- No feature gaps vs. Android
+
+**Tasks**:
+- [ ] **Task 7.1.1**: Configure iOS build (2 pts)
+- [ ] **Task 7.1.2**: Implement iOS-specific features (5 pts)
+- [ ] **Task 7.1.3**: Optimize for iOS devices (3 pts)
+- [ ] **Task 7.1.4**: Prepare for App Store (3 pts)
+
+#### Feature 7.2: Android Platform Support ⭐ P0
+**Story**: As an Android user, I want full feature parity so that I get the complete Mind Wars experience
+
+**Story Points**: 13  
+**Acceptance Criteria**:
+- Supports Android 8.0+ (API 26)
+- Material Design 3
+- Android-specific optimizations
+- Google Play compliant
+- No feature gaps vs. iOS
+
+**Tasks**:
+- [ ] **Task 7.2.1**: Configure Android build (2 pts)
+- [ ] **Task 7.2.2**: Implement Android-specific features (5 pts)
+- [ ] **Task 7.2.3**: Optimize for Android fragmentation (3 pts)
+- [ ] **Task 7.2.4**: Prepare for Google Play (3 pts)
+
+#### Feature 7.4: Responsive UI Design ⭐ P1
+**Story**: As a player, I want the app to work well on different screen sizes so that I have a good experience
+
+**Story Points**: 8  
+**Personas**: Critical for Grandparent Gamer (accessibility), multi-device families  
+**Acceptance Criteria**:
+- Supports 5" to 12" screens
+- Portrait and landscape modes
+- Tablet-optimized layouts
+- Minimum 48dp touch targets
+- Adaptive font sizes
+
+**Tasks**:
+- [ ] **Task 7.4.1**: Implement responsive layouts (3 pts)
+- [ ] **Task 7.4.2**: Test on various device sizes (2 pts)
+- [ ] **Task 7.4.3**: Optimize touch targets (2 pts)
+- [ ] **Task 7.4.4**: Handle orientation changes (1 pt)
+
+---
+
+### Phase 1 Summary
+**Total Story Points**: 170 points  
+**Estimated Duration**: 8-9 weeks (4-5 sprints)  
+**Key Deliverable**: Functional multiplayer cognitive games app with core gameplay
+
+**Critical Path**:
+1. Authentication & Onboarding (Week 1-2)
+2. Lobby Management & Multiplayer (Week 3-4)
+3. Core Gameplay & Game Catalog (Week 5-6)
+4. Cross-Platform Support & Polish (Week 7-8)
+5. Testing & Bug Fixes (Week 9)
+
+---
+
+## Phase 2: Social & Progression (Months 3-4)
+
+### Epic 4: Social Features & Communication
+**Epic Priority**: P1 - High  
+**Business Value**: Increases engagement and creates social bonds  
+**Personas**: Social Player, College Student, Competitive Gamer, Teen Squad Leader  
+**Epic Story Points**: 42 points
+
+#### Feature 4.1: In-Game Chat ⭐ P1
+**Story**: As a player, I want to chat with other players so that I can communicate during games
+
+**Story Points**: 13  
+**Personas**: Critical for Teen Squad Leader, Friend Circle Competitor - social interaction  
+**Acceptance Criteria**:
+- Real-time text messaging
+- Messages visible to all lobby members
+- Chat history persists during session
+- Character limit per message (500 chars)
+- Profanity filter applied
+
+**Tasks**:
+- [ ] **Task 4.1.1**: Implement chat backend (COMPLETED ✅)
+- [ ] **Task 4.1.2**: Create chat UI component (5 pts)
+- [ ] **Task 4.1.3**: Add real-time chat updates (3 pts)
+- [ ] **Task 4.1.4**: Implement profanity filter (3 pts)
+
+#### Feature 4.2: Emoji Reactions ⭐ P1
+**Story**: As a player, I want to send quick emoji reactions so that I can express emotions easily
+
+**Story Points**: 8  
+**Personas**: Important for Family Connector - simple cross-generational communication  
+**Acceptance Criteria**:
+- 8 emoji options available (👍 ❤️ 😂 🎉 🔥 👏 😮 🤔)
+- Reactions shown in real-time
+- Reactions tied to game events or messages
+- Animation when reaction sent
+- Reaction count visible
+
+**Tasks**:
+- [ ] **Task 4.2.1**: Implement reaction system (COMPLETED ✅)
+- [ ] **Task 4.2.2**: Create reaction UI (3 pts)
+- [ ] **Task 4.2.3**: Add real-time animations (3 pts)
+- [ ] **Task 4.2.4**: Handle reaction contexts (2 pts)
+
+#### Feature 4.3: Vote-to-Skip Mechanics ⭐ P1
+**Story**: As a player, I want to vote to skip inactive players so that games progress smoothly
+
+**Story Points**: 8  
+**Acceptance Criteria**:
+- Any player can initiate skip vote
+- Requires majority (50%+1) to pass
+- Idle player is auto-skipped after timeout
+- Vote status visible to all players
+- Countdown timer shown
+
+**Tasks**:
+- [ ] **Task 4.3.1**: Implement vote-to-skip (COMPLETED ✅)
+- [ ] **Task 4.3.2**: Create skip vote UI (3 pts)
+- [ ] **Task 4.3.3**: Add Socket.io vote events (2 pts)
+- [ ] **Task 4.3.4**: Implement idle detection (3 pts)
+
+#### Feature 4.4: Player Blocking & Reporting ⭐ P2
+**Story**: As a player, I want to block or report disruptive players so that I maintain a positive experience
+
+**Story Points**: 13  
+**Personas**: Important for Parent-Child Builder - safety controls  
+**Acceptance Criteria**:
+- Can block players from future lobbies
+- Can report players for violations
+- Reporting includes reason selection
+- Blocked players list manageable
+- Reports reviewed by moderation team
+
+**Tasks**:
+- [ ] **Task 4.4.1**: Implement blocking API (3 pts)
+- [ ] **Task 4.4.2**: Create blocking UI (3 pts)
+- [ ] **Task 4.4.3**: Implement reporting system (5 pts)
+- [ ] **Task 4.4.4**: Create reporting UI (2 pts)
+
+---
+
+### Epic 5: Progression & Achievement System
+**Epic Priority**: P1 - High  
+**Business Value**: Increases retention and long-term motivation  
+**Personas**: Competitive Gamer, Brain Trainer, Middle Schooler  
+**Epic Story Points**: 54 points
+
+#### Feature 5.1: Weekly Leaderboards ⭐ P1
+**Story**: As a player, I want to compete on leaderboards so that I can see my rank among other players
+
+**Story Points**: 13  
+**Personas**: Critical for Competitive Sibling, Friend Circle Competitor  
+**Acceptance Criteria**:
+- Weekly leaderboard resets every Monday
+- Rankings based on total score
+- Top 100 players shown
+- Player's rank always visible
+- Friends' ranks highlighted
+
+**Tasks**:
+- [ ] **Task 5.1.1**: Implement leaderboard API (COMPLETED ✅)
+- [ ] **Task 5.1.2**: Create leaderboard UI (5 pts)
+- [ ] **Task 5.1.3**: Add filtering (3 pts)
+- [ ] **Task 5.1.4**: Implement rewards (3 pts)
+
+#### Feature 5.2: Badge & Achievement System ⭐ P1
+**Story**: As a player, I want to earn badges for accomplishments so that I can showcase my achievements
+
+**Story Points**: 13  
+**Personas**: Critical for Middle Schooler, Teen Squad Leader - visible progress  
+**Acceptance Criteria**:
+- 15+ badges available
+- Badges organized by category
+- Progress tracking for each badge
+- Badges displayed on player profile
+- Notification when badge earned
+
+**Tasks**:
+- [ ] **Task 5.2.1**: Implement badge system (COMPLETED ✅)
+- [ ] **Task 5.2.2**: Create badge UI grid (5 pts)
+- [ ] **Task 5.2.3**: Add badge categories (3 pts)
+- [ ] **Task 5.2.4**: Implement unlock notifications (3 pts)
+
+#### Feature 5.3: Streak Tracking System ⭐ P1
+**Story**: As a player, I want to maintain daily play streaks so that I stay motivated to play regularly
+
+**Story Points**: 8  
+**Personas**: Important for Grandparent Gamer - daily routine  
+**Acceptance Criteria**:
+- Streak counts consecutive days played
+- Streak multipliers up to 2.0x
+- Streak freeze available (1 per week)
+- Streak displayed prominently
+- Loss of streak sends notification
+
+**Tasks**:
+- [ ] **Task 5.3.1**: Implement streak tracking (COMPLETED ✅)
+- [ ] **Task 5.3.2**: Create streak UI (3 pts)
+- [ ] **Task 5.3.3**: Add progressive multipliers (2 pts)
+- [ ] **Task 5.3.4**: Implement notifications (3 pts)
+
+#### Feature 5.4: Level & XP System ⭐ P2
+**Story**: As a player, I want to level up based on my performance so that I see my overall progress
+
+**Story Points**: 13  
+**Acceptance Criteria**:
+- XP gained from all activities
+- Clear level progression (1-100+)
+- XP required increases per level
+- Level shown on profile
+- Level-up celebration
+
+**Tasks**:
+- [ ] **Task 5.4.1**: Implement XP calculation (3 pts)
+- [ ] **Task 5.4.2**: Create level UI (3 pts)
+- [ ] **Task 5.4.3**: Add XP rewards (5 pts)
+- [ ] **Task 5.4.4**: Implement level-up animations (2 pts)
+
+#### Feature 5.5: Personal Statistics Dashboard ⭐ P2
+**Story**: As a player, I want detailed statistics about my performance so that I can track improvement
+
+**Story Points**: 13  
+**Personas**: Important for Grandparent Gamer - cognitive health tracking  
+**Acceptance Criteria**:
+- Total games played
+- Win/loss ratio
+- Average score per game
+- Category performance breakdown
+- Performance trends over time
+
+**Tasks**:
+- [ ] **Task 5.5.1**: Implement statistics backend (5 pts)
+- [ ] **Task 5.5.2**: Create statistics dashboard (5 pts)
+- [ ] **Task 5.5.3**: Add detailed analytics (3 pts)
+- [ ] **Task 5.5.4**: Implement data export (2 pts)
+
+---
+
+### Phase 2 Summary
+**Total Story Points**: 96 points  
+**Estimated Duration**: 5-6 weeks (3 sprints)  
+**Key Deliverable**: Rich social experience with long-term progression hooks
+
+---
+
+## Phase 3: Offline & Polish (Months 5-6)
+
+### Epic 6: Offline Mode & Data Sync
+**Epic Priority**: P1 - High  
+**Business Value**: Critical for users with unreliable connections  
+**Personas**: Brain Trainer, Busy Parent, Remote Worker, Grandparent Gamer  
+**Epic Story Points**: 42 points
+
+#### Feature 6.1: Offline Game Storage ⭐ P1
+**Story**: As a player, I want to save games locally so that I can play without internet
+
+**Story Points**: 13  
+**Personas**: Critical for Parent-Child Builder, Grandparent Gamer - unreliable connectivity  
+**Acceptance Criteria**:
+- All game data stored in SQLite
+- Games playable completely offline
+- Local puzzle generation
+- Offline moves queued for sync
+- No feature loss when offline
+
+**Tasks**:
+- [ ] **Task 6.1.1**: Implement SQLite schema (COMPLETED ✅)
+- [ ] **Task 6.1.2**: Create offline service layer (3 pts)
+- [ ] **Task 6.1.3**: Implement local puzzle generation (5 pts)
+- [ ] **Task 6.1.4**: Add offline mode indicators (3 pts)
+
+#### Feature 6.2: Automatic Data Sync ⭐ P1
+**Story**: As a player, I want my offline progress synced automatically so that I don't lose data
+
+**Story Points**: 13  
+**Acceptance Criteria**:
+- Auto-sync on network reconnection
+- Sync queue processes failed requests
+- Max 5 retry attempts per request
+- Sync status visible to user
+- Conflict resolution: server wins
+
+**Tasks**:
+- [ ] **Task 6.2.1**: Implement sync queue (COMPLETED ✅)
+- [ ] **Task 6.2.2**: Create auto-sync on reconnection (3 pts)
+- [ ] **Task 6.2.3**: Add sync API endpoints (COMPLETED ✅)
+- [ ] **Task 6.2.4**: Implement conflict resolution (3 pts)
+
+#### Feature 6.3: Offline Caching Strategy ⭐ P2
+**Story**: As a player, I want frequently used data cached so that the app works smoothly offline
+
+**Story Points**: 8  
+**Acceptance Criteria**:
+- Game definitions cached locally
+- User profile cached
+- Recent game history cached
+- Images and assets cached
+- Cache refreshes on app launch (if online)
+
+**Tasks**:
+- [ ] **Task 6.3.1**: Implement cache management (3 pts)
+- [ ] **Task 6.3.2**: Add cache refresh logic (2 pts)
+- [ ] **Task 6.3.3**: Optimize cache performance (2 pts)
+- [ ] **Task 6.3.4**: Handle cache failures (1 pt)
+
+#### Feature 6.4: Network State Management ⭐ P2
+**Story**: As a player, I want clear indication of network status so that I understand app behavior
+
+**Story Points**: 8  
+**Acceptance Criteria**:
+- Network status visible in UI
+- Smooth transition online ↔ offline
+- Warning before data-heavy actions offline
+- Queue status indicator
+- Connectivity tests performed
+
+**Tasks**:
+- [ ] **Task 6.4.1**: Implement network detection (3 pts)
+- [ ] **Task 6.4.2**: Create network status UI (2 pts)
+- [ ] **Task 6.4.3**: Add smooth transitions (2 pts)
+- [ ] **Task 6.4.4**: Implement data-saving mode (1 pt)
+
+---
+
+### Epic 7: Cross-Platform Support (Complete)
+**Epic Priority**: P1 - High  
+**Story Points**: 13 points
+
+#### Feature 7.3: Cross-Platform Multiplayer ⭐ P1
+**Story**: As a player, I want to play with friends regardless of their device
+
+**Story Points**: 13  
+**Personas**: Essential for all group types - mixed device families/friend groups  
+**Acceptance Criteria**:
+- iOS and Android users in same lobbies
+- Feature parity between platforms
+- Consistent game experience
+- Cross-platform friend lists
+- Synced data across devices
+
+**Tasks**:
+- [ ] **Task 7.3.1**: Ensure protocol compatibility (3 pts)
+- [ ] **Task 7.3.2**: Test iOS-Android lobbies (3 pts)
+- [ ] **Task 7.3.3**: Handle platform UI differences (5 pts)
+- [ ] **Task 7.3.4**: Add platform indicators (2 pts)
+
+---
+
+### Epic 8: Analytics & Optimization
+**Epic Priority**: P2 - Medium  
+**Business Value**: Data-driven decisions improve retention  
+**Epic Story Points**: 34 points
+
+#### Feature 8.1: Event Tracking ⭐ P2
+**Story**: As a product manager, I want to track user events so that I can understand user behavior
+
+**Story Points**: 8  
+**Personas**: Indirect benefit for all personas, direct value for Office Team Builder (analytics)  
+**Acceptance Criteria**:
+- Track all major user actions
+- Events sent to analytics backend
+- Event properties include context
+- Privacy-compliant tracking
+- Opt-out available for users
+
+**Tasks**:
+- [ ] **Task 8.1.1**: Implement analytics service (COMPLETED ✅)
+- [ ] **Task 8.1.2**: Add event tracking calls (3 pts)
+- [ ] **Task 8.1.3**: Implement event properties (2 pts)
+- [ ] **Task 8.1.4**: Add privacy controls (2 pts)
+
+#### Feature 8.2: A/B Testing Framework ⭐ P2
+**Story**: As a product manager, I want to run A/B tests so that I can validate feature changes
+
+**Story Points**: 13  
+**Acceptance Criteria**:
+- Support for multiple concurrent tests
+- Random assignment to variants
+- Consistent variant per user
+- Track variant performance
+- Easy test configuration
+
+**Tasks**:
+- [ ] **Task 8.2.1**: Implement A/B test service (COMPLETED ✅)
+- [ ] **Task 8.2.2**: Create test configuration (5 pts)
+- [ ] **Task 8.2.3**: Add variant handling (5 pts)
+- [ ] **Task 8.2.4**: Analyze test results (3 pts)
+
+#### Feature 8.3: Performance Monitoring ⭐ P2
+**Story**: As a developer, I want to monitor app performance so that I can identify and fix issues
+
+**Story Points**: 8  
+**Acceptance Criteria**:
+- Track app launch time
+- Monitor API response times
+- Track frame rates (FPS)
+- Detect crashes and errors
+- Alert on performance degradation
+
+**Tasks**:
+- [ ] **Task 8.3.1**: Implement performance tracking (3 pts)
+- [ ] **Task 8.3.2**: Add error tracking (2 pts)
+- [ ] **Task 8.3.3**: Create performance dashboard (2 pts)
+- [ ] **Task 8.3.4**: Optimize based on data (1 pt)
+
+#### Feature 8.4: User Feedback System ⭐ P3
+**Story**: As a user, I want to provide feedback so that I can help improve the app
+
+**Story Points**: 5  
+**Acceptance Criteria**:
+- In-app feedback form
+- Rating prompt (after positive experience)
+- Bug report functionality
+- Feature request submission
+- Response from team (for bugs)
+
+**Tasks**:
+- [ ] **Task 8.4.1**: Create feedback UI (2 pts)
+- [ ] **Task 8.4.2**: Implement feedback API (1 pt)
+- [ ] **Task 8.4.3**: Add smart rating prompt (1 pt)
+- [ ] **Task 8.4.4**: Create feedback dashboard (1 pt)
+
+---
+
+### Phase 3 Summary
+**Total Story Points**: 89 points  
+**Estimated Duration**: 5 weeks (3 sprints)  
+**Key Deliverable**: Production-ready app with offline capabilities and analytics
+
+---
+
+## Phase 4: Advanced Features (Future)
+
+### Epic 9: Advanced Social Features
+**Epic Priority**: P3 - Low (Future)  
+**Story Points**: TBD
+
+#### Feature 9.1: Voice Chat ⭐ P3
+**Story**: As a player, I want voice chat during games so that I can communicate naturally
+- Real-time voice communication
+- Mute/unmute controls
+- Voice quality optimization
+- Low latency requirements
+
+#### Feature 9.2: Friend System ⭐ P3
+**Story**: As a player, I want to add friends so that I can easily find and play with them
+- Send/accept friend requests
+- Friends list management
+- See friends' online status
+- Invite friends to lobbies
+- Friends-only leaderboards
+
+#### Feature 9.3: Clans/Teams ⭐ P3
+**Story**: As a player, I want to join a clan so that I can be part of a community
+- Create/join clans
+- Clan chat
+- Clan leaderboards
+- Clan vs. clan competitions
+
+---
+
+### Epic 10: Advanced Progression
+**Epic Priority**: P3 - Low (Future)  
+**Story Points**: TBD
+
+#### Feature 10.1: Tournaments ⭐ P3
+**Story**: As a competitive player, I want to enter tournaments so that I can win prizes
+- Weekly/monthly tournaments
+- Tournament brackets
+- Prize pools
+- Tournament history
+
+#### Feature 10.2: Seasonal Content ⭐ P3
+**Story**: As a player, I want seasonal events so that I have fresh content
+- Holiday-themed games
+- Seasonal badges
+- Limited-time events
+- Seasonal leaderboards
+
+#### Feature 10.3: AI Practice Mode ⭐ P3
+**Story**: As a player, I want to practice against AI so that I can improve my skills
+- Single-player practice mode
+- AI difficulty levels
+- Practice statistics
+- No impact on competitive stats
+
+---
+
+### Epic 11: Monetization
+**Epic Priority**: P3 - Low (Future)  
+**Story Points**: TBD
+
+#### Feature 11.1: Premium Subscription ⭐ P3
+**Story**: As a player, I want premium features so that I get enhanced experience
+- Ad-free experience
+- Exclusive badges and avatars
+- Priority matchmaking
+- Advanced statistics
+- Family/group plans
+
+#### Feature 11.2: Cosmetic Store ⭐ P3
+**Story**: As a player, I want to customize my profile so that I express my personality
+- Avatar customization
+- Profile themes
+- Badge frames
+- Chat emojis
+- Victory animations
+
+---
+
+## Backlog Grooming Guidelines
+
+### Weekly Backlog Refinement
+**Cadence**: Every Wednesday, 1 hour  
+**Participants**: Product Owner, Scrum Master, Tech Lead, 2-3 Engineers
+
+**Agenda**:
+1. Review upcoming sprint items (15 min)
+   - Clarify acceptance criteria
+   - Identify dependencies
+   - Estimate story points
+   
+2. Groom future backlog items (30 min)
+   - Break down large stories (>13 points)
+   - Add technical details to tasks
+   - Update priorities based on learnings
+   
+3. Persona alignment check (10 min)
+   - Verify features serve target personas
+   - Ensure balance across persona needs
+   - Identify gaps in persona coverage
+   
+4. Dependencies and blockers (5 min)
+   - Identify technical dependencies
+   - Flag external dependencies
+   - Update BLOCKED status
+
+### Story Refinement Checklist
+Before a story enters a sprint, ensure:
+- [ ] Clear acceptance criteria defined
+- [ ] Linked to at least one persona
+- [ ] Story points estimated (team consensus)
+- [ ] Tasks broken down (if >8 points)
+- [ ] Dependencies identified
+- [ ] Technical approach validated
+- [ ] UI/UX designs available (if needed)
+- [ ] Test scenarios outlined
+
+### Definition of Ready
+A backlog item is "Ready" when:
+1. ✅ User story format complete ("As a... I want... so that...")
+2. ✅ Acceptance criteria clearly defined (testable)
+3. ✅ Linked to target persona(s)
+4. ✅ Story points estimated by team
+5. ✅ Dependencies identified and resolved
+6. ✅ Technical feasibility validated
+7. ✅ Design assets available (if UI work)
+8. ✅ Team understands and can commit
+
+### Definition of Done
+A backlog item is "Done" when:
+1. ✅ All tasks completed and code merged
+2. ✅ Unit tests written (>80% coverage)
+3. ✅ Integration tests passing
+4. ✅ Tested on iOS and Android
+5. ✅ Code reviewed and approved
+6. ✅ Performance meets targets
+7. ✅ Security review passed (if applicable)
+8. ✅ Documentation updated
+9. ✅ Product owner approval
+10. ✅ Deployed to staging environment
+
+---
+
+## Sprint Planning Recommendations
+
+### Sprint Structure
+- **Sprint Duration**: 2 weeks
+- **Sprint Velocity Target**: 40-50 story points
+- **Team Size**: 5-7 engineers (full-stack)
+- **Sprint Ceremonies**:
+  - Sprint Planning: Monday, 2 hours
+  - Daily Standup: Every day, 15 minutes
+  - Sprint Review: Friday (Week 2), 1 hour
+  - Sprint Retrospective: Friday (Week 2), 1 hour
+
+### Sprint Planning Process
+
+#### Part 1: What to Build (1 hour)
+1. **Review Sprint Goal** (10 min)
+   - Product owner presents sprint objective
+   - Aligns with phase/epic goals
+   - Focuses on persona value delivery
+
+2. **Story Selection** (30 min)
+   - Select highest priority "Ready" items
+   - Team capacity: 40-50 points
+   - Must support sprint goal
+   - Balance between new features and technical debt
+
+3. **Story Walkthrough** (20 min)
+   - Product owner explains each story
+   - Team asks clarifying questions
+   - Acceptance criteria reviewed
+   - Success metrics defined
+
+#### Part 2: How to Build (1 hour)
+1. **Task Breakdown** (30 min)
+   - Engineering team breaks down stories
+   - Identify technical tasks
+   - Estimate individual tasks
+   - Assign owners (tentative)
+
+2. **Dependency Mapping** (15 min)
+   - Identify blockers
+   - External dependencies flagged
+   - Order of execution planned
+   - Risk mitigation strategies
+
+3. **Capacity Check** (15 min)
+   - Verify total points vs. capacity
+   - Account for holidays, meetings
+   - Buffer for unknowns (10-20%)
+   - Commit to sprint backlog
+
+### Sprint Velocity Tracking
+- **Phase 1 Target**: 40-50 points/sprint (170 points over 4-5 sprints)
+- **Phase 2 Target**: 40-50 points/sprint (96 points over 2-3 sprints)
+- **Phase 3 Target**: 40-50 points/sprint (89 points over 2-3 sprints)
+
+**Velocity Adjustments**:
+- First 2 sprints: Establish baseline
+- Sprint 3+: Use 3-sprint average
+- Adjust for team changes, holidays
+- Account for technical debt sprints
+
+### Story Point Calibration
+**Reference Stories** (use for comparison):
+- **1 point**: Update button text, fix typo
+- **2 points**: Add new UI component (reusable)
+- **3 points**: Implement simple API endpoint
+- **5 points**: Create new screen with basic logic
+- **8 points**: Implement complex feature with state management
+- **13 points**: Build complete user flow (auth, lobby creation)
+
+### Risk Management
+**High-Risk Items** (need extra attention):
+- New technology/library integration
+- Cross-platform compatibility issues
+- Real-time multiplayer edge cases
+- Offline sync conflict resolution
+- Security-critical features
+
+**Mitigation**:
+- Add buffer points (multiply estimate by 1.5x)
+- Spike stories for unknowns
+- Pair programming on complex items
+- Early integration testing
+- Frequent demos to stakeholders
+
+---
+
+## Persona-Feature Matrix
+
+### Critical Features by Persona
+
+| Feature | Competitive Sibling | Family Connector | Grandparent Gamer | Parent-Child Builder | Teen Squad Leader | Middle Schooler | Friend Circle | Office Team Builder |
+|---------|---------------------|------------------|-------------------|----------------------|-------------------|-----------------|---------------|---------------------|
+| **Private Lobbies** | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
+| **Async Multiplayer** | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
+| **Game Voting** | ⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
+| **Chat & Emoji** | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
+| **Fair Scoring** | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
+| **Badges** | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
+| **Leaderboards** | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
+| **Offline Mode** | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐ |
+| **Accessibility** | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ |
+| **Cross-Platform** | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
+
+⭐⭐⭐ = Critical | ⭐⭐ = Important | ⭐ = Nice to have
+
+---
+
+## Success Metrics & KPIs
+
+### User Acquisition Metrics
+- **Target**: 10,000 registered users in first 3 months
+- **DAU (Daily Active Users)**: Track daily engagement
+- **WAU (Weekly Active Users)**: Track weekly engagement
+- **Organic Growth Rate**: 20% month-over-month target
+
+### Engagement Metrics
+- **Average Session Length**: Target > 15 minutes
+- **Sessions Per User Per Week**: Target 3+
+- **7-Day Streak Maintenance**: Target 50%+ of users
+- **Lobby Completion Rate**: Target 70%+ complete all games
+
+### Retention Metrics
+- **Day 1 Retention**: Target > 40%
+- **Day 7 Retention**: Target > 25%
+- **Day 30 Retention**: Target > 15%
+- **6-Month Retention**: Target > 5%
+
+### Social Metrics
+- **Average Lobby Size**: Target 4 players
+- **Friend Play Rate**: Target 30%+ play with friends
+- **Messages Per Lobby**: Target 50+ average
+- **Game Voting Usage**: Target 80%+ of lobbies
+
+### Quality Metrics
+- **App Crash Rate**: Target < 1%
+- **App Rating**: Target > 4.5 stars
+- **API Response Time**: Target < 500ms (p95)
+- **Multiplayer Uptime**: Target 99.9%
+
+### Persona-Specific Metrics
+- **Family Mind Wars**: % of lobbies with 3+ generation age gap
+- **Friends Mind Wars**: % of lobbies with repeat players
+- **Office Mind Wars**: % of lobbies created during work hours
+- **Multi-Generational Usage**: % of lobbies with ages 11-70+
+
+---
+
+## Backlog Health Indicators
+
+### Healthy Backlog Characteristics
+- ✅ Top 2 sprints worth of items are "Ready"
+- ✅ Next 4 sprints have rough estimates
+- ✅ Clear prioritization (P0 > P1 > P2 > P3)
+- ✅ Balanced persona coverage across phases
+- ✅ Technical debt < 20% of capacity
+- ✅ Dependencies identified and tracked
+- ✅ Regular grooming sessions held
+
+### Red Flags (Requires Attention)
+- ⚠️ Multiple P0 items blocked
+- ⚠️ Large stories (>13 pts) not broken down
+- ⚠️ Acceptance criteria missing
+- ⚠️ Velocity trending downward
+- ⚠️ Technical debt accumulating
+- ⚠️ Persona needs unbalanced
+- ⚠️ Grooming sessions skipped
+
+---
+
+## Appendix
+
+### Related Documents
+- [USER_PERSONAS.md](USER_PERSONAS.md) - Detailed user personas (8 personas)
+- [USER_STORIES.md](USER_STORIES.md) - Complete user stories with Epics, Features, Tasks
+- [ARCHITECTURE.md](ARCHITECTURE.md) - Technical architecture
+- [README.md](README.md) - Project overview and setup
+- [VALIDATION.md](VALIDATION.md) - Implementation validation checklist
+- [VOTING_SYSTEM.md](VOTING_SYSTEM.md) - Game voting system details
+
+### Glossary
+- **Epic**: Large body of work (1-2 months, multiple features)
+- **Feature**: User-facing functionality (1-2 weeks, multiple tasks)
+- **Task**: Technical implementation item (hours to days)
+- **Story Points**: Relative effort estimation (Fibonacci scale)
+- **Sprint**: 2-week development iteration
+- **Velocity**: Story points completed per sprint
+- **Mind War**: Private group competition (Family/Friends/Colleagues)
+- **Persona**: Representative user archetype
+- **MVP**: Minimum Viable Product (Phase 1)
+
+### Change Log
+| Date | Version | Changes | Author |
+|------|---------|---------|--------|
+| Nov 2025 | 1.0 | Initial backlog creation based on updated personas | Product Team |
+
+---
+
+**Document Status**: Active  
+**Next Review**: After Phase 1 Sprint 1  
+**Owner**: Product Manager  
+**Contributors**: Engineering Team, Design Team, Persona Research Team
+
+---
+
+*This backlog is a living document and should be updated regularly based on:*
+- *Sprint retrospective learnings*
+- *User feedback and analytics*
+- *Technical discoveries and constraints*
+- *Market and competitive changes*
+- *Persona validation and evolution*

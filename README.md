@@ -130,9 +130,15 @@ Core features first, polish iteratively. Optimistic updates with server confirma
 
 ## Documentation
 
+### 🎯 Backlog & Planning (START HERE)
+- **[BACKLOG_GUIDE.md](BACKLOG_GUIDE.md)** - ⭐ Quick reference guide to navigate all backlog documentation
+- **[PRODUCT_BACKLOG.md](PRODUCT_BACKLOG.md)** - Prioritized backlog with Epics, Features, and Tasks (P0-P3)
+- **[ROADMAP.md](ROADMAP.md)** - Visual 6-month roadmap with milestones and success metrics
+- **[SPRINT_TEMPLATES.md](SPRINT_TEMPLATES.md)** - Sprint planning, standup, review, and retrospective templates
+
 ### 📚 Product Documentation
-- **[USER_PERSONAS.md](USER_PERSONAS.md)** - 6 detailed user personas representing target audience
-- **[USER_STORIES.md](USER_STORIES.md)** - Comprehensive user stories organized as Epics, Features, and Tasks
+- **[USER_PERSONAS.md](USER_PERSONAS.md)** - 8 detailed user personas (Family, Friends, Office/Colleagues)
+- **[USER_STORIES.md](USER_STORIES.md)** - Comprehensive user stories with acceptance criteria
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - Technical architecture and implementation analysis
 - **[VALIDATION.md](VALIDATION.md)** - Implementation validation checklist
 - **[VOTING_SYSTEM.md](VOTING_SYSTEM.md)** - Game voting system documentation
