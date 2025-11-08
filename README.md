@@ -276,6 +276,7 @@ await offlineService.syncWithServer(
 - ✅ Cross-platform support (iOS 14+, Android 8+)
 - ✅ 12+ games across 5 cognitive categories
 - ✅ Social features (chat, emoji reactions, vote-to-skip)
+- ✅ Game voting system (democratic game selection)
 - ✅ Progression system (leaderboards, badges, streaks)
 - ✅ Offline mode with SQLite and automatic sync
 - ✅ Unified scoring system
