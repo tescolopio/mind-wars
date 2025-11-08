@@ -9,7 +9,13 @@ This document organizes user stories in a three-tier hierarchy:
 
 Each story follows the format: "As a [persona], I want [goal] so that [benefit]"
 
-**Product Philosophy**: Mind Wars is designed for families and friends to compete together across generations (Grade 6+, ages 11+). The primary use case is playing with known people (family members, friends), with private lobbies as the default. Public/random matching is available as an alternative option, but family bonding is the core value proposition.
+**Product Philosophy**: Mind Wars is designed for private group competitions called **"Mind Wars"** - multi-game, multi-round, async competitions between specific groups of people. The primary use cases are:
+1. **Family Mind Wars**: Multi-generational family competitions (Grade 6+, ages 11-70+)
+2. **Friends Mind Wars**: Social competitions with close friends
+3. **Office/Colleagues Mind Wars**: Team-building and competitive challenges at work
+4. **Mixed Mind Wars**: Any combination of family, friends, and colleagues
+
+Private group lobbies are the default. Public/random matching is available as an alternative option, but family/friends/colleagues bonding is the core value proposition.
 
 ---
 
@@ -910,6 +916,24 @@ Each story follows the format: "As a [persona], I want [goal] so that [benefit]"
 5. Feature 5.2: Badge & Achievement System (visible progress)
 6. Feature 4.4: Player Blocking & Reporting (parental approved safety)
 7. Feature 3.4: Game Scoring System (fair competition with older kids)
+
+### Friend Circle Competitor - Critical Stories
+1. Feature 2.1: Lobby Creation (private friends "Mind Wars")
+2. Feature 3.2: Democratic Game Voting (group picks games together)
+3. Feature 4.1: In-Game Chat (trash talk and banter)
+4. Feature 4.2: Emoji Reactions (quick reactions to plays)
+5. Feature 5.1: Weekly Leaderboards (friends group rankings)
+6. Feature 5.2: Badge & Achievement System (bragging rights)
+7. Feature 3.3: Turn-Based Gameplay (async for different time zones)
+
+### Office Team Builder - Critical Stories
+1. Feature 2.1: Lobby Creation (team-building "Mind Wars")
+2. Feature 3.2: Democratic Game Voting (inclusive team participation)
+3. Feature 5.1: Weekly Leaderboards (department comparisons)
+4. Feature 8.1: Event Tracking (participation analytics)
+5. Feature 2.4: Player Presence & Status (see team engagement)
+6. Feature 3.1: Game Catalog & Selection (professional appropriate games)
+7. Feature 7.3: Cross-Platform Multiplayer (diverse team devices)
 
 ---
 

@@ -3,7 +3,13 @@
 ## Overview
 This document defines the primary user personas for the Mind Wars mobile application. These personas represent our target audience and guide feature development, UX decisions, and marketing strategies.
 
-**Core Philosophy**: Mind Wars is designed for families and friends to compete together across generations. The primary use case is playing with known people (family members, friends, extended family), with public/random matching as an alternative option. Target age range is Grade 6+ (~11 years old and up), spanning from pre-teens to grandparents.
+**Core Philosophy**: Mind Wars is designed for private group competitions called **"Mind Wars"** - multi-game, multi-round, async competitions between specific groups of people. The primary use cases are:
+1. **Family Mind Wars**: Multi-generational family competitions (Grade 6+, ages 11-70+)
+2. **Friends Mind Wars**: Social competitions with close friends
+3. **Office/Colleagues Mind Wars**: Team-building and competitive challenges at work
+4. **Mixed Mind Wars**: Any combination of family, friends, and colleagues
+
+Public/random matching is available as an alternative option, but the core value is in these private group "Mind Wars" where known people compete over multiple games and rounds.
 
 ---
 
@@ -325,24 +331,131 @@ This document defines the primary user personas for the Mind Wars mobile applica
 
 ---
 
+## Persona 7: The Friend Circle Competitor 🎯
+
+### Profile
+- **Name**: Marcus Johnson
+- **Age**: 28
+- **Occupation**: Marketing Specialist
+- **Location**: Urban area (Chicago, IL)
+- **Device**: Samsung Galaxy S23
+- **Gaming Experience**: Medium-High - Social gamer who enjoys competition
+- **Social Context**: Plays with college friends group (6-8 people) who stayed close after graduation
+
+### Demographics
+- **Income**: $72,000/year
+- **Education**: Bachelor's in Communications
+- **Tech Savvy**: High
+- **Gaming Time**: 4-5 times per week, 30-60 minutes per session
+- **Play Group**: College friends spread across 4 states (6-8 person private lobbies)
+
+### Goals & Motivations
+- Wants to maintain friendships despite geographic distance
+- Enjoys competitive social gaming with trash talk and banter
+- Seeks regular touchpoints with friend group
+- Values bragging rights and proving superiority within friend circle
+- Wants structured competition more engaging than just texting
+
+### Pain Points
+- Hard to coordinate everyone's schedules for real-time gaming
+- Friends scattered across time zones (EST to PST)
+- Traditional social media feels passive, wants active engagement
+- Other multiplayer games too intense or require too much time commitment
+- Wants competition but with friends, not anonymous strangers
+
+### Behaviors
+- Organizes monthly "Mind War" tournaments with friends
+- Highly active in group chat during games, lots of trash talk
+- Competitive about weekly/monthly rankings within friend group
+- Takes screenshots of victories to share in group chat
+- Prefers quick-fire competitive games (Color Rush, Anagram Attack)
+- Creates themed competitions ("Logic Games Week")
+
+### User Needs
+- **Friends-Only Lobbies**: Private "Mind Wars" with known friend group
+- **Competitive Features**: Rankings, head-to-head comparisons, bragging rights
+- **Async Play**: Friends in different time zones can all participate
+- **Social Elements**: Chat, reactions, friendly rivalries
+- **Multiple Rounds**: Multi-game tournaments create sustained engagement
+- **Fair Competition**: Server validation ensures legitimate wins
+
+### Quote
+> "Our college friends group does a Mind War every month - 5 rounds, winner gets crowned in our group chat. It's way more fun than just liking each other's posts. The trash talk is legendary, and async play means even our friend in California can compete!"
+
+---
+
+## Persona 8: The Office Team Builder 💼
+
+### Profile
+- **Name**: Jennifer Park
+- **Age**: 35
+- **Occupation**: HR Manager / Team Lead
+- **Location**: Suburban area (Seattle, WA)
+- **Device**: iPhone 14
+- **Gaming Experience**: Low-Medium - Uses gaming for team engagement
+- **Work Context**: Organizes team-building activities for remote/hybrid team of 8-12 people
+
+### Demographics
+- **Income**: $95,000/year
+- **Education**: Master's in Human Resources
+- **Tech Savvy**: Medium-High
+- **Gaming Time**: 2-3 times per week (mostly organized team sessions)
+- **Play Group**: Work colleagues (8-12 person team lobbies)
+
+### Goals & Motivations
+- Wants engaging team-building activities for remote/hybrid teams
+- Seeks to improve team morale and connection
+- Values activities that work across different skill levels and ages
+- Wants measurable engagement (participation rates, completion)
+- Needs something professional yet fun, not too casual or childish
+
+### Pain Points
+- Traditional team-building feels forced or awkward
+- Remote team members feel disconnected
+- Virtual happy hours have Zoom fatigue
+- Needs activities that don't require everyone online at once
+- Wants something inclusive for all ages and skill levels (22-60)
+
+### Behaviors
+- Sets up monthly team "Mind Wars" as team-building exercises
+- Announces competitions in team Slack/Teams channels
+- Tracks participation and engagement metrics for management
+- Creates departmental challenges (Sales vs. Marketing)
+- Uses results in team meetings for recognition
+- Appreciates cognitive/professional angle (not just "games")
+
+### User Needs
+- **Professional Presentation**: Looks legitimate as team-building tool
+- **Group Management**: Easy setup for 8-12 colleagues
+- **Async Format**: Accommodates different work schedules and time zones
+- **Inclusive Design**: Works for 22-60 year-olds, all skill levels
+- **Analytics**: Participation and engagement tracking
+- **Team Features**: Department leaderboards, team vs. team competitions
+
+### Quote
+> "I set up quarterly Mind Wars for our team as a team-building alternative to Zoom happy hours. Everyone can participate on their schedule, it's actually engaging, and management loves that it's 'cognitive development.' Our team Slack lights up with friendly competition!"
+
+---
+
 ## Persona Mapping to Features
 
 ### Feature Priority by Persona
 
-| Feature | Competitive Sibling | Family Connector | Grandparent Gamer | Parent-Child Builder | Teen Squad Leader | Middle Schooler |
-|---------|---------------------|------------------|-------------------|----------------------|-------------------|-----------------|
-| Private Family Lobbies | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
-| Async Multiplayer | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ |
-| Multi-Gen Accessibility | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐ | ⭐⭐ |
-| Chat & Emoji | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
-| Age-Appropriate Content | ⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
-| Game Variety | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
-| Badges & Achievements | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐ | ⭐⭐ | ⭐⭐⭐ |
-| Vote System | ⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
-| Offline Mode | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ |
-| Family Leaderboards | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ |
-| Parental Controls | ⭐ | ⭐⭐⭐ | ⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ |
-| Cross-Platform | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
+| Feature | Competitive Sibling | Family Connector | Grandparent Gamer | Parent-Child Builder | Teen Squad Leader | Middle Schooler | Friend Circle Competitor | Office Team Builder |
+|---------|---------------------|------------------|-------------------|----------------------|-------------------|-----------------|--------------------------|---------------------|
+| Private Group Lobbies | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
+| Async Multiplayer | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
+| Multi-Gen Accessibility | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ |
+| Chat & Emoji | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
+| Age-Appropriate Content | ⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐ | ⭐⭐ |
+| Game Variety | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
+| Badges & Achievements | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
+| Vote System | ⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
+| Offline Mode | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐ |
+| Group Leaderboards | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
+| Parental Controls | ⭐ | ⭐⭐⭐ | ⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐ | ⭐ |
+| Cross-Platform | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
+| Analytics/Tracking | ⭐⭐ | ⭐⭐ | ⭐⭐ | ⭐ | ⭐ | ⭐ | ⭐⭐ | ⭐⭐⭐ |
 
 ⭐⭐⭐ = Critical | ⭐⭐ = Important | ⭐ = Nice to have
 
@@ -352,34 +465,36 @@ This document defines the primary user personas for the Mind Wars mobile applica
 
 ### By Time of Day
 - **Morning (6-9 AM)**: Grandparent Gamer (routine), Parent-Child Builder (work breaks)
+- **Lunch Break (12-1 PM)**: Friend Circle Competitor, Office Team Builder, Competitive Sibling
 - **After School (3-6 PM)**: Teen Squad Leader, Middle Schooler (with homework done)
-- **Evening (7-10 PM)**: Family Connector (organized family time), all personas for family game nights
+- **Evening (7-10 PM)**: Family Connector (organized family time), Friend Circle Competitor
 - **Weekend Mornings**: Grandparent Gamer playing with grandkids
-- **Throughout Day (async)**: Competitive Sibling, Parent-Child Builder
+- **Throughout Day (async)**: Competitive Sibling, Parent-Child Builder, Office Team Builder
 
 ### By Session Length
 - **10-15 minutes**: Parent-Child Builder (work breaks), Middle Schooler (quick sessions)
-- **30-45 minutes**: Competitive Sibling, Teen Squad Leader, Middle Schooler
-- **45-60 minutes**: Family Connector (organized family sessions), Grandparent Gamer
+- **30-45 minutes**: Competitive Sibling, Teen Squad Leader, Middle Schooler, Friend Circle Competitor
+- **45-60 minutes**: Family Connector (organized family sessions), Grandparent Gamer, Friend Circle Competitor
+- **Variable (async)**: Office Team Builder (takes turns throughout work week)
 
-### By Social Context
-- **Family Lobbies (Primary)**: All personas - this is the core use case
-- **Extended Family**: Family Connector (100%), Grandparent Gamer (80%), Middle Schooler (60%)
-- **Friend Groups**: Teen Squad Leader (70% friends, 30% family)
-- **Multi-Generational**: Family Connector, Grandparent Gamer, Parent-Child Builder
-- **Public Lobbies (Alternative)**: Competitive Sibling (20%), Teen Squad Leader (10%)
+### By Social Context - "Mind War" Types
+- **Family Mind Wars (Primary)**: Family-focused personas - multi-generational competitions
+- **Friends Mind Wars**: Friend Circle Competitor (100%), Teen Squad Leader (70%)
+- **Office/Colleagues Mind Wars**: Office Team Builder (100% for team-building)
+- **Mixed Mind Wars**: Teen Squad Leader (friends + family), Competitive Sibling (siblings + friends)
+- **Public Lobbies (Alternative)**: Competitive Sibling (20%), Friend Circle Competitor (10%)
 
 ### By Platform
-- **iOS Primary**: Competitive Sibling, Parent-Child Builder
-- **Android Primary**: Family Connector, Teen Squad Leader
+- **iOS Primary**: Competitive Sibling, Parent-Child Builder, Office Team Builder
+- **Android Primary**: Family Connector, Teen Squad Leader, Friend Circle Competitor
 - **iPad/Tablet**: Grandparent Gamer, Middle Schooler
-- **Mixed Devices in Family**: Very common - cross-platform essential
+- **Mixed Devices in Groups**: Very common across all "Mind War" types - cross-platform essential
 
 ### By Age Range
 - **Grade 6+ (11-13)**: Middle Schooler
 - **Teens (14-17)**: Teen Squad Leader
-- **Young Adults (18-30)**: Competitive Sibling
-- **Parents (35-50)**: Family Connector, Parent-Child Builder
+- **Young Adults (18-30)**: Competitive Sibling, Friend Circle Competitor
+- **Parents/Professionals (30-50)**: Family Connector, Parent-Child Builder, Office Team Builder
 - **Grandparents (60+)**: Grandparent Gamer
 
 ---
@@ -387,107 +502,140 @@ This document defines the primary user personas for the Mind Wars mobile applica
 ## Design Implications
 
 ### Universal Requirements (All Personas)
-- **Private family lobbies** as primary use case (not public matching)
-- Reliable offline mode with sync (family members in different locations)
-- Async multiplayer architecture (family schedules don't align)
-- Cross-platform support (families use mixed iOS/Android/tablets)
-- Clear, intuitive UI for all age ranges (11-70+)
-- Age-appropriate, safe content (Grade 6+ standard)
-- Battery efficiency and data-conscious design
+- **Private group lobbies** as primary use case (Family, Friends, or Colleagues "Mind Wars")
+- Reliable offline mode with sync (group members in different locations)
+- Async multiplayer architecture (schedules don't align across groups)
+- Cross-platform support (groups use mixed iOS/Android/tablets)
+- Clear, intuitive UI for diverse age ranges
+- Shareable lobby codes for easy group invites
+- Multi-round, multi-game tournament structure
 
-### Multi-Generational Accessibility
+### "Mind War" Group Types Support
+- **Family Mind Wars**: Multi-generational (ages 11-70+), parental controls, age-appropriate content
+- **Friends Mind Wars**: Competitive features, social elements, trash talk, bragging rights
+- **Office/Colleagues Mind Wars**: Professional presentation, team-building angle, analytics/tracking
+- **Mixed Mind Wars**: Flexible combinations of family, friends, colleagues
+
+### Multi-Generational Accessibility (Primarily Family Mind Wars)
 - Minimum 48dp touch targets for older users and young children
 - Scalable fonts and high contrast modes for vision differences
 - Clear visual hierarchy that works for all ages
-- Avoid reliance on fast reflexes (some games can, but not all)
-- Tutorial and help systems for less tech-savvy family members
-- Simple navigation that 12-year-olds and 70-year-olds both understand
+- Avoid exclusive reliance on fast reflexes (variety of game types)
+- Tutorial and help systems for less tech-savvy members
+- Simple navigation accessible to diverse skill levels
 
-### Family-Focused Features
-- **Private Lobbies First**: Family/friend lobbies are primary; public matching is alternative
-- **Family Leaderboards**: Compare within your family group, not just global
-- **Multi-Gen Game Balance**: Games that 11-year-olds and 68-year-olds can both enjoy
-- **Safe Environment**: No stranger danger, parental controls, age-appropriate content
-- **Family Coordination**: Easy invites, scheduled game times, family group management
-- **Cognitive Value**: Parents approve because games exercise mental abilities
+### Group-Focused Features
+- **Private Lobbies First**: Group (Family/Friends/Colleagues) lobbies are primary; public matching is alternative
+- **Group Leaderboards**: Compare within your specific group, not just global
+- **Flexible Game Balance**: Games that work across different group dynamics
+- **Safe Environment**: Privacy controls, appropriate content for group context
+- **Group Coordination**: Easy invites, scheduled tournaments, group management tools
+- **Value Propositions by Group Type**:
+  - Family: Bonding, cognitive development, multi-generational connection
+  - Friends: Social engagement, competition, staying connected
+  - Office: Team-building, morale, professional development
 
 ### Social Features
-- In-game chat for family banter and trash talk
-- Emoji reactions for quick, fun communication across ages
-- Game voting so everyone gets games they enjoy
-- Achievement sharing to show off within family
-- Family game history and photo memories
+- In-game chat for banter and communication (family, friends, colleagues)
+- Emoji reactions for quick, expressive communication
+- Game voting so groups democratically choose games
+- Achievement sharing to show off within groups
+- Group history and memorable moments
+- Competitive features for friends/colleagues (rankings, head-to-head stats)
 
 ### Monetization Considerations
-- Free-to-play core experience (important for families with multiple kids)
-- Family plan pricing (not per-user)
-- No pay-to-win mechanics (fairness in family competition critical)
+- Free-to-play core experience (important for families with multiple kids, friend groups)
+- Group plan pricing (family plans, team/office plans)
+- No pay-to-win mechanics (fairness critical across all group types)
 - Optional cosmetic customization
-- Educational value justifies parent purchases
+- Context-specific value propositions:
+  - Family: Educational value, cognitive development
+  - Friends: Premium tournaments, enhanced competition features
+  - Office: Team analytics, enterprise features for HR/management
 
 ---
 
-## Family Dynamics & Personas
+## "Mind War" Group Dynamics & Examples
 
-### The Multigenerational Family
+### The Multigenerational Family Mind War
 **Example**: Dr. Patterson (68) plays with adult children (40, 43) and grandkids (12, 14, 17)
 - Grandparent wants to stay connected with growing grandchildren
 - Adult children appreciate activity that includes aging parents
 - Teenagers enjoy competitive challenge with family elders
 - Pre-teens get to participate in "big kid" family activities
+- **Type**: Family Mind War across 3 generations
 
-### The Extended Family Network  
+### The Extended Family Network Mind War
 **Example**: Maria Rodriguez connects her family (kids 13, 16) with parents (65, 67) and sister's family across states
 - Distance makes in-person gatherings rare
 - Virtual game nights create regular family touchpoints
 - Multi-state coordination requires async gameplay
 - Ages span from pre-teen to retirement
+- **Type**: Extended Family Mind War with 12+ participants
 
-### The Nuclear Family Unit
+### The Nuclear Family Unit Mind War
 **Example**: Sarah Williams (38) plays with kids (11, 14), husband (40), occasionally mother (62)
 - Parents use as quality time with kids despite opposite schedules
 - Games provide approved, educational screen time
 - Async play accommodates parent work schedules
 - Includes grandmother for family bonding
+- **Type**: Nuclear Family Mind War with occasional extended family
 
-### The Sibling Network
+### The Sibling Network Mind War
 **Example**: Alex Chen (24) with siblings (16, 28) and cousins create competitive family tradition
 - Adult siblings stay connected despite distance and busy lives
 - Includes younger siblings (still in school) in adult activities
 - Family lobbies become tradition at family gatherings
 - Friendly competition and bragging rights at holidays
+- **Type**: Sibling/Cousin Mind War with competitive edge
 
-### The Friend Group (Secondary Use Case)
-**Example**: Emma (16) and school friends, Jordan (12) with cousins
-- While not family, close friend groups act similarly
-- Private groups, known people, safe environment
-- Age-appropriate socialization
-- Parents approve because it's controlled and educational
+### The Friends Circle Mind War
+**Example**: Marcus Johnson (28) and college friends across 4 states
+- Monthly tournaments keep friend group connected
+- Highly competitive with rankings and trash talk
+- Async play accommodates different time zones
+- Social bonding through structured competition
+- **Type**: Friends Mind War with competitive focus
+
+### The Office Team-Building Mind War
+**Example**: Jennifer Park's remote team of 8-12 colleagues
+- Quarterly team-building competitions
+- Improves morale and team connection for remote/hybrid workers
+- Professional context with cognitive development angle
+- Departmental competitions (Sales vs. Marketing)
+- **Type**: Office/Colleagues Mind War for team-building
+
+### The Mixed Mind War (Flexible)
+**Example**: Teen Squad Leader with both school friends and siblings
+- Combines different social circles in one competition
+- Flexible group composition based on who's available
+- Can include family members, friends, or both
+- **Type**: Mixed Mind War blending multiple group types
 
 ---
 
 ## Persona Validation & Evolution
 
 These personas should be validated and refined through:
-- Family interviews and surveys (interview entire families, not individuals)
-- Multi-generational focus groups
-- Beta testing with family units
-- Analytics data tracking family vs. public lobby usage
-- Parent and child feedback together
+- Group interviews (entire families, friend groups, teams - not just individuals)
+- Multi-generational and cross-group focus groups
+- Beta testing with diverse group types (family units, friend circles, office teams)
+- Analytics data tracking group composition and "Mind War" types
+- Feedback from group organizers (parents, friend group leaders, HR managers)
 - Regular quarterly reviews with family-focused lens
 
 **Key Metrics to Track**:
-- Percentage of lobbies that are private (family/friends) vs. public
-- Age distribution within lobbies (are they multi-generational?)
-- Family retention rates vs. individual users
-- Multi-device usage patterns within families
-- Parent satisfaction with age-appropriateness
+- Percentage of lobbies by type: Family vs. Friends vs. Office vs. Mixed vs. Public
+- Age distribution within different "Mind War" types
+- Group retention rates (do groups stay together over time?)
+- Multi-device usage patterns within groups
+- Satisfaction levels by group type and use case
 
-As the product evolves, personas may shift or new personas may emerge. This is a living document that should be updated based on real family usage data.
+As the product evolves, personas may shift or new personas may emerge. This is a living document that should be updated based on real group usage data across all "Mind War" types.
 
 ---
 
 **Last Updated**: November 2025
-**Version**: 2.0 (Revised for family-focused vision)
+**Version**: 3.0 (Expanded to include Friends and Office/Colleagues personas)
 **Owner**: Product Team
-**Philosophy**: Family-first, multi-generational cognitive gaming for ages 11+
+**Philosophy**: Private group "Mind Wars" (Family, Friends, Colleagues) as primary use case; public matching as alternative
