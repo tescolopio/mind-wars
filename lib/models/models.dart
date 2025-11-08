@@ -394,3 +394,152 @@ class VoteToSkip {
         required: json['required'],
       );
 }
+
+/// Game vote model - represents a player's vote for a game
+class GameVote {
+  final String playerId;
+  final String gameId;
+  final int points;
+  final DateTime timestamp;
+
+  GameVote({
+    required this.playerId,
+    required this.gameId,
+    required this.points,
+    required this.timestamp,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'playerId': playerId,
+        'gameId': gameId,
+        'points': points,
+        'timestamp': timestamp.toIso8601String(),
+      };
+
+  factory GameVote.fromJson(Map<String, dynamic> json) => GameVote(
+        playerId: json['playerId'],
+        gameId: json['gameId'],
+        points: json['points'],
+        timestamp: DateTime.parse(json['timestamp']),
+      );
+}
+
+/// Voting session model - manages voting for games across multiple rounds
+class VotingSession {
+  final String id;
+  final String lobbyId;
+  final int pointsPerPlayer;
+  final int totalRounds;
+  final int gamesPerRound;
+  final int currentRound;
+  final List<String> availableGames;
+  final Map<String, Map<String, int>> votes; // playerId -> gameId -> points
+  final Map<String, int> remainingPoints; // playerId -> remaining points
+  final List<List<String>> selectedGames; // Games selected for each round (rounds -> games)
+  final bool completed;
+  final DateTime createdAt;
+
+  VotingSession({
+    required this.id,
+    required this.lobbyId,
+    required this.pointsPerPlayer,
+    required this.totalRounds,
+    required this.gamesPerRound,
+    required this.currentRound,
+    required this.availableGames,
+    required this.votes,
+    required this.remainingPoints,
+    required this.selectedGames,
+    required this.completed,
+    required this.createdAt,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'lobbyId': lobbyId,
+        'pointsPerPlayer': pointsPerPlayer,
+        'totalRounds': totalRounds,
+        'gamesPerRound': gamesPerRound,
+        'currentRound': currentRound,
+        'availableGames': availableGames,
+        'votes': votes,
+        'remainingPoints': remainingPoints,
+        'selectedGames': selectedGames,
+        'completed': completed,
+        'createdAt': createdAt.toIso8601String(),
+      };
+
+  factory VotingSession.fromJson(Map<String, dynamic> json) => VotingSession(
+        id: json['id'],
+        lobbyId: json['lobbyId'],
+        pointsPerPlayer: json['pointsPerPlayer'],
+        totalRounds: json['totalRounds'],
+        gamesPerRound: json['gamesPerRound'],
+        currentRound: json['currentRound'],
+        availableGames: List<String>.from(json['availableGames']),
+        votes: (json['votes'] as Map<String, dynamic>).map(
+          (playerId, playerVotes) => MapEntry(
+            playerId,
+            Map<String, int>.from(playerVotes as Map),
+          ),
+        ),
+        remainingPoints: Map<String, int>.from(json['remainingPoints']),
+        selectedGames: (json['selectedGames'] as List)
+            .map((round) => List<String>.from(round))
+            .toList(),
+        completed: json['completed'],
+        createdAt: DateTime.parse(json['createdAt']),
+      );
+
+  /// Calculate total points for each game
+  Map<String, int> calculateGameTotals() {
+    final totals = <String, int>{};
+    for (var playerVotes in votes.values) {
+      for (var entry in playerVotes.entries) {
+        totals[entry.key] = (totals[entry.key] ?? 0) + entry.value;
+      }
+    }
+    return totals;
+  }
+
+  /// Get the top N games with most points for the round
+  /// Returns list of game IDs sorted by points (highest first)
+  List<String> getTopGames(int count) {
+    final totals = calculateGameTotals();
+    if (totals.isEmpty) return [];
+    
+    // Sort games by points (descending)
+    final sortedEntries = totals.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    
+    // Return top N games
+    return sortedEntries
+        .take(count)
+        .map((e) => e.key)
+        .toList();
+  }
+
+  /// Get the winning game (game with most points) - for backward compatibility
+  String? getWinningGame() {
+    final winners = getTopGames(1);
+    return winners.isEmpty ? null : winners.first;
+  }
+
+  /// Check if all players have used their points
+  bool get allPlayersVoted {
+    return remainingPoints.values.every((points) => points == 0);
+  }
+
+  /// Check if voting is open for current round
+  bool get isVotingOpen {
+    return !completed && currentRound <= totalRounds;
+  }
+
+  /// Get total number of games in the match
+  int get totalGames => totalRounds * gamesPerRound;
+
+  /// Get all selected games flattened
+  List<String> get allSelectedGames {
+    return selectedGames.expand((round) => round).toList();
+  }
+}

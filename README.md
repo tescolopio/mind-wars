@@ -70,6 +70,10 @@ Core features first, polish iteratively. Optimistic updates with server confirma
 - **In-game chat** with real-time messaging
 - **Emoji reactions** (👍 ❤️ 😂 🎉 🔥 👏 😮 🤔)
 - **Vote-to-skip mechanics** for game progression
+- **Game voting system** - Players vote on which games to play
+  - Configurable points per player
+  - Vote across multiple rounds
+  - Democratic game selection
 - Player presence indicators
 
 ### 🏆 Progression System
@@ -135,7 +139,8 @@ mind-wars/
 │   │   ├── api_service.dart          # RESTful API client
 │   │   ├── multiplayer_service.dart  # Multiplayer functionality
 │   │   ├── offline_service.dart      # Offline mode & sync with SQLite
-│   │   └── progression_service.dart  # Leaderboards & badges
+│   │   ├── progression_service.dart  # Leaderboards & badges
+│   │   └── voting_service.dart       # Game voting system
 │   ├── games/               # Game implementations
 │   │   └── game_catalog.dart         # Game catalog (12+ games)
 │   ├── screens/             # Screen widgets
@@ -199,6 +204,8 @@ The app expects the following backend endpoints:
 - Events: `create-lobby`, `join-lobby`, `leave-lobby`, `start-game`, `make-turn`
 - Chat events: `chat-message`, `emoji-reaction`
 - Vote events: `vote-skip`
+- Voting events: `start-voting`, `vote-game`, `remove-vote`, `end-voting`
+- Voting notifications: `voting-started`, `vote-cast`, `voting-update`, `voting-ended`
 
 ### REST API (Server-Side Validation)
 Authentication:
@@ -269,6 +276,7 @@ await offlineService.syncWithServer(
 - ✅ Cross-platform support (iOS 14+, Android 8+)
 - ✅ 12+ games across 5 cognitive categories
 - ✅ Social features (chat, emoji reactions, vote-to-skip)
+- ✅ Game voting system (democratic game selection)
 - ✅ Progression system (leaderboards, badges, streaks)
 - ✅ Offline mode with SQLite and automatic sync
 - ✅ Unified scoring system

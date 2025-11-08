@@ -208,6 +208,109 @@ class MultiplayerService {
     return completer.future;
   }
 
+  /// Start a voting session for game selection
+  Future<VotingSession> startVotingSession({
+    required int pointsPerPlayer,
+    required int totalRounds,
+    required int gamesPerRound,
+    List<String>? availableGames,
+  }) async {
+    if (_socket == null || _currentLobby == null) {
+      throw Exception('Not in a lobby');
+    }
+
+    final completer = Completer<VotingSession>();
+
+    _socket!.emitWithAck('start-voting', {
+      'lobbyId': _currentLobby!.id,
+      'pointsPerPlayer': pointsPerPlayer,
+      'totalRounds': totalRounds,
+      'gamesPerRound': gamesPerRound,
+      'availableGames': availableGames,
+    }, ack: (data) {
+      if (data['success']) {
+        completer.complete(VotingSession.fromJson(data['votingSession']));
+      } else {
+        completer.completeError(Exception(data['error']));
+      }
+    });
+
+    return completer.future;
+  }
+
+  /// Cast a vote for a game
+  Future<void> voteForGame({
+    required String gameId,
+    required int points,
+  }) async {
+    if (_socket == null || _currentLobby == null) {
+      throw Exception('Not in a lobby');
+    }
+
+    final completer = Completer<void>();
+
+    _socket!.emitWithAck('vote-game', {
+      'lobbyId': _currentLobby!.id,
+      'gameId': gameId,
+      'points': points,
+    }, ack: (data) {
+      if (data['success']) {
+        completer.complete();
+      } else {
+        completer.completeError(Exception(data['error']));
+      }
+    });
+
+    return completer.future;
+  }
+
+  /// Remove vote from a game
+  Future<void> removeGameVote({
+    required String gameId,
+    int? points,
+  }) async {
+    if (_socket == null || _currentLobby == null) {
+      throw Exception('Not in a lobby');
+    }
+
+    final completer = Completer<void>();
+
+    _socket!.emitWithAck('remove-vote', {
+      'lobbyId': _currentLobby!.id,
+      'gameId': gameId,
+      'points': points,
+    }, ack: (data) {
+      if (data['success']) {
+        completer.complete();
+      } else {
+        completer.completeError(Exception(data['error']));
+      }
+    });
+
+    return completer.future;
+  }
+
+  /// End voting for current round
+  Future<List<String>> endVotingRound() async {
+    if (_socket == null || _currentLobby == null) {
+      throw Exception('Not in a lobby');
+    }
+
+    final completer = Completer<List<String>>();
+
+    _socket!.emitWithAck('end-voting', {
+      'lobbyId': _currentLobby!.id,
+    }, ack: (data) {
+      if (data['success']) {
+        completer.complete(List<String>.from(data['selectedGames']));
+      } else {
+        completer.completeError(Exception(data['error']));
+      }
+    });
+
+    return completer.future;
+  }
+
   /// Get list of available lobbies
   Future<List<GameLobby>> getAvailableLobbies() async {
     if (_socket == null) {
@@ -279,6 +382,22 @@ class MultiplayerService {
 
     _socket!.on('vote-skip-update', (data) {
       _emit('vote-skip-update', data);
+    });
+
+    _socket!.on('voting-started', (data) {
+      _emit('voting-started', data);
+    });
+
+    _socket!.on('vote-cast', (data) {
+      _emit('vote-cast', data);
+    });
+
+    _socket!.on('voting-update', (data) {
+      _emit('voting-update', data);
+    });
+
+    _socket!.on('voting-ended', (data) {
+      _emit('voting-ended', data);
     });
 
     _socket!.on('disconnect', (_) {
