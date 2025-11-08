@@ -9,14 +9,22 @@ The game voting system allows players to democratically select which games will 
 - **Flexible Allocation**: Players can distribute their points across multiple games or focus on favorites
 - **Real-Time Updates**: All players see vote counts update in real-time via Socket.io
 - **Democratic Selection**: The game with the most votes wins each round
+- **Minimum Game Requirement**: At least 3 games must be available to ensure meaningful voting choices
 
 ## How It Works
 
 ### 1. Starting a Voting Session
 The lobby host/leader starts a voting session by specifying:
 - **Points Per Player**: How many voting points each player receives (e.g., 10 points)
-- **Total Rounds**: Number of games to select (e.g., 3 rounds)
-- **Available Games** (optional): Specific games to vote on, or defaults to all games suitable for the player count
+- **Total Rounds**: Number of rounds in the match (e.g., 3 rounds)
+- **Games Per Round**: Number of games to select per round (e.g., 2 games)
+- **Available Games** (optional): Specific games to vote on (minimum 3), or defaults to all games suitable for the player count
+
+**Match Structure**: A match consists of X rounds, with each round selecting Y games to play. For example:
+- 3 rounds × 2 games per round = 6 total games in the match
+- 4 rounds × 3 games per round = 12 total games in the match
+
+**Note**: The system requires at least 3 games to be available for voting. This ensures users have meaningful choices to spend their points based on their game preferences.
 
 ```dart
 final votingService = VotingService();
@@ -24,9 +32,10 @@ final votingService = VotingService();
 final session = votingService.createVotingSession(
   lobbyId: 'lobby123',
   pointsPerPlayer: 10,
-  totalRounds: 3,
+  totalRounds: 3,          // 3 rounds in the match
+  gamesPerRound: 2,        // 2 games selected per round = 6 total games
   playerIds: ['player1', 'player2', 'player3'],
-  availableGames: ['memory_match', 'sudoku_duel', 'word_builder'], // optional
+  availableGames: ['memory_match', 'sudoku_duel', 'word_builder', 'puzzle_race'], // optional, min 3 games
 );
 ```
 
@@ -113,20 +122,32 @@ final selectedGame = votingService.endVotingRound();
 
 ### 6. Multi-Round Progression
 After each round:
-- The winning game is added to the selected games list
+- The top N games (based on gamesPerRound) are added to the selected games list for that round
 - The round counter increments
 - All votes are cleared
 - Points are reset for all players
 - Players vote again for the next round
 
 ```dart
-// After 3 rounds, all games are selected
+// After 3 rounds with 2 games per round, 6 games are selected
 final selectedGames = votingService.selectedGames;
-// Returns: ['memory_match', 'sudoku_duel', 'word_builder']
+// Returns flattened list: ['memory_match', 'sudoku_duel', 'word_builder', 'puzzle_race', 'color_rush', 'anagram_attack']
+
+// Get games organized by round
+final gamesByRound = votingService.selectedGamesByRound;
+// Returns: [
+//   ['memory_match', 'sudoku_duel'],      // Round 1
+//   ['word_builder', 'puzzle_race'],       // Round 2
+//   ['color_rush', 'anagram_attack']       // Round 3
+// ]
 
 // Session is marked as completed
 final isCompleted = votingService.currentSession!.completed;
 // Returns: true
+
+// Total games in match
+final totalGames = votingService.currentSession!.totalGames;
+// Returns: 6 (3 rounds × 2 games per round)
 ```
 
 ## Multiplayer Integration
@@ -140,7 +161,8 @@ final multiplayerService = MultiplayerService();
 await multiplayerService.startVotingSession(
   pointsPerPlayer: 10,
   totalRounds: 3,
-  availableGames: ['game1', 'game2', 'game3'],
+  gamesPerRound: 2,
+  availableGames: ['game1', 'game2', 'game3', 'game4'],
 );
 
 // Players cast votes
@@ -156,7 +178,8 @@ await multiplayerService.removeGameVote(
 );
 
 // Host ends voting round
-final selectedGame = await multiplayerService.endVotingRound();
+final selectedGames = await multiplayerService.endVotingRound();
+// Returns list of selected games for the round: ['game1', 'game2']
 ```
 
 ### Socket.io Events
@@ -190,36 +213,40 @@ multiplayerService.on('voting-update', (data) {
 });
 
 multiplayerService.on('voting-ended', (data) {
-  print('Game selected: ${data['selectedGame']}');
+  print('Games selected: ${data['selectedGames']}');
 });
 ```
 
 ## Example User Flow
 
 1. **Setup Phase**
-   - Lobby host creates a voting session with 10 points per player for 3 rounds
-   - Available games: Memory Match, Sudoku Duel, Word Builder
+   - Lobby host creates a voting session with 10 points per player for 3 rounds, 2 games per round
+   - Total games in match: 6 (3 rounds × 2 games)
+   - Available games: Memory Match, Sudoku Duel, Word Builder, Puzzle Race
 
 2. **Round 1 - Voting**
    - Player 1: 6 points → Memory Match, 4 points → Sudoku Duel
    - Player 2: 8 points → Memory Match, 2 points → Word Builder
    - Player 3: 5 points → Sudoku Duel, 5 points → Word Builder
-   - **Result**: Memory Match wins (14 points)
+   - **Result**: Top 2 games selected → Memory Match (14 points), Sudoku Duel (9 points)
 
 3. **Round 2 - Voting**
-   - Player 1: 7 points → Sudoku Duel, 3 points → Word Builder
-   - Player 2: 6 points → Word Builder, 4 points → Sudoku Duel
-   - Player 3: 10 points → Sudoku Duel
-   - **Result**: Sudoku Duel wins (21 points)
+   - Player 1: 7 points → Word Builder, 3 points → Puzzle Race
+   - Player 2: 6 points → Word Builder, 4 points → Puzzle Race
+   - Player 3: 10 points → Puzzle Race
+   - **Result**: Top 2 games selected → Puzzle Race (17 points), Word Builder (13 points)
 
 4. **Round 3 - Voting**
-   - Player 1: 10 points → Word Builder
-   - Player 2: 10 points → Word Builder
-   - Player 3: 10 points → Word Builder
-   - **Result**: Word Builder wins (30 points)
+   - Player 1: 5 points → Memory Match, 5 points → Sudoku Duel
+   - Player 2: 7 points → Memory Match, 3 points → Sudoku Duel
+   - Player 3: 4 points → Memory Match, 6 points → Puzzle Race
+   - **Result**: Top 2 games selected → Memory Match (16 points), Sudoku Duel (14 points)
 
 5. **Game Session**
-   - Games played in order: Memory Match → Sudoku Duel → Word Builder
+   - **Round 1**: Memory Match, Sudoku Duel
+   - **Round 2**: Puzzle Race, Word Builder
+   - **Round 3**: Memory Match, Sudoku Duel
+   - Total: 6 games across 3 rounds
    - Session complete!
 
 ## Best Practices
@@ -228,15 +255,22 @@ multiplayerService.on('voting-ended', (data) {
    - Give enough points to allow meaningful distribution (10-20 points recommended)
    - More points = more granular voting options
 
-2. **Round Count**
+2. **Games Per Round**
+   - Consider session length: 2-3 games per round works well
+   - More games per round = longer play sessions but more variety
+
+3. **Round Count**
    - Match round count to desired session length
    - 3-5 rounds works well for most play sessions
+   - Total match length = rounds × games per round
 
-3. **Game Selection**
+4. **Game Selection**
    - Limit available games to those suitable for your player count
    - Consider player preferences and skill levels
+   - Ensure at least 3 games (minimum requirement)
+   - Ideally, have more games available than gamesPerRound to allow for variety
 
-4. **Time Management**
+5. **Time Management**
    - Set reasonable voting time limits on the server side
    - Auto-end voting after timeout or when all players have used their points
 

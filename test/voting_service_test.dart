@@ -24,13 +24,16 @@ void main() {
           lobbyId: 'lobby123',
           pointsPerPlayer: 10,
           totalRounds: 3,
+          gamesPerRound: 2,
           playerIds: ['player1', 'player2', 'player3'],
         );
 
         expect(session.lobbyId, equals('lobby123'));
         expect(session.pointsPerPlayer, equals(10));
         expect(session.totalRounds, equals(3));
+        expect(session.gamesPerRound, equals(2));
         expect(session.currentRound, equals(1));
+        expect(session.totalGames, equals(6)); // 3 rounds * 2 games per round
         expect(session.remainingPoints['player1'], equals(10));
         expect(session.remainingPoints['player2'], equals(10));
         expect(session.remainingPoints['player3'], equals(10));
@@ -45,6 +48,7 @@ void main() {
           lobbyId: 'lobby123',
           pointsPerPlayer: 10,
           totalRounds: 3,
+          gamesPerRound: 1,
           playerIds: ['player1', 'player2'],
           availableGames: games,
         );
@@ -58,6 +62,7 @@ void main() {
             lobbyId: 'lobby123',
             pointsPerPlayer: 0,
             totalRounds: 3,
+            gamesPerRound: 2,
             playerIds: ['player1'],
           ),
           throwsException,
@@ -68,6 +73,7 @@ void main() {
             lobbyId: 'lobby123',
             pointsPerPlayer: -5,
             totalRounds: 3,
+            gamesPerRound: 2,
             playerIds: ['player1'],
           ),
           throwsException,
@@ -80,6 +86,7 @@ void main() {
             lobbyId: 'lobby123',
             pointsPerPlayer: 10,
             totalRounds: 0,
+            gamesPerRound: 2,
             playerIds: ['player1'],
           ),
           throwsException,
@@ -90,6 +97,31 @@ void main() {
             lobbyId: 'lobby123',
             pointsPerPlayer: 10,
             totalRounds: -3,
+            gamesPerRound: 2,
+            playerIds: ['player1'],
+          ),
+          throwsException,
+        );
+      });
+
+      test('should throw exception if gamesPerRound is zero or negative', () {
+        expect(
+          () => votingService.createVotingSession(
+            lobbyId: 'lobby123',
+            pointsPerPlayer: 10,
+            totalRounds: 3,
+            gamesPerRound: 0,
+            playerIds: ['player1'],
+          ),
+          throwsException,
+        );
+
+        expect(
+          () => votingService.createVotingSession(
+            lobbyId: 'lobby123',
+            pointsPerPlayer: 10,
+            totalRounds: 3,
+            gamesPerRound: -2,
             playerIds: ['player1'],
           ),
           throwsException,
@@ -102,7 +134,61 @@ void main() {
             lobbyId: 'lobby123',
             pointsPerPlayer: 10,
             totalRounds: 3,
+            gamesPerRound: 2,
             playerIds: [],
+          ),
+          throwsException,
+        );
+      });
+
+      test('should throw exception if less than 3 games available', () {
+        expect(
+          () => votingService.createVotingSession(
+            lobbyId: 'lobby123',
+            pointsPerPlayer: 10,
+            totalRounds: 3,
+            gamesPerRound: 1,
+            playerIds: ['player1', 'player2'],
+            availableGames: ['game1', 'game2'],
+          ),
+          throwsException,
+        );
+
+        expect(
+          () => votingService.createVotingSession(
+            lobbyId: 'lobby123',
+            pointsPerPlayer: 10,
+            totalRounds: 3,
+            gamesPerRound: 1,
+            playerIds: ['player1', 'player2'],
+            availableGames: ['game1'],
+          ),
+          throwsException,
+        );
+      });
+
+      test('should succeed with exactly 3 games', () {
+        final session = votingService.createVotingSession(
+          lobbyId: 'lobby123',
+          pointsPerPlayer: 10,
+          totalRounds: 3,
+          gamesPerRound: 1,
+          playerIds: ['player1', 'player2'],
+          availableGames: ['game1', 'game2', 'game3'],
+        );
+
+        expect(session.availableGames.length, equals(3));
+      });
+
+      test('should throw exception if not enough games for gamesPerRound', () {
+        expect(
+          () => votingService.createVotingSession(
+            lobbyId: 'lobby123',
+            pointsPerPlayer: 10,
+            totalRounds: 2,
+            gamesPerRound: 5,
+            playerIds: ['player1', 'player2'],
+            availableGames: ['game1', 'game2', 'game3'],
           ),
           throwsException,
         );
@@ -115,6 +201,7 @@ void main() {
           lobbyId: 'lobby123',
           pointsPerPlayer: 10,
           totalRounds: 3,
+          gamesPerRound: 2,
           playerIds: ['player1', 'player2'],
           availableGames: ['memory_match', 'sudoku_duel', 'word_builder'],
         );
@@ -228,6 +315,7 @@ void main() {
           lobbyId: 'lobby123',
           pointsPerPlayer: 10,
           totalRounds: 3,
+          gamesPerRound: 2,
           playerIds: ['player1', 'player2'],
           availableGames: ['memory_match', 'sudoku_duel', 'word_builder'],
         );
@@ -289,12 +377,13 @@ void main() {
           lobbyId: 'lobby123',
           pointsPerPlayer: 10,
           totalRounds: 3,
+          gamesPerRound: 2,
           playerIds: ['player1', 'player2', 'player3'],
-          availableGames: ['memory_match', 'sudoku_duel', 'word_builder'],
+          availableGames: ['memory_match', 'sudoku_duel', 'word_builder', 'puzzle_race'],
         );
       });
 
-      test('should select game with most votes', () {
+      test('should select top N games based on gamesPerRound', () {
         votingService.castVote(
           playerId: 'player1',
           gameId: 'memory_match',
@@ -308,18 +397,33 @@ void main() {
         votingService.castVote(
           playerId: 'player3',
           gameId: 'sudoku_duel',
+          points: 8,
+        );
+        votingService.castVote(
+          playerId: 'player1',
+          gameId: 'word_builder',
           points: 3,
         );
 
-        final winner = votingService.endVotingRound();
-        expect(winner, equals('memory_match'));
-        expect(votingService.selectedGames, contains('memory_match'));
+        final winners = votingService.endVotingRound();
+        expect(winners.length, equals(2));
+        expect(winners, contains('memory_match')); // 12 points
+        expect(winners, contains('sudoku_duel')); // 8 points
+        
+        final session = votingService.currentSession!;
+        expect(session.selectedGames.length, equals(1)); // One round complete
+        expect(session.selectedGames[0], equals(winners));
       });
 
       test('should move to next round after voting', () {
         votingService.castVote(
           playerId: 'player1',
           gameId: 'memory_match',
+          points: 5,
+        );
+        votingService.castVote(
+          playerId: 'player2',
+          gameId: 'sudoku_duel',
           points: 5,
         );
 
@@ -340,12 +444,22 @@ void main() {
           gameId: 'memory_match',
           points: 5,
         );
+        votingService.castVote(
+          playerId: 'player2',
+          gameId: 'sudoku_duel',
+          points: 5,
+        );
         votingService.endVotingRound();
 
         // Round 2
         votingService.castVote(
           playerId: 'player1',
-          gameId: 'sudoku_duel',
+          gameId: 'word_builder',
+          points: 5,
+        );
+        votingService.castVote(
+          playerId: 'player2',
+          gameId: 'puzzle_race',
           points: 5,
         );
         votingService.endVotingRound();
@@ -353,7 +467,12 @@ void main() {
         // Round 3
         votingService.castVote(
           playerId: 'player1',
-          gameId: 'word_builder',
+          gameId: 'memory_match',
+          points: 5,
+        );
+        votingService.castVote(
+          playerId: 'player2',
+          gameId: 'sudoku_duel',
           points: 5,
         );
         votingService.endVotingRound();
@@ -361,10 +480,26 @@ void main() {
         final session = votingService.currentSession!;
         expect(session.completed, isTrue);
         expect(session.isVotingOpen, isFalse);
-        expect(session.selectedGames.length, equals(3));
+        expect(session.selectedGames.length, equals(3)); // 3 rounds
+        expect(session.totalGames, equals(6)); // 3 rounds * 2 games per round
+        expect(session.allSelectedGames.length, equals(6));
       });
 
       test('should throw exception if no votes cast', () {
+        expect(
+          () => votingService.endVotingRound(),
+          throwsException,
+        );
+      });
+
+      test('should throw exception if not enough games voted on', () {
+        // Only vote on 1 game when 2 games per round are required
+        votingService.castVote(
+          playerId: 'player1',
+          gameId: 'memory_match',
+          points: 10,
+        );
+
         expect(
           () => votingService.endVotingRound(),
           throwsException,
@@ -378,6 +513,7 @@ void main() {
           lobbyId: 'lobby123',
           pointsPerPlayer: 10,
           totalRounds: 3,
+          gamesPerRound: 2,
           playerIds: ['player1', 'player2', 'player3'],
           availableGames: ['memory_match', 'sudoku_duel', 'word_builder'],
         );
@@ -417,8 +553,9 @@ void main() {
           lobbyId: 'lobby123',
           pointsPerPlayer: 10,
           totalRounds: 3,
+          gamesPerRound: 2,
           playerIds: ['player1', 'player2'],
-          availableGames: ['memory_match', 'sudoku_duel'],
+          availableGames: ['memory_match', 'sudoku_duel', 'word_builder'],
         );
       });
 
@@ -455,6 +592,7 @@ void main() {
           lobbyId: 'lobby1',
           pointsPerPlayer: 10,
           totalRounds: 3,
+          gamesPerRound: 2,
           currentRound: 1,
           availableGames: ['game1', 'game2', 'game3'],
           votes: {
@@ -473,45 +611,72 @@ void main() {
         expect(totals['game3'], equals(2));
       });
 
-      test('should get winning game correctly', () {
+      test('should get top N games correctly', () {
         final session = VotingSession(
           id: 'session1',
           lobbyId: 'lobby1',
           pointsPerPlayer: 10,
           totalRounds: 3,
+          gamesPerRound: 2,
           currentRound: 1,
-          availableGames: ['game1', 'game2', 'game3'],
+          availableGames: ['game1', 'game2', 'game3', 'game4'],
           votes: {
-            'player1': {'game1': 5, 'game2': 3},
-            'player2': {'game2': 7, 'game3': 2},
+            'player1': {'game1': 5, 'game2': 3, 'game3': 2},
+            'player2': {'game2': 7, 'game3': 4, 'game4': 1},
           },
-          remainingPoints: {'player1': 2, 'player2': 1},
+          remainingPoints: {'player1': 0, 'player2': 0},
           selectedGames: [],
           completed: false,
           createdAt: DateTime.now(),
         );
 
-        final winner = session.getWinningGame();
-        expect(winner, equals('game2')); // 3 + 7 = 10
+        final top2 = session.getTopGames(2);
+        expect(top2.length, equals(2));
+        expect(top2, contains('game2')); // 10 points
+        expect(top2, contains('game3')); // 6 points
       });
 
-      test('should return null if no votes', () {
+      test('should calculate totalGames correctly', () {
         final session = VotingSession(
           id: 'session1',
           lobbyId: 'lobby1',
           pointsPerPlayer: 10,
-          totalRounds: 3,
+          totalRounds: 4,
+          gamesPerRound: 3,
           currentRound: 1,
-          availableGames: ['game1', 'game2'],
+          availableGames: ['game1', 'game2', 'game3'],
           votes: {},
-          remainingPoints: {'player1': 10, 'player2': 10},
+          remainingPoints: {'player1': 10},
           selectedGames: [],
           completed: false,
           createdAt: DateTime.now(),
         );
 
-        final winner = session.getWinningGame();
-        expect(winner, isNull);
+        expect(session.totalGames, equals(12)); // 4 rounds * 3 games per round
+      });
+
+      test('should flatten selected games correctly', () {
+        final session = VotingSession(
+          id: 'session1',
+          lobbyId: 'lobby1',
+          pointsPerPlayer: 10,
+          totalRounds: 2,
+          gamesPerRound: 2,
+          currentRound: 3,
+          availableGames: ['game1', 'game2', 'game3', 'game4'],
+          votes: {},
+          remainingPoints: {'player1': 10},
+          selectedGames: [
+            ['game1', 'game2'],
+            ['game3', 'game4'],
+          ],
+          completed: true,
+          createdAt: DateTime.now(),
+        );
+
+        final allGames = session.allSelectedGames;
+        expect(allGames.length, equals(4));
+        expect(allGames, equals(['game1', 'game2', 'game3', 'game4']));
       });
 
       test('should serialize and deserialize correctly', () {
@@ -520,13 +685,16 @@ void main() {
           lobbyId: 'lobby1',
           pointsPerPlayer: 10,
           totalRounds: 3,
+          gamesPerRound: 2,
           currentRound: 2,
-          availableGames: ['game1', 'game2'],
+          availableGames: ['game1', 'game2', 'game3'],
           votes: {
             'player1': {'game1': 5},
           },
           remainingPoints: {'player1': 5, 'player2': 10},
-          selectedGames: ['game2'],
+          selectedGames: [
+            ['game1', 'game2']
+          ],
           completed: false,
           createdAt: DateTime.now(),
         );
@@ -538,6 +706,7 @@ void main() {
         expect(deserialized.lobbyId, equals(session.lobbyId));
         expect(deserialized.pointsPerPlayer, equals(session.pointsPerPlayer));
         expect(deserialized.totalRounds, equals(session.totalRounds));
+        expect(deserialized.gamesPerRound, equals(session.gamesPerRound));
         expect(deserialized.currentRound, equals(session.currentRound));
         expect(deserialized.availableGames, equals(session.availableGames));
         expect(deserialized.votes, equals(session.votes));

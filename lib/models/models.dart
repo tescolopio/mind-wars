@@ -430,11 +430,12 @@ class VotingSession {
   final String lobbyId;
   final int pointsPerPlayer;
   final int totalRounds;
+  final int gamesPerRound;
   final int currentRound;
   final List<String> availableGames;
   final Map<String, Map<String, int>> votes; // playerId -> gameId -> points
   final Map<String, int> remainingPoints; // playerId -> remaining points
-  final List<String> selectedGames; // Games selected for each round
+  final List<List<String>> selectedGames; // Games selected for each round (rounds -> games)
   final bool completed;
   final DateTime createdAt;
 
@@ -443,6 +444,7 @@ class VotingSession {
     required this.lobbyId,
     required this.pointsPerPlayer,
     required this.totalRounds,
+    required this.gamesPerRound,
     required this.currentRound,
     required this.availableGames,
     required this.votes,
@@ -457,6 +459,7 @@ class VotingSession {
         'lobbyId': lobbyId,
         'pointsPerPlayer': pointsPerPlayer,
         'totalRounds': totalRounds,
+        'gamesPerRound': gamesPerRound,
         'currentRound': currentRound,
         'availableGames': availableGames,
         'votes': votes,
@@ -471,6 +474,7 @@ class VotingSession {
         lobbyId: json['lobbyId'],
         pointsPerPlayer: json['pointsPerPlayer'],
         totalRounds: json['totalRounds'],
+        gamesPerRound: json['gamesPerRound'],
         currentRound: json['currentRound'],
         availableGames: List<String>.from(json['availableGames']),
         votes: (json['votes'] as Map<String, dynamic>).map(
@@ -480,7 +484,9 @@ class VotingSession {
           ),
         ),
         remainingPoints: Map<String, int>.from(json['remainingPoints']),
-        selectedGames: List<String>.from(json['selectedGames']),
+        selectedGames: (json['selectedGames'] as List)
+            .map((round) => List<String>.from(round))
+            .toList(),
         completed: json['completed'],
         createdAt: DateTime.parse(json['createdAt']),
       );
@@ -496,20 +502,27 @@ class VotingSession {
     return totals;
   }
 
-  /// Get the winning game (game with most points)
-  String? getWinningGame() {
+  /// Get the top N games with most points for the round
+  /// Returns list of game IDs sorted by points (highest first)
+  List<String> getTopGames(int count) {
     final totals = calculateGameTotals();
-    if (totals.isEmpty) return null;
+    if (totals.isEmpty) return [];
     
-    var maxPoints = 0;
-    String? winner;
-    for (var entry in totals.entries) {
-      if (entry.value > maxPoints) {
-        maxPoints = entry.value;
-        winner = entry.key;
-      }
-    }
-    return winner;
+    // Sort games by points (descending)
+    final sortedEntries = totals.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    
+    // Return top N games
+    return sortedEntries
+        .take(count)
+        .map((e) => e.key)
+        .toList();
+  }
+
+  /// Get the winning game (game with most points) - for backward compatibility
+  String? getWinningGame() {
+    final winners = getTopGames(1);
+    return winners.isEmpty ? null : winners.first;
   }
 
   /// Check if all players have used their points
@@ -520,5 +533,13 @@ class VotingSession {
   /// Check if voting is open for current round
   bool get isVotingOpen {
     return !completed && currentRound <= totalRounds;
+  }
+
+  /// Get total number of games in the match
+  int get totalGames => totalRounds * gamesPerRound;
+
+  /// Get all selected games flattened
+  List<String> get allSelectedGames {
+    return selectedGames.expand((round) => round).toList();
   }
 }

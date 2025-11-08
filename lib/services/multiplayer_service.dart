@@ -212,6 +212,7 @@ class MultiplayerService {
   Future<VotingSession> startVotingSession({
     required int pointsPerPlayer,
     required int totalRounds,
+    required int gamesPerRound,
     List<String>? availableGames,
   }) async {
     if (_socket == null || _currentLobby == null) {
@@ -224,6 +225,7 @@ class MultiplayerService {
       'lobbyId': _currentLobby!.id,
       'pointsPerPlayer': pointsPerPlayer,
       'totalRounds': totalRounds,
+      'gamesPerRound': gamesPerRound,
       'availableGames': availableGames,
     }, ack: (data) {
       if (data['success']) {
@@ -289,18 +291,18 @@ class MultiplayerService {
   }
 
   /// End voting for current round
-  Future<String> endVotingRound() async {
+  Future<List<String>> endVotingRound() async {
     if (_socket == null || _currentLobby == null) {
       throw Exception('Not in a lobby');
     }
 
-    final completer = Completer<String>();
+    final completer = Completer<List<String>>();
 
     _socket!.emitWithAck('end-voting', {
       'lobbyId': _currentLobby!.id,
     }, ack: (data) {
       if (data['success']) {
-        completer.complete(data['selectedGame']);
+        completer.complete(List<String>.from(data['selectedGames']));
       } else {
         completer.completeError(Exception(data['error']));
       }

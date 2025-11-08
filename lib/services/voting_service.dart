@@ -11,13 +11,15 @@ class VotingService {
 
   /// Create a new voting session for a lobby
   /// [pointsPerPlayer] - Number of voting points each player receives
-  /// [totalRounds] - Number of rounds to play
+  /// [totalRounds] - Number of rounds to play in the match
+  /// [gamesPerRound] - Number of games to select per round
   /// [playerIds] - List of player IDs participating
   /// [availableGames] - Optional list of game IDs to vote on (defaults to all games suitable for player count)
   VotingSession createVotingSession({
     required String lobbyId,
     required int pointsPerPlayer,
     required int totalRounds,
+    required int gamesPerRound,
     required List<String> playerIds,
     List<String>? availableGames,
   }) {
@@ -27,6 +29,10 @@ class VotingService {
 
     if (totalRounds <= 0) {
       throw Exception('Total rounds must be greater than 0');
+    }
+
+    if (gamesPerRound <= 0) {
+      throw Exception('Games per round must be greater than 0');
     }
 
     if (playerIds.isEmpty) {
@@ -43,6 +49,19 @@ class VotingService {
       throw Exception('No games available for this player count');
     }
 
+    // Ensure at least 3 games are available for meaningful voting
+    if (games.length < 3) {
+      throw Exception(
+          'At least 3 games are required for voting. Only ${games.length} available.');
+    }
+
+    // Ensure enough games are available for the voting configuration
+    final totalGamesNeeded = totalRounds * gamesPerRound;
+    if (games.length < gamesPerRound) {
+      throw Exception(
+          'Not enough games available. Need at least $gamesPerRound games per round, but only ${games.length} available.');
+    }
+
     // Initialize remaining points for each player
     final remainingPoints = <String, int>{};
     for (var playerId in playerIds) {
@@ -54,6 +73,7 @@ class VotingService {
       lobbyId: lobbyId,
       pointsPerPlayer: pointsPerPlayer,
       totalRounds: totalRounds,
+      gamesPerRound: gamesPerRound,
       currentRound: 1,
       availableGames: games,
       votes: {},
@@ -162,9 +182,9 @@ class VotingService {
         _currentSession!.remainingPoints[playerId]! + pointsToRemove;
   }
 
-  /// End voting for the current round and select the winning game
-  /// Returns the selected game ID
-  String endVotingRound() {
+  /// End voting for the current round and select the winning games
+  /// Returns the list of selected game IDs for this round
+  List<String> endVotingRound() {
     if (_currentSession == null) {
       throw Exception('No active voting session');
     }
@@ -173,13 +193,22 @@ class VotingService {
       throw Exception('Voting is already closed');
     }
 
-    final winningGame = _currentSession!.getWinningGame();
-    if (winningGame == null) {
+    // Get top N games based on gamesPerRound
+    final selectedGamesForRound = _currentSession!.getTopGames(
+      _currentSession!.gamesPerRound,
+    );
+    
+    if (selectedGamesForRound.isEmpty) {
       throw Exception('No votes cast');
     }
 
-    // Add winning game to selected games
-    _currentSession!.selectedGames.add(winningGame);
+    if (selectedGamesForRound.length < _currentSession!.gamesPerRound) {
+      throw Exception(
+          'Not enough games voted on. Need ${_currentSession!.gamesPerRound} games, but only ${selectedGamesForRound.length} have votes.');
+    }
+
+    // Add selected games to the round
+    _currentSession!.selectedGames.add(selectedGamesForRound);
 
     // Check if all rounds are complete
     if (_currentSession!.currentRound >= _currentSession!.totalRounds) {
@@ -188,6 +217,7 @@ class VotingService {
         lobbyId: _currentSession!.lobbyId,
         pointsPerPlayer: _currentSession!.pointsPerPlayer,
         totalRounds: _currentSession!.totalRounds,
+        gamesPerRound: _currentSession!.gamesPerRound,
         currentRound: _currentSession!.currentRound,
         availableGames: _currentSession!.availableGames,
         votes: _currentSession!.votes,
@@ -208,6 +238,7 @@ class VotingService {
         lobbyId: _currentSession!.lobbyId,
         pointsPerPlayer: _currentSession!.pointsPerPlayer,
         totalRounds: _currentSession!.totalRounds,
+        gamesPerRound: _currentSession!.gamesPerRound,
         currentRound: _currentSession!.currentRound + 1,
         availableGames: _currentSession!.availableGames,
         votes: {},
@@ -218,7 +249,7 @@ class VotingService {
       );
     }
 
-    return winningGame;
+    return selectedGamesForRound;
   }
 
   /// Get the current voting session
@@ -249,13 +280,20 @@ class VotingService {
   }
 
   /// Check if all players have voted
+  /// Check if all players have voted
   bool get allPlayersVoted {
     if (_currentSession == null) return false;
     return _currentSession!.allPlayersVoted;
   }
 
-  /// Get all selected games from completed and current rounds
+  /// Get all selected games from completed and current rounds (flattened)
   List<String> get selectedGames {
+    if (_currentSession == null) return [];
+    return _currentSession!.allSelectedGames;
+  }
+
+  /// Get selected games by round
+  List<List<String>> get selectedGamesByRound {
     if (_currentSession == null) return [];
     return _currentSession!.selectedGames;
   }
