@@ -9,6 +9,8 @@ This document organizes user stories in a three-tier hierarchy:
 
 Each story follows the format: "As a [persona], I want [goal] so that [benefit]"
 
+**Product Philosophy**: Mind Wars is designed for families and friends to compete together across generations (Grade 6+, ages 11+). The primary use case is playing with known people (family members, friends), with private lobbies as the default. Public/random matching is available as an alternative option, but family bonding is the core value proposition.
+
 ---
 
 ## Table of Contents
@@ -187,29 +189,32 @@ Each story follows the format: "As a [persona], I want [goal] so that [benefit]"
 
 ### Feature 2.1: Lobby Creation
 
-**As a user**, I want to create a game lobby so that I can invite friends to play
+**As a user**, I want to create a private game lobby so that I can invite family and friends to play together
 
 **Acceptance Criteria**:
 - User can create lobby with 2-10 players
-- Lobby has unique ID/code for joining
+- Lobby has unique shareable code for easy family invites
 - Creator is designated as host
-- Lobby is visible in lobby list
+- Private lobbies are default (public is optional)
 - Host can configure game settings
+- Easy sharing of lobby code via family group chats
 
 #### Tasks:
 - [ ] **Task 2.1.1**: Implement lobby creation API
   - `POST /lobbies` - Create new lobby
-  - Generate unique lobby code
+  - Generate memorable, short lobby code (e.g., "FAMILY42")
   - Set creator as host
+  - Default to private lobby
   - Store lobby configuration
-  - Return lobby details
+  - Return lobby details with shareable code
   
 - [ ] **Task 2.1.2**: Create lobby creation UI
   - Max players selector (2-10)
-  - Lobby name input
-  - Privacy settings (public/private)
+  - Lobby name input (e.g., "Smith Family Game Night")
+  - Privacy toggle: Private (default) / Public (optional)
   - Create button
-  - Show lobby code on success
+  - Prominent display of lobby code for sharing
+  - "Share Code" button to copy or send via messaging apps
   
 - [ ] **Task 2.1.3**: Implement Socket.io connection
   - Connect to multiplayer server
@@ -227,25 +232,29 @@ Each story follows the format: "As a [persona], I want [goal] so that [benefit]"
 
 ### Feature 2.2: Lobby Discovery & Joining
 
-**As a user**, I want to find and join available lobbies so that I can play with others
+**As a user**, I want to find and join lobbies so that I can play with family/friends or explore public games
 
 **Acceptance Criteria**:
-- User can view list of public lobbies
-- User can search lobbies by code
+- User can join private lobbies via invite code (primary use case)
+- User can view list of public lobbies (alternative/optional)
+- User can search lobbies by code for easy family invites
 - User can see lobby details before joining
-- User can join lobbies with available slots
 - Real-time updates of lobby status
+- Private/family lobbies are prominent, public lobbies are secondary
 
 #### Tasks:
 - [ ] **Task 2.2.1**: Implement lobby list API
   - `GET /lobbies` - Get available lobbies
   - Filter by status (waiting/in-progress)
-  - Filter by player count
-  - Pagination support
+  - Filter by privacy (private/public)
+  - Prioritize private lobby joining via code
+  - Pagination support for public lobbies
   - Real-time updates via Socket.io
   
 - [ ] **Task 2.2.2**: Create lobby browser UI
-  - Scrollable list of available lobbies
+  - Prominent "Join with Code" input for family invites
+  - Optional public lobby list (secondary section)
+  - Scrollable list of available public lobbies
   - Lobby card showing: name, players, status
   - Join button per lobby
   - Refresh button
@@ -848,48 +857,59 @@ Each story follows the format: "As a [persona], I want [goal] so that [benefit]"
 
 ## Story Mapping by Persona
 
-### Competitive Gamer - Critical Stories
-1. Feature 2.2: Lobby Discovery & Joining
-2. Feature 3.3: Turn-Based Gameplay
-3. Feature 3.4: Game Scoring System
-4. Feature 5.1: Weekly Leaderboards
-5. Feature 5.2: Badge & Achievement System
-6. Feature 5.3: Streak Tracking System
-7. Feature 6.1: Offline Game Storage
+### Competitive Sibling - Critical Stories
+1. Feature 2.1: Lobby Creation (private family lobbies)
+2. Feature 3.2: Democratic Game Voting (family chooses together)
+3. Feature 3.4: Game Scoring System (fair family competition)
+4. Feature 5.1: Weekly Leaderboards (family rankings)
+5. Feature 5.2: Badge & Achievement System (bragging rights)
+6. Feature 4.1: In-Game Chat (trash talk with siblings)
+7. Feature 7.3: Cross-Platform Multiplayer (family uses different devices)
 
-### Social Player - Critical Stories
-1. Feature 2.1: Lobby Creation
-2. Feature 3.2: Democratic Game Voting
-3. Feature 4.1: In-Game Chat
-4. Feature 4.2: Emoji Reactions
-5. Feature 3.1: Game Catalog & Selection
+### Family Connector - Critical Stories
+1. Feature 2.1: Lobby Creation (organize family game nights)
+2. Feature 3.1: Game Catalog & Selection (variety for all ages)
+3. Feature 3.2: Democratic Game Voting (everyone gets input)
+4. Feature 4.1: In-Game Chat (family communication)
+5. Feature 4.2: Emoji Reactions (simple cross-generational fun)
+6. Feature 7.3: Cross-Platform Multiplayer (essential for mixed devices)
+7. Feature 2.4: Player Presence & Status (see who's online)
 
-### Brain Trainer - Critical Stories
-1. Feature 3.1: Game Catalog & Selection
-2. Feature 5.3: Streak Tracking System
-3. Feature 5.5: Personal Statistics Dashboard
-4. Feature 6.1: Offline Game Storage
-5. Feature 6.2: Automatic Data Sync
+### Grandparent Gamer - Critical Stories
+1. Feature 1.3: Onboarding Tutorial (easy onboarding)
+2. Feature 2.1: Lobby Creation (join grandkids' games)
+3. Feature 3.1: Game Catalog & Selection (cognitive games)
+4. Feature 5.3: Streak Tracking System (daily routine)
+5. Feature 5.5: Personal Statistics Dashboard (track cognitive health)
+6. Feature 6.1: Offline Game Storage (rural internet)
+7. Feature 7.4: Responsive UI Design (accessibility features)
 
-### Busy Parent - Critical Stories
-1. Feature 3.3: Turn-Based Gameplay
-2. Feature 6.1: Offline Game Storage
-3. Feature 3.5: Game State Management
-4. Feature 6.4: Network State Management
+### Parent-Child Builder - Critical Stories
+1. Feature 2.1: Lobby Creation (family-only lobbies)
+2. Feature 3.3: Turn-Based Gameplay (async for different schedules)
+3. Feature 3.5: Game State Management (resume anytime)
+4. Feature 4.4: Player Blocking & Reporting (safety controls)
+5. Feature 6.1: Offline Game Storage (work without WiFi)
+6. Feature 6.2: Automatic Data Sync (seamless experience)
+7. Feature 3.1: Game Catalog & Selection (age-appropriate games)
 
-### College Student - Critical Stories
-1. Feature 2.1: Lobby Creation
-2. Feature 3.2: Democratic Game Voting
-3. Feature 4.1: In-Game Chat
-4. Feature 4.2: Emoji Reactions
-5. Feature 5.1: Weekly Leaderboards
-6. Feature 7.3: Cross-Platform Multiplayer
+### Teen Squad Leader - Critical Stories
+1. Feature 2.1: Lobby Creation (friend groups & family)
+2. Feature 3.2: Democratic Game Voting (group decides)
+3. Feature 4.1: In-Game Chat (social interaction)
+4. Feature 4.2: Emoji Reactions (fun communication)
+5. Feature 5.1: Weekly Leaderboards (competition with friends)
+6. Feature 5.2: Badge & Achievement System (show off accomplishments)
+7. Feature 7.3: Cross-Platform Multiplayer (friends on different devices)
 
-### Remote Worker - Critical Stories
-1. Feature 3.3: Turn-Based Gameplay
-2. Feature 6.1: Offline Game Storage
-3. Feature 6.2: Automatic Data Sync
-4. Feature 7.3: Cross-Platform Multiplayer
+### Middle Schooler - Critical Stories
+1. Feature 1.4: Profile Setup (personalization)
+2. Feature 2.1: Lobby Creation (cousin groups)
+3. Feature 3.1: Game Catalog & Selection (variety of games)
+4. Feature 4.1: In-Game Chat (communicate with cousins)
+5. Feature 5.2: Badge & Achievement System (visible progress)
+6. Feature 4.4: Player Blocking & Reporting (parental approved safety)
+7. Feature 3.4: Game Scoring System (fair competition with older kids)
 
 ---
 
