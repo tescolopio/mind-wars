@@ -79,6 +79,25 @@ class OfflineService {
             cached_at TEXT NOT NULL
           )
         ''');
+
+        // Turn queue table for offline turns
+        await db.execute('''
+          CREATE TABLE turn_queue (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            lobby_id TEXT NOT NULL,
+            player_id TEXT NOT NULL,
+            game_id TEXT NOT NULL,
+            turn_data TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            synced INTEGER DEFAULT 0,
+            retry_count INTEGER DEFAULT 0
+          )
+        ''');
+        
+        // Create indexes for performance
+        await db.execute('CREATE INDEX idx_turn_queue_lobby ON turn_queue(lobby_id)');
+        await db.execute('CREATE INDEX idx_turn_queue_synced ON turn_queue(synced)');
+        await db.execute('CREATE INDEX idx_sync_queue_retry ON sync_queue(retry_count)');
       },
     );
   }
@@ -488,4 +507,226 @@ class OfflineService {
     final result = await db.rawQuery('SELECT COUNT(*) FROM sync_queue');
     return Sqflite.firstIntValue(result) ?? 0;
   }
+
+  // ===== Turn Queue Management =====
+
+  /// Queue a turn for later sync (when offline)
+  Future<void> queueTurn({
+    required String lobbyId,
+    required String playerId,
+    required String gameId,
+    required Map<String, dynamic> turnData,
+  }) async {
+    final db = await database;
+    
+    await db.insert('turn_queue', {
+      'lobby_id': lobbyId,
+      'player_id': playerId,
+      'game_id': gameId,
+      'turn_data': jsonEncode(turnData),
+      'created_at': DateTime.now().toIso8601String(),
+      'synced': 0,
+      'retry_count': 0,
+    });
+    
+    print('Turn queued for lobby $lobbyId');
+  }
+
+  /// Get all unsynced turns for a lobby
+  Future<List<QueuedTurn>> getUnsyncedTurns(String lobbyId) async {
+    final db = await database;
+    final maps = await db.query(
+      'turn_queue',
+      where: 'lobby_id = ? AND synced = ?',
+      whereArgs: [lobbyId, 0],
+      orderBy: 'created_at ASC',
+    );
+
+    return maps.map((map) => QueuedTurn(
+      id: map['id'] as int,
+      lobbyId: map['lobby_id'] as String,
+      playerId: map['player_id'] as String,
+      gameId: map['game_id'] as String,
+      turnData: jsonDecode(map['turn_data'] as String),
+      createdAt: DateTime.parse(map['created_at'] as String),
+      synced: (map['synced'] as int) == 1,
+      retryCount: map['retry_count'] as int,
+    )).toList();
+  }
+
+  /// Get all unsynced turns across all lobbies
+  Future<List<QueuedTurn>> getAllUnsyncedTurns() async {
+    final db = await database;
+    final maps = await db.query(
+      'turn_queue',
+      where: 'synced = ?',
+      whereArgs: [0],
+      orderBy: 'created_at ASC',
+    );
+
+    return maps.map((map) => QueuedTurn(
+      id: map['id'] as int,
+      lobbyId: map['lobby_id'] as String,
+      playerId: map['player_id'] as String,
+      gameId: map['game_id'] as String,
+      turnData: jsonDecode(map['turn_data'] as String),
+      createdAt: DateTime.parse(map['created_at'] as String),
+      synced: (map['synced'] as int) == 1,
+      retryCount: map['retry_count'] as int,
+    )).toList();
+  }
+
+  /// Mark turn as synced
+  Future<void> markTurnAsSynced(int turnId) async {
+    final db = await database;
+    await db.update(
+      'turn_queue',
+      {'synced': 1},
+      where: 'id = ?',
+      whereArgs: [turnId],
+    );
+  }
+
+  /// Increment turn retry count
+  Future<void> incrementTurnRetryCount(int turnId) async {
+    final db = await database;
+    await db.rawUpdate(
+      'UPDATE turn_queue SET retry_count = retry_count + 1 WHERE id = ?',
+      [turnId],
+    );
+  }
+
+  /// Sync all queued turns with server
+  Future<SyncResult> syncQueuedTurns(String apiEndpoint) async {
+    final unsyncedTurns = await getAllUnsyncedTurns();
+    
+    if (unsyncedTurns.isEmpty) {
+      return SyncResult(
+        success: true,
+        syncedCount: 0,
+        failedCount: 0,
+        message: 'No turns to sync',
+      );
+    }
+
+    int syncedCount = 0;
+    int failedCount = 0;
+    List<String> errors = [];
+
+    for (var turn in unsyncedTurns) {
+      // Skip if max retries reached
+      if (turn.retryCount >= 5) {
+        errors.add('Turn ${turn.id} exceeded max retries');
+        failedCount++;
+        continue;
+      }
+
+      try {
+        final response = await http.post(
+          Uri.parse('$apiEndpoint/games/${turn.gameId}/submit-turn'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({
+            'lobbyId': turn.lobbyId,
+            'playerId': turn.playerId,
+            'turnData': turn.turnData,
+            'timestamp': turn.createdAt.toIso8601String(),
+          }),
+        );
+
+        if (response.statusCode >= 200 && response.statusCode < 300) {
+          await markTurnAsSynced(turn.id);
+          syncedCount++;
+          print('Synced turn ${turn.id}');
+        } else {
+          await incrementTurnRetryCount(turn.id);
+          errors.add('Turn ${turn.id} failed: ${response.statusCode}');
+          failedCount++;
+        }
+      } catch (error) {
+        await incrementTurnRetryCount(turn.id);
+        errors.add('Turn ${turn.id} error: $error');
+        failedCount++;
+      }
+    }
+
+    return SyncResult(
+      success: failedCount == 0,
+      syncedCount: syncedCount,
+      failedCount: failedCount,
+      message: errors.isEmpty 
+          ? 'All turns synced successfully'
+          : errors.join(', '),
+    );
+  }
+
+  /// Get turn queue size for a lobby
+  Future<int> getTurnQueueSize(String lobbyId) async {
+    final db = await database;
+    final result = await db.rawQuery(
+      'SELECT COUNT(*) FROM turn_queue WHERE lobby_id = ? AND synced = 0',
+      [lobbyId],
+    );
+    return Sqflite.firstIntValue(result) ?? 0;
+  }
+
+  /// Get total pending items (turns + sync queue)
+  Future<int> getTotalPendingItems() async {
+    final syncQueue = await getSyncQueueSize();
+    final db = await database;
+    final result = await db.rawQuery(
+      'SELECT COUNT(*) FROM turn_queue WHERE synced = 0',
+    );
+    final turnQueue = Sqflite.firstIntValue(result) ?? 0;
+    return syncQueue + turnQueue;
+  }
+
+  /// Clear synced turns (cleanup old data)
+  Future<void> clearSyncedTurns({int daysOld = 7}) async {
+    final db = await database;
+    final cutoffDate = DateTime.now().subtract(Duration(days: daysOld));
+    
+    await db.delete(
+      'turn_queue',
+      where: 'synced = 1 AND created_at < ?',
+      whereArgs: [cutoffDate.toIso8601String()],
+    );
+  }
+}
+
+/// Queued turn model
+class QueuedTurn {
+  final int id;
+  final String lobbyId;
+  final String playerId;
+  final String gameId;
+  final Map<String, dynamic> turnData;
+  final DateTime createdAt;
+  final bool synced;
+  final int retryCount;
+
+  QueuedTurn({
+    required this.id,
+    required this.lobbyId,
+    required this.playerId,
+    required this.gameId,
+    required this.turnData,
+    required this.createdAt,
+    required this.synced,
+    required this.retryCount,
+  });
+}
+
+/// Sync result model
+class SyncResult {
+  final bool success;
+  final int syncedCount;
+  final int failedCount;
+  final String message;
+
+  SyncResult({
+    required this.success,
+    required this.syncedCount,
+    required this.failedCount,
+    required this.message,
+  });
 }
