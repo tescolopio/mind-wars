@@ -1,0 +1,108 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
+if (flutterVersionCode == null) {
+    flutterVersionCode = '1'
+}
+
+def flutterVersionName = localProperties.getProperty('flutter.versionName')
+if (flutterVersionName == null) {
+    flutterVersionName = '1.0'
+}
+
+android {
+    namespace "com.mindwars.app"
+    compileSdk 34
+    ndkVersion flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    defaultConfig {
+        applicationId "com.mindwars.app"
+        // Minimum SDK: Android 8.0 (API 26)
+        minSdk 26
+        targetSdk 33
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+        
+        // MultiDex support for large apps
+        multiDexEnabled true
+        
+        // Vector drawables support
+        vectorDrawables.useSupportLibrary = true
+    }
+
+    buildTypes {
+        release {
+            // Signing config for release builds
+            signingConfig signingConfigs.debug
+            
+            // Code shrinking and obfuscation
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        
+        debug {
+            applicationIdSuffix ".debug"
+            debuggable true
+        }
+    }
+    
+    // Split APKs by ABI for smaller download sizes
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi-v7a', 'arm64-v8a', 'x86_64'
+            universalApk true
+        }
+    }
+    
+    // Optimize for different screen densities
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
+    }
+}
+
+flutter {
+    source '../..'
+}
+
+dependencies {
+    // Material Design 3 support
+    implementation 'com.google.android.material:material:1.10.0'
+    
+    // MultiDex support
+    implementation 'androidx.multidex:multidex:2.0.1'
+}
