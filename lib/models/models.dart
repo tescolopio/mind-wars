@@ -159,6 +159,10 @@ class GameLobby {
   final Game? currentGame;
   final String status; // 'waiting', 'in-progress', 'completed'
   final DateTime createdAt;
+  final String? lobbyCode; // Shareable lobby code (e.g., "FAMILY42")
+  final bool isPrivate; // Private lobbies require code to join
+  final int numberOfRounds; // Number of rounds to play
+  final int votingPointsPerPlayer; // Points each player gets for voting
 
   GameLobby({
     required this.id,
@@ -169,6 +173,10 @@ class GameLobby {
     this.currentGame,
     required this.status,
     required this.createdAt,
+    this.lobbyCode,
+    this.isPrivate = true,
+    this.numberOfRounds = 3,
+    this.votingPointsPerPlayer = 10,
   });
 
   Map<String, dynamic> toJson() => {
@@ -180,6 +188,10 @@ class GameLobby {
         'currentGame': currentGame?.toJson(),
         'status': status,
         'createdAt': createdAt.toIso8601String(),
+        'lobbyCode': lobbyCode,
+        'isPrivate': isPrivate,
+        'numberOfRounds': numberOfRounds,
+        'votingPointsPerPlayer': votingPointsPerPlayer,
       };
 
   factory GameLobby.fromJson(Map<String, dynamic> json) => GameLobby(
@@ -195,7 +207,51 @@ class GameLobby {
             : null,
         status: json['status'],
         createdAt: DateTime.parse(json['createdAt']),
+        lobbyCode: json['lobbyCode'],
+        isPrivate: json['isPrivate'] ?? true,
+        numberOfRounds: json['numberOfRounds'] ?? 3,
+        votingPointsPerPlayer: json['votingPointsPerPlayer'] ?? 10,
       );
+  
+  /// Create a copy of this lobby with updated values
+  GameLobby copyWith({
+    String? id,
+    String? name,
+    String? hostId,
+    List<Player>? players,
+    int? maxPlayers,
+    Game? currentGame,
+    String? status,
+    DateTime? createdAt,
+    String? lobbyCode,
+    bool? isPrivate,
+    int? numberOfRounds,
+    int? votingPointsPerPlayer,
+  }) {
+    return GameLobby(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      hostId: hostId ?? this.hostId,
+      players: players ?? this.players,
+      maxPlayers: maxPlayers ?? this.maxPlayers,
+      currentGame: currentGame ?? this.currentGame,
+      status: status ?? this.status,
+      createdAt: createdAt ?? this.createdAt,
+      lobbyCode: lobbyCode ?? this.lobbyCode,
+      isPrivate: isPrivate ?? this.isPrivate,
+      numberOfRounds: numberOfRounds ?? this.numberOfRounds,
+      votingPointsPerPlayer: votingPointsPerPlayer ?? this.votingPointsPerPlayer,
+    );
+  }
+  
+  /// Check if current user is the host
+  bool isHost(String userId) => hostId == userId;
+  
+  /// Check if lobby is full
+  bool get isFull => players.length >= maxPlayers;
+  
+  /// Check if lobby can be joined
+  bool get canJoin => status == 'waiting' && !isFull;
 }
 
 /// Game model
