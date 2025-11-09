@@ -11,18 +11,18 @@ This is your quick reference guide to navigate the Mind Wars backlog system. Use
 ## Documentation Map
 
 ### 📚 Product & User Research
-1. **[USER_PERSONAS.md](USER_PERSONAS.md)** (30KB) - 8 detailed user personas
+1. **[USER_PERSONAS.md](../business/USER_PERSONAS.md)** (30KB) - 8 detailed user personas
    - **Use When**: Understanding who we're building for
    - **Key Content**: Family Connector, Competitive Sibling, Grandparent Gamer, etc.
    - **Audience**: Everyone on the team
 
-2. **[USER_STORIES.md](USER_STORIES.md)** (41KB) - Complete user stories library
+2. **[USER_STORIES.md](../business/USER_STORIES.md)** (41KB) - Complete user stories library
    - **Use When**: Detailed requirements and acceptance criteria needed
    - **Key Content**: All Epics, Features, Tasks with full details
    - **Audience**: Product Owners, Engineers, QA
 
 ### 📋 Backlog Management
-3. **[PRODUCT_BACKLOG.md](PRODUCT_BACKLOG.md)** (42KB) - **⭐ START HERE**
+3. **[PRODUCT_BACKLOG.md](../../PRODUCT_BACKLOG.md)** (42KB) - **⭐ START HERE**
    - **Use When**: Planning sprints, prioritizing work
    - **Key Content**: Prioritized backlog (P0-P3), story points, sprint planning
    - **Audience**: Scrum Master, Product Owner, Tech Lead
@@ -32,13 +32,13 @@ This is your quick reference guide to navigate the Mind Wars backlog system. Use
    - **Key Content**: All ceremony templates, checklists, examples
    - **Audience**: Scrum Master, entire team
 
-5. **[ROADMAP.md](ROADMAP.md)** (23KB) - Visual timeline and milestones
+5. **[ROADMAP.md](../../ROADMAP.md)** (23KB) - Visual timeline and milestones
    - **Use When**: Planning phases, tracking progress, stakeholder updates
    - **Key Content**: 6-month roadmap, milestones, success metrics
    - **Audience**: Product Manager, Leadership, Stakeholders
 
 ### 🏗️ Technical Documentation
-6. **[ARCHITECTURE.md](ARCHITECTURE.md)** (9KB) - Technical architecture
+6. **[ARCHITECTURE.md](../../ARCHITECTURE.md)** (9KB) - Technical architecture
    - **Use When**: Understanding technical implementation
    - **Key Content**: Tech stack, offline-first design, security
    - **Audience**: Engineers, Tech Lead
@@ -48,13 +48,13 @@ This is your quick reference guide to navigate the Mind Wars backlog system. Use
    - **Key Content**: Validation checklists for all features
    - **Audience**: QA, Engineers
 
-8. **[VOTING_SYSTEM.md](VOTING_SYSTEM.md)** (11KB) - Game voting system details
+8. **[VOTING_SYSTEM.md](../../VOTING_SYSTEM.md)** (11KB) - Game voting system details
    - **Use When**: Implementing democratic game selection
    - **Key Content**: Voting mechanics, Socket.io events
    - **Audience**: Engineers working on voting feature
 
 ### 📖 General
-9. **[README.md](README.md)** (9KB) - Project overview
+9. **[README.md](../../README.md)** (9KB) - Project overview
    - **Use When**: Onboarding new team members
    - **Key Content**: Features, tech stack, setup instructions
    - **Audience**: Everyone, especially new team members
@@ -65,36 +65,36 @@ This is your quick reference guide to navigate the Mind Wars backlog system. Use
 
 ### Product Manager / Product Owner
 **Daily Use:**
-- [PRODUCT_BACKLOG.md](PRODUCT_BACKLOG.md) - Prioritizing and grooming backlog
+- [PRODUCT_BACKLOG.md](../../PRODUCT_BACKLOG.md) - Prioritizing and grooming backlog
 - [USER_PERSONAS.md](USER_PERSONAS.md) - Validating persona alignment
-- [ROADMAP.md](ROADMAP.md) - Tracking progress and milestones
+- [ROADMAP.md](../../ROADMAP.md) - Tracking progress and milestones
 
 **Weekly Use:**
 - [SPRINT_TEMPLATES.md](SPRINT_TEMPLATES.md) - Sprint planning and reviews
-- [USER_STORIES.md](USER_STORIES.md) - Refining user stories
+- [USER_STORIES.md](../business/USER_STORIES.md) - Refining user stories
 
 **Monthly Use:**
-- [ROADMAP.md](ROADMAP.md) - Stakeholder updates and phase reviews
+- [ROADMAP.md](../../ROADMAP.md) - Stakeholder updates and phase reviews
 
 ### Scrum Master
 **Daily Use:**
 - [SPRINT_TEMPLATES.md](SPRINT_TEMPLATES.md) - Standup facilitation
-- [PRODUCT_BACKLOG.md](PRODUCT_BACKLOG.md) - Sprint progress tracking
+- [PRODUCT_BACKLOG.md](../../PRODUCT_BACKLOG.md) - Sprint progress tracking
 
 **Weekly Use:**
 - [SPRINT_TEMPLATES.md](SPRINT_TEMPLATES.md) - All sprint ceremonies
-- [PRODUCT_BACKLOG.md](PRODUCT_BACKLOG.md) - Backlog grooming
+- [PRODUCT_BACKLOG.md](../../PRODUCT_BACKLOG.md) - Backlog grooming
 
 **Sprint Boundaries:**
 - [SPRINT_TEMPLATES.md](SPRINT_TEMPLATES.md) - Planning, review, retrospective
 
 ### Engineering Team
 **Daily Use:**
-- [PRODUCT_BACKLOG.md](PRODUCT_BACKLOG.md) - Task details and story points
-- [USER_STORIES.md](USER_STORIES.md) - Acceptance criteria and implementation details
+- [PRODUCT_BACKLOG.md](../../PRODUCT_BACKLOG.md) - Task details and story points
+- [USER_STORIES.md](../business/USER_STORIES.md) - Acceptance criteria and implementation details
 
 **When Starting New Work:**
-- [ARCHITECTURE.md](ARCHITECTURE.md) - Technical approach
+- [ARCHITECTURE.md](../../ARCHITECTURE.md) - Technical approach
 - [USER_PERSONAS.md](USER_PERSONAS.md) - Understanding user needs
 
 **Before Completing Work:**
@@ -102,45 +102,45 @@ This is your quick reference guide to navigate the Mind Wars backlog system. Use
 
 ### Tech Lead
 **Daily Use:**
-- [PRODUCT_BACKLOG.md](PRODUCT_BACKLOG.md) - Technical planning and dependencies
-- [ARCHITECTURE.md](ARCHITECTURE.md) - Architecture decisions
+- [PRODUCT_BACKLOG.md](../../PRODUCT_BACKLOG.md) - Technical planning and dependencies
+- [ARCHITECTURE.md](../../ARCHITECTURE.md) - Architecture decisions
 
 **Weekly Use:**
 - [SPRINT_TEMPLATES.md](SPRINT_TEMPLATES.md) - Sprint planning and reviews
-- [USER_STORIES.md](USER_STORIES.md) - Story refinement and estimation
+- [USER_STORIES.md](../business/USER_STORIES.md) - Story refinement and estimation
 
 **Monthly Use:**
-- [ROADMAP.md](ROADMAP.md) - Technical roadmap and risk management
+- [ROADMAP.md](../../ROADMAP.md) - Technical roadmap and risk management
 
 ### QA / Test Engineer
 **Daily Use:**
-- [USER_STORIES.md](USER_STORIES.md) - Acceptance criteria for testing
+- [USER_STORIES.md](../business/USER_STORIES.md) - Acceptance criteria for testing
 - [VALIDATION.md](VALIDATION.md) - Feature validation checklists
 
 **When Testing Features:**
 - [USER_PERSONAS.md](USER_PERSONAS.md) - Persona-based testing scenarios
-- [PRODUCT_BACKLOG.md](PRODUCT_BACKLOG.md) - Story acceptance criteria
+- [PRODUCT_BACKLOG.md](../../PRODUCT_BACKLOG.md) - Story acceptance criteria
 
 ### UX/UI Designer
 **Daily Use:**
 - [USER_PERSONAS.md](USER_PERSONAS.md) - Designing for personas
-- [USER_STORIES.md](USER_STORIES.md) - User flows and requirements
+- [USER_STORIES.md](../business/USER_STORIES.md) - User flows and requirements
 
 **Weekly Use:**
-- [PRODUCT_BACKLOG.md](PRODUCT_BACKLOG.md) - Upcoming design needs
-- [ROADMAP.md](ROADMAP.md) - Design roadmap planning
+- [PRODUCT_BACKLOG.md](../../PRODUCT_BACKLOG.md) - Upcoming design needs
+- [ROADMAP.md](../../ROADMAP.md) - Design roadmap planning
 
 ### Leadership / Stakeholders
 **Weekly Use:**
-- [ROADMAP.md](ROADMAP.md) - Progress and milestones
+- [ROADMAP.md](../../ROADMAP.md) - Progress and milestones
 
 **Monthly Use:**
-- [ROADMAP.md](ROADMAP.md) - Phase reviews and success metrics
-- [PRODUCT_BACKLOG.md](PRODUCT_BACKLOG.md) - Feature priorities
+- [ROADMAP.md](../../ROADMAP.md) - Phase reviews and success metrics
+- [PRODUCT_BACKLOG.md](../../PRODUCT_BACKLOG.md) - Feature priorities
 
 **Quarterly Use:**
 - [USER_PERSONAS.md](USER_PERSONAS.md) - Persona validation
-- [ROADMAP.md](ROADMAP.md) - Strategic alignment
+- [ROADMAP.md](../../ROADMAP.md) - Strategic alignment
 
 ---
 
@@ -149,7 +149,7 @@ This is your quick reference guide to navigate the Mind Wars backlog system. Use
 ### 1. Planning a New Sprint
 
 **Steps:**
-1. Open [PRODUCT_BACKLOG.md](PRODUCT_BACKLOG.md) - Review prioritized items
+1. Open [PRODUCT_BACKLOG.md](../../PRODUCT_BACKLOG.md) - Review prioritized items
 2. Open [SPRINT_TEMPLATES.md](SPRINT_TEMPLATES.md) - Use Sprint Planning Template
 3. Select items from backlog that are "Ready" (Definition of Ready)
 4. Calculate team velocity (40-50 points target)
@@ -164,12 +164,12 @@ This is your quick reference guide to navigate the Mind Wars backlog system. Use
 ### 2. Refining a User Story
 
 **Steps:**
-1. Open [USER_STORIES.md](USER_STORIES.md) - Find the story
+1. Open [USER_STORIES.md](../business/USER_STORIES.md) - Find the story
 2. Open [USER_PERSONAS.md](USER_PERSONAS.md) - Identify target persona(s)
 3. Review acceptance criteria
-4. Add technical details from [ARCHITECTURE.md](ARCHITECTURE.md)
+4. Add technical details from [ARCHITECTURE.md](../../ARCHITECTURE.md)
 5. Estimate story points (use calibration guide in PRODUCT_BACKLOG.md)
-6. Mark as "Ready" in [PRODUCT_BACKLOG.md](PRODUCT_BACKLOG.md)
+6. Mark as "Ready" in [PRODUCT_BACKLOG.md](../../PRODUCT_BACKLOG.md)
 
 **Key Documents:**
 - Primary: USER_STORIES.md, PRODUCT_BACKLOG.md
@@ -221,7 +221,7 @@ This is your quick reference guide to navigate the Mind Wars backlog system. Use
 
 **Steps:**
 1. Open [VALIDATION.md](VALIDATION.md) - Find feature checklist
-2. Open [USER_STORIES.md](USER_STORIES.md) - Review acceptance criteria
+2. Open [USER_STORIES.md](../business/USER_STORIES.md) - Review acceptance criteria
 3. Test against all acceptance criteria
 4. Verify persona needs are met (use USER_PERSONAS.md)
 5. Check Definition of Done (in PRODUCT_BACKLOG.md)
@@ -234,7 +234,7 @@ This is your quick reference guide to navigate the Mind Wars backlog system. Use
 ### 7. Updating the Roadmap
 
 **Steps:**
-1. Open [ROADMAP.md](ROADMAP.md) - Current phase section
+1. Open [ROADMAP.md](../../ROADMAP.md) - Current phase section
 2. Review milestone progress
 3. Update completed features (✅)
 4. Update in-progress features (🔄)
@@ -295,34 +295,34 @@ This is your quick reference guide to navigate the Mind Wars backlog system. Use
 ## FAQ
 
 ### Q: Where do I start if I'm new to the project?
-**A:** Start with [README.md](README.md) for overview, then [USER_PERSONAS.md](USER_PERSONAS.md) to understand our users, then [PRODUCT_BACKLOG.md](PRODUCT_BACKLOG.md) to see the prioritized work.
+**A:** Start with [README.md](../../README.md) for overview, then [USER_PERSONAS.md](USER_PERSONAS.md) to understand our users, then [PRODUCT_BACKLOG.md](../../PRODUCT_BACKLOG.md) to see the prioritized work.
 
 ### Q: How do I know what to work on next?
-**A:** Check [PRODUCT_BACKLOG.md](PRODUCT_BACKLOG.md) - items are prioritized P0 (highest) to P3 (lowest). Work on P0 items first.
+**A:** Check [PRODUCT_BACKLOG.md](../../PRODUCT_BACKLOG.md) - items are prioritized P0 (highest) to P3 (lowest). Work on P0 items first.
 
 ### Q: Where can I find detailed acceptance criteria?
-**A:** [USER_STORIES.md](USER_STORIES.md) has complete acceptance criteria for every feature.
+**A:** [USER_STORIES.md](../business/USER_STORIES.md) has complete acceptance criteria for every feature.
 
 ### Q: How do I estimate story points?
-**A:** Use the calibration guide in [PRODUCT_BACKLOG.md](PRODUCT_BACKLOG.md) - compare to reference stories.
+**A:** Use the calibration guide in [PRODUCT_BACKLOG.md](../../PRODUCT_BACKLOG.md) - compare to reference stories.
 
 ### Q: What ceremonies do we run in sprints?
 **A:** All sprint ceremonies are documented in [SPRINT_TEMPLATES.md](SPRINT_TEMPLATES.md) with templates and examples.
 
 ### Q: How do I know if we're on track?
-**A:** Check [ROADMAP.md](ROADMAP.md) for phase milestones and success metrics timeline.
+**A:** Check [ROADMAP.md](../../ROADMAP.md) for phase milestones and success metrics timeline.
 
 ### Q: Where do I find technical implementation details?
-**A:** [ARCHITECTURE.md](ARCHITECTURE.md) for architecture, [USER_STORIES.md](USER_STORIES.md) for feature-specific tasks.
+**A:** [ARCHITECTURE.md](../../ARCHITECTURE.md) for architecture, [USER_STORIES.md](../business/USER_STORIES.md) for feature-specific tasks.
 
 ### Q: How do I validate a completed feature?
-**A:** Use [VALIDATION.md](VALIDATION.md) checklists and verify against acceptance criteria in [USER_STORIES.md](USER_STORIES.md).
+**A:** Use [VALIDATION.md](VALIDATION.md) checklists and verify against acceptance criteria in [USER_STORIES.md](../business/USER_STORIES.md).
 
 ### Q: What if a persona's needs change?
-**A:** Update [USER_PERSONAS.md](USER_PERSONAS.md), then review [PRODUCT_BACKLOG.md](PRODUCT_BACKLOG.md) to adjust priorities.
+**A:** Update [USER_PERSONAS.md](USER_PERSONAS.md), then review [PRODUCT_BACKLOG.md](../../PRODUCT_BACKLOG.md) to adjust priorities.
 
 ### Q: How often should we groom the backlog?
-**A:** Weekly, per guidelines in [PRODUCT_BACKLOG.md](PRODUCT_BACKLOG.md) - Backlog Grooming section.
+**A:** Weekly, per guidelines in [PRODUCT_BACKLOG.md](../../PRODUCT_BACKLOG.md) - Backlog Grooming section.
 
 ---
 
@@ -427,11 +427,11 @@ After Sprint Planning:
 ---
 
 **Quick Links:**
-- [Product Backlog](PRODUCT_BACKLOG.md) ⭐
+- [Product Backlog](../../PRODUCT_BACKLOG.md) ⭐
 - [Sprint Templates](SPRINT_TEMPLATES.md)
-- [Roadmap](ROADMAP.md)
+- [Roadmap](../../ROADMAP.md)
 - [User Personas](USER_PERSONAS.md)
-- [User Stories](USER_STORIES.md)
+- [User Stories](../business/USER_STORIES.md)
 
 ---
 

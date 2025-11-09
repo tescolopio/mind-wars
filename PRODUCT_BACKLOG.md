@@ -1379,7 +1379,7 @@ A backlog item is "Done" when:
 ## Appendix
 
 ### Related Documents
-- [USER_PERSONAS.md](USER_PERSONAS.md) - Detailed user personas (8 personas)
+- [USER_PERSONAS.md](docs/business/USER_PERSONAS.md) - Detailed user personas (8 personas)
 - [USER_STORIES.md](USER_STORIES.md) - Complete user stories with Epics, Features, Tasks
 - [ARCHITECTURE.md](ARCHITECTURE.md) - Technical architecture
 - [README.md](README.md) - Project overview and setup
