@@ -551,6 +551,7 @@ class VotingSession {
   final List<List<String>> selectedGames; // Games selected for each round (rounds -> games)
   final bool completed;
   final DateTime createdAt;
+  final bool blindVoting; // If true, vote totals are hidden until voting ends
 
   VotingSession({
     required this.id,
@@ -565,6 +566,7 @@ class VotingSession {
     required this.selectedGames,
     required this.completed,
     required this.createdAt,
+    this.blindVoting = true, // Default to blind voting
   });
 
   Map<String, dynamic> toJson() => {
@@ -580,6 +582,7 @@ class VotingSession {
         'selectedGames': selectedGames,
         'completed': completed,
         'createdAt': createdAt.toIso8601String(),
+        'blindVoting': blindVoting,
       };
 
   factory VotingSession.fromJson(Map<String, dynamic> json) => VotingSession(
@@ -602,6 +605,7 @@ class VotingSession {
             .toList(),
         completed: json['completed'],
         createdAt: DateTime.parse(json['createdAt']),
+        blindVoting: json['blindVoting'] ?? true, // Default to blind voting
       );
 
   /// Calculate total points for each game

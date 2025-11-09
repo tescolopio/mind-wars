@@ -3,11 +3,13 @@
  * Allows players to vote on which games will be played during rounds
  */
 
+import 'dart:math';
 import '../models/models.dart';
 import '../games/game_catalog.dart';
 
 class VotingService {
   VotingSession? _currentSession;
+  final Random _random = Random();
 
   /// Create a new voting session for a lobby
   /// [pointsPerPlayer] - Number of voting points each player receives
@@ -15,6 +17,7 @@ class VotingService {
   /// [gamesPerRound] - Number of games to select per round
   /// [playerIds] - List of player IDs participating
   /// [availableGames] - Optional list of game IDs to vote on (defaults to all games suitable for player count)
+  /// [blindVoting] - If true (default), vote totals are hidden until voting ends
   VotingSession createVotingSession({
     required String lobbyId,
     required int pointsPerPlayer,
@@ -22,6 +25,7 @@ class VotingService {
     required int gamesPerRound,
     required List<String> playerIds,
     List<String>? availableGames,
+    bool blindVoting = true,
   }) {
     if (pointsPerPlayer <= 0) {
       throw Exception('Points per player must be greater than 0');
@@ -81,6 +85,7 @@ class VotingService {
       selectedGames: [],
       completed: false,
       createdAt: DateTime.now(),
+      blindVoting: blindVoting,
     );
 
     return _currentSession!;
@@ -225,6 +230,7 @@ class VotingService {
         selectedGames: _currentSession!.selectedGames,
         completed: true,
         createdAt: _currentSession!.createdAt,
+        blindVoting: _currentSession!.blindVoting,
       );
     } else {
       // Move to next round and reset votes/points
@@ -246,6 +252,7 @@ class VotingService {
         selectedGames: _currentSession!.selectedGames,
         completed: false,
         createdAt: _currentSession!.createdAt,
+        blindVoting: _currentSession!.blindVoting,
       );
     }
 
@@ -296,6 +303,68 @@ class VotingService {
   List<List<String>> get selectedGamesByRound {
     if (_currentSession == null) return [];
     return _currentSession!.selectedGames;
+  }
+
+  /// Randomly allocate remaining points for a player
+  /// Distributes points randomly across minimum number of games required (gamesPerRound)
+  /// Returns a map of gameId -> points allocated
+  Map<String, int> allocatePointsRandomly(String playerId) {
+    if (_currentSession == null) {
+      throw Exception('No active voting session');
+    }
+
+    if (!_currentSession!.isVotingOpen) {
+      throw Exception('Voting is closed');
+    }
+
+    final remainingPoints = _currentSession!.remainingPoints[playerId];
+    if (remainingPoints == null) {
+      throw Exception('Player not in voting session');
+    }
+
+    if (remainingPoints == 0) {
+      throw Exception('No remaining points to allocate');
+    }
+
+    // Get minimum number of games to select
+    final minGames = _currentSession!.gamesPerRound;
+    final availableGames = List<String>.from(_currentSession!.availableGames);
+    
+    if (availableGames.length < minGames) {
+      throw Exception('Not enough games available for random allocation');
+    }
+
+    // Shuffle and select minimum number of games
+    availableGames.shuffle(_random);
+    final selectedGames = availableGames.take(minGames).toList();
+
+    // Distribute points randomly among selected games
+    final allocations = <String, int>{};
+    var pointsLeft = remainingPoints;
+
+    for (int i = 0; i < selectedGames.length; i++) {
+      if (i == selectedGames.length - 1) {
+        // Allocate remaining points to last game
+        allocations[selectedGames[i]] = pointsLeft;
+      } else {
+        // Allocate random amount (at least 1 point per game)
+        final maxForThisGame = pointsLeft - (selectedGames.length - i - 1);
+        final pointsForThisGame = _random.nextInt(maxForThisGame) + 1;
+        allocations[selectedGames[i]] = pointsForThisGame;
+        pointsLeft -= pointsForThisGame;
+      }
+    }
+
+    // Apply the votes
+    for (var entry in allocations.entries) {
+      castVote(
+        playerId: playerId,
+        gameId: entry.key,
+        points: entry.value,
+      );
+    }
+
+    return allocations;
   }
 
   /// Clear the current voting session

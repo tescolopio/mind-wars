@@ -714,6 +714,115 @@ void main() {
             deserialized.remainingPoints, equals(session.remainingPoints));
         expect(deserialized.selectedGames, equals(session.selectedGames));
         expect(deserialized.completed, equals(session.completed));
+        expect(deserialized.blindVoting, equals(session.blindVoting));
+      });
+
+      test('should default to blind voting when not specified', () {
+        final session = VotingSession(
+          id: 'session1',
+          lobbyId: 'lobby1',
+          pointsPerPlayer: 10,
+          totalRounds: 3,
+          gamesPerRound: 2,
+          currentRound: 1,
+          availableGames: ['game1', 'game2', 'game3'],
+          votes: {},
+          remainingPoints: {'player1': 10},
+          selectedGames: [],
+          completed: false,
+          createdAt: DateTime.now(),
+        );
+
+        expect(session.blindVoting, isTrue);
+      });
+
+      test('should support non-blind voting when specified', () {
+        final session = VotingSession(
+          id: 'session1',
+          lobbyId: 'lobby1',
+          pointsPerPlayer: 10,
+          totalRounds: 3,
+          gamesPerRound: 2,
+          currentRound: 1,
+          availableGames: ['game1', 'game2', 'game3'],
+          votes: {},
+          remainingPoints: {'player1': 10},
+          selectedGames: [],
+          completed: false,
+          createdAt: DateTime.now(),
+          blindVoting: false,
+        );
+
+        expect(session.blindVoting, isFalse);
+      });
+    });
+
+    group('allocatePointsRandomly', () {
+      setUp(() {
+        votingService.createVotingSession(
+          lobbyId: 'lobby123',
+          pointsPerPlayer: 10,
+          totalRounds: 3,
+          gamesPerRound: 2,
+          playerIds: ['player1', 'player2'],
+          availableGames: ['memory_match', 'sudoku_duel', 'word_builder', 'puzzle_race'],
+        );
+      });
+
+      test('should allocate all remaining points', () {
+        final allocations = votingService.allocatePointsRandomly('player1');
+        
+        final totalAllocated = allocations.values.fold(0, (sum, points) => sum + points);
+        expect(totalAllocated, equals(10));
+        expect(votingService.getRemainingPoints('player1'), equals(0));
+      });
+
+      test('should allocate to minimum number of games', () {
+        final allocations = votingService.allocatePointsRandomly('player1');
+        
+        expect(allocations.length, equals(2)); // gamesPerRound = 2
+      });
+
+      test('should allocate at least 1 point per game', () {
+        final allocations = votingService.allocatePointsRandomly('player1');
+        
+        for (var points in allocations.values) {
+          expect(points, greaterThanOrEqualTo(1));
+        }
+      });
+
+      test('should throw exception if no remaining points', () {
+        votingService.castVote(
+          playerId: 'player1',
+          gameId: 'memory_match',
+          points: 10,
+        );
+
+        expect(
+          () => votingService.allocatePointsRandomly('player1'),
+          throwsException,
+        );
+      });
+
+      test('should throw exception if player not in session', () {
+        expect(
+          () => votingService.allocatePointsRandomly('player3'),
+          throwsException,
+        );
+      });
+
+      test('should work with partially allocated points', () {
+        votingService.castVote(
+          playerId: 'player1',
+          gameId: 'memory_match',
+          points: 3,
+        );
+
+        final allocations = votingService.allocatePointsRandomly('player1');
+        final totalAllocated = allocations.values.fold(0, (sum, points) => sum + points);
+        
+        expect(totalAllocated, equals(7)); // Remaining 7 points
+        expect(votingService.getRemainingPoints('player1'), equals(0));
       });
     });
   });
