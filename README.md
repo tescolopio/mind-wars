@@ -131,27 +131,27 @@ Core features first, polish iteratively. Optimistic updates with server confirma
 ## Documentation
 
 ### 🎯 Getting Started (READ FIRST)
-- **[GAMES_EVALUATION_AND_ROADMAP.md](GAMES_EVALUATION_AND_ROADMAP.md)** - ⭐ NEW: Game prioritization and implementation roadmap
-- **[BACKLOG_GUIDE.md](BACKLOG_GUIDE.md)** - Quick reference guide to navigate all documentation
+- **[GAMES_EVALUATION_AND_ROADMAP.md](docs/games/GAMES_EVALUATION_AND_ROADMAP.md)** - ⭐ NEW: Game prioritization and implementation roadmap
+- **[BACKLOG_GUIDE.md](docs/project/BACKLOG_GUIDE.md)** - Quick reference guide to navigate all documentation
 - **[docs/README.md](docs/README.md)** - ⭐ NEW: Complete documentation hub and navigation
 
 ### 📋 Planning & Strategy
 - **[PRODUCT_BACKLOG.md](PRODUCT_BACKLOG.md)** - Prioritized backlog with Epics, Features, and Tasks (P0-P3)
 - **[ROADMAP.md](ROADMAP.md)** - Visual 6-month roadmap with milestones and success metrics
-- **[SPRINT_TEMPLATES.md](SPRINT_TEMPLATES.md)** - Sprint planning, standup, review, and retrospective templates
+- **[SPRINT_TEMPLATES.md](docs/project/SPRINT_TEMPLATES.md)** - Sprint planning, standup, review, and retrospective templates
 
 ### 📚 Product Documentation
-- **[USER_PERSONAS.md](USER_PERSONAS.md)** - 8 detailed user personas (Family, Friends, Office/Colleagues)
-- **[USER_STORIES.md](USER_STORIES.md)** - Comprehensive user stories with acceptance criteria
+- **[USER_PERSONAS.md](docs/business/USER_PERSONAS.md)** - 8 detailed user personas (Family, Friends, Office/Colleagues)
+- **[USER_STORIES.md](docs/business/USER_STORIES.md)** - Comprehensive user stories with acceptance criteria
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - Technical architecture and implementation analysis
-- **[VALIDATION.md](VALIDATION.md)** - Implementation validation checklist
+- **[VALIDATION.md](docs/project/VALIDATION.md)** - Implementation validation checklist
 - **[VOTING_SYSTEM.md](VOTING_SYSTEM.md)** - Game voting system documentation
 
 ### 🎯 Epic Implementation Summaries (NEW)
-- **[EPIC_1_SUMMARY.md](EPIC_1_SUMMARY.md)** - Authentication & Onboarding implementation
-- **[EPIC_2_SUMMARY.md](EPIC_2_SUMMARY.md)** - Lobby Management & Multiplayer implementation
-- **[EPIC_3_IMPLEMENTATION.md](EPIC_3_IMPLEMENTATION.md)** - Core Gameplay Experience implementation
-- **[EPIC_4_IMPLEMENTATION.md](EPIC_4_IMPLEMENTATION.md)** - ⭐ NEW: Cross-Platform & Reliability implementation
+- **[EPIC_1_SUMMARY.md](docs/project/EPIC_1_SUMMARY.md)** - Authentication & Onboarding implementation
+- **[EPIC_2_SUMMARY.md](docs/project/EPIC_2_SUMMARY.md)** - Lobby Management & Multiplayer implementation
+- **[EPIC_3_IMPLEMENTATION.md](docs/project/EPIC_3_IMPLEMENTATION.md)** - Core Gameplay Experience implementation
+- **[EPIC_4_IMPLEMENTATION.md](docs/project/EPIC_4_IMPLEMENTATION.md)** - ⭐ NEW: Cross-Platform & Reliability implementation
 
 ### 🗂️ Organized Documentation (NEW)
 Comprehensive documentation is now organized in the `docs/` directory:
@@ -172,7 +172,6 @@ Key documents:
 Extensive research on game design and cognitive training:
 - [Competitive Async MPG Research](docs/research/COMPETITIVE-ASYNC-MPG.md) - 25+ competitive games
 - [Brain Training Games Research](docs/research/BRAIN_TRAINING_GAMES.md) - 18 cognitive games
-- Original files also available in root: [COMPETITIVE-ASYNC-MPG.md](COMPETITIVE-ASYNC-MPG.md), [brain-training-games-research.md](brain-training-games-research.md)
 
 ## Project Structure
 
@@ -194,8 +193,12 @@ mind-wars/
 │   └── main.dart            # Main app entry point
 ├── test/                    # Test files
 ├── pubspec.yaml             # Dependencies
-├── USER_PERSONAS.md         # User personas documentation
-├── USER_STORIES.md          # User stories (Epics/Features/Tasks)
+├── docs/                    # Documentation directory
+│   ├── business/            # Business documentation
+│   │   ├── USER_PERSONAS.md # User personas
+│   │   └── USER_STORIES.md  # User stories
+│   ├── project/             # Project management docs
+│   └── games/               # Game design docs
 └── README.md
 ```
 
