@@ -130,8 +130,12 @@ Core features first, polish iteratively. Optimistic updates with server confirma
 
 ## Documentation
 
-### 🎯 Backlog & Planning (START HERE)
-- **[BACKLOG_GUIDE.md](BACKLOG_GUIDE.md)** - ⭐ Quick reference guide to navigate all backlog documentation
+### 🎯 Getting Started (READ FIRST)
+- **[GAMES_EVALUATION_AND_ROADMAP.md](GAMES_EVALUATION_AND_ROADMAP.md)** - ⭐ NEW: Game prioritization and implementation roadmap
+- **[BACKLOG_GUIDE.md](BACKLOG_GUIDE.md)** - Quick reference guide to navigate all documentation
+- **[docs/README.md](docs/README.md)** - ⭐ NEW: Complete documentation hub and navigation
+
+### 📋 Planning & Strategy
 - **[PRODUCT_BACKLOG.md](PRODUCT_BACKLOG.md)** - Prioritized backlog with Epics, Features, and Tasks (P0-P3)
 - **[ROADMAP.md](ROADMAP.md)** - Visual 6-month roadmap with milestones and success metrics
 - **[SPRINT_TEMPLATES.md](SPRINT_TEMPLATES.md)** - Sprint planning, standup, review, and retrospective templates
@@ -142,6 +146,27 @@ Core features first, polish iteratively. Optimistic updates with server confirma
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - Technical architecture and implementation analysis
 - **[VALIDATION.md](VALIDATION.md)** - Implementation validation checklist
 - **[VOTING_SYSTEM.md](VOTING_SYSTEM.md)** - Game voting system documentation
+
+### 🗂️ Organized Documentation (NEW)
+Comprehensive documentation is now organized in the `docs/` directory:
+- **[docs/business/](docs/business/)** - Business strategy, market analysis, monetization
+- **[docs/project/](docs/project/)** - Project management, technical specs, onboarding
+- **[docs/social/](docs/social/)** - Social media, community, marketing strategy
+- **[docs/games/](docs/games/)** - Game design documents and templates
+- **[docs/research/](docs/research/)** - Research archives and analysis
+
+Key documents:
+- [Business Strategy Overview](docs/business/STRATEGY_OVERVIEW.md)
+- [Market Analysis](docs/business/MARKET_ANALYSIS.md)
+- [Developer Onboarding](docs/project/DEVELOPER_ONBOARDING.md)
+- [Social Media Strategy](docs/social/SOCIAL_MEDIA_STRATEGY.md)
+- [Game Design Template](docs/games/GAME_DESIGN_TEMPLATE.md)
+
+### 🔬 Research Archives
+Extensive research on game design and cognitive training:
+- [Competitive Async MPG Research](docs/research/COMPETITIVE-ASYNC-MPG.md) - 25+ competitive games
+- [Brain Training Games Research](docs/research/BRAIN_TRAINING_GAMES.md) - 18 cognitive games
+- Original files also available in root: [COMPETITIVE-ASYNC-MPG.md](COMPETITIVE-ASYNC-MPG.md), [brain-training-games-research.md](brain-training-games-research.md)
 
 ## Project Structure
 
