@@ -1,7 +1,7 @@
 /**
  * Game Voting Screen - Feature 3.2.2
  * Allows players to vote on games using a point allocation system
- * with real-time updates and multi-round support
+ * with blind voting, search/filter, and random allocation support
  */
 
 import 'package:flutter/material.dart';
@@ -33,6 +33,9 @@ class _GameVotingScreenState extends State<GameVotingScreen>
   late AnimationController _animationController;
   Map<String, int> _localVotes = {};
   bool _isSubmitting = false;
+  String _searchQuery = '';
+  CognitiveCategory? _filterCategory;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -48,6 +51,7 @@ class _GameVotingScreenState extends State<GameVotingScreen>
   @override
   void dispose() {
     _animationController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -78,6 +82,34 @@ class _GameVotingScreenState extends State<GameVotingScreen>
     return _localVotes.values.fold(0, (sum, points) => sum + points);
   }
 
+  List<GameTemplate> _getFilteredGames() {
+    final availableGames = _session!.availableGames
+        .map((id) => GameCatalog.getGameById(id))
+        .where((game) => game != null)
+        .cast<GameTemplate>()
+        .toList();
+
+    var filtered = availableGames;
+
+    // Apply category filter
+    if (_filterCategory != null) {
+      filtered = filtered
+          .where((game) => game.category == _filterCategory)
+          .toList();
+    }
+
+    // Apply search filter
+    if (_searchQuery.isNotEmpty) {
+      final query = _searchQuery.toLowerCase();
+      filtered = filtered.where((game) {
+        return game.name.toLowerCase().contains(query) ||
+            game.category.toString().toLowerCase().contains(query);
+      }).toList();
+    }
+
+    return filtered;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_session == null) {
@@ -102,12 +134,14 @@ class _GameVotingScreenState extends State<GameVotingScreen>
         children: [
           // Voting header with points info
           _buildVotingHeader(),
+          // Search and filter bar
+          _buildSearchAndFilter(),
           // Games list
           Expanded(
             child: _buildGamesList(),
           ),
-          // Submit button
-          _buildSubmitButton(),
+          // Bottom action buttons
+          _buildBottomActions(),
         ],
       ),
     );
@@ -199,184 +233,373 @@ class _GameVotingScreenState extends State<GameVotingScreen>
               fontSize: 14,
             ),
           ),
+          if (_session!.blindVoting)
+            const SizedBox(height: 4),
+          if (_session!.blindVoting)
+            const Text(
+              '🔒 Blind Voting - Votes are hidden',
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 12,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
         ],
       ),
     );
   }
 
-  Widget _buildGamesList() {
-    final availableGames = _session!.availableGames
-        .map((id) => GameCatalog.getGameById(id))
-        .where((game) => game != null)
-        .cast<GameTemplate>()
-        .toList();
+  Widget _buildSearchAndFilter() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          // Search bar
+          TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              hintText: 'Search games by name or type...',
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: _searchQuery.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        setState(() {
+                          _searchController.clear();
+                          _searchQuery = '';
+                        });
+                      },
+                    )
+                  : null,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              filled: true,
+              fillColor: Colors.grey.shade100,
+            ),
+            onChanged: (value) {
+              setState(() {
+                _searchQuery = value;
+              });
+            },
+          ),
+          const SizedBox(height: 12),
+          // Category filter chips
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _buildFilterChip('All', null),
+                const SizedBox(width: 8),
+                _buildFilterChip('🧠 Memory', CognitiveCategory.memory),
+                const SizedBox(width: 8),
+                _buildFilterChip('🧩 Logic', CognitiveCategory.logic),
+                const SizedBox(width: 8),
+                _buildFilterChip('👁️ Attention', CognitiveCategory.attention),
+                const SizedBox(width: 8),
+                _buildFilterChip('🗺️ Spatial', CognitiveCategory.spatial),
+                const SizedBox(width: 8),
+                _buildFilterChip('📚 Language', CognitiveCategory.language),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-    if (availableGames.isEmpty) {
-      return const Center(
-        child: Text('No games available for voting'),
+  Widget _buildFilterChip(String label, CognitiveCategory? category) {
+    final isSelected = _filterCategory == category;
+    return FilterChip(
+      label: Text(label),
+      selected: isSelected,
+      onSelected: (selected) {
+        setState(() {
+          _filterCategory = selected ? category : null;
+        });
+      },
+      selectedColor: Colors.deepPurple.shade100,
+      checkmarkColor: Colors.deepPurple,
+    );
+  }
+
+  Widget _buildGamesList() {
+    final filteredGames = _getFilteredGames();
+
+    if (filteredGames.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.search_off,
+              size: 64,
+              color: Colors.grey.shade400,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'No games found',
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.grey.shade600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Try adjusting your search or filters',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey.shade500,
+              ),
+            ),
+          ],
+        ),
       );
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: availableGames.length,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      itemCount: filteredGames.length,
       itemBuilder: (context, index) {
-        final game = availableGames[index];
-        return _buildGameVoteCard(game);
+        final game = filteredGames[index];
+        return _buildGameCard(game);
       },
     );
   }
 
-  Widget _buildGameVoteCard(GameTemplate game) {
+  Widget _buildGameCard(GameTemplate game) {
     final categoryInfo = GameCatalog.getCategoryInfo(game.category);
     final currentVotes = _localVotes[game.id] ?? 0;
-    final totalVotes = widget.votingService.getCurrentResults()[game.id] ?? 0;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
+        side: currentVotes > 0
+            ? BorderSide(color: Colors.deepPurple, width: 2)
+            : BorderSide.none,
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Game header
-            Row(
-              children: [
-                // Game icon
-                Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: _getCategoryColor(game.category),
-                    borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTap: () => _showVoteAllocationDialog(game),
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              // Game icon
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: _getCategoryColor(game.category),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Center(
+                  child: Text(
+                    game.icon,
+                    style: const TextStyle(fontSize: 28),
                   ),
-                  child: Center(
-                    child: Text(
-                      game.icon,
-                      style: const TextStyle(fontSize: 28),
+                ),
+              ),
+              const SizedBox(width: 12),
+              // Game info
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      game.name,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                // Game info
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        game.name,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Text(
+                          categoryInfo['icon']!,
+                          style: const TextStyle(fontSize: 12),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Text(
-                            categoryInfo['icon']!,
-                            style: const TextStyle(fontSize: 12),
+                        const SizedBox(width: 4),
+                        Text(
+                          categoryInfo['name']!,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
                           ),
-                          const SizedBox(width: 4),
-                          Text(
-                            categoryInfo['name']!,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                // Total votes indicator
+              ),
+              // Current votes indicator
+              if (currentVotes > 0)
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: totalVotes > 0
-                        ? Colors.deepPurple.withOpacity(0.1)
-                        : Colors.grey.withOpacity(0.1),
+                    color: Colors.deepPurple,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.how_to_vote,
-                        size: 16,
-                        color: totalVotes > 0 ? Colors.deepPurple : Colors.grey,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '$totalVotes',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: totalVotes > 0 ? Colors.deepPurple : Colors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            // Vote controls
-            Row(
-              children: [
-                // Minus button
-                IconButton(
-                  onPressed: currentVotes > 0 ? () => _decrementVote(game.id) : null,
-                  icon: const Icon(Icons.remove_circle_outline),
-                  color: Colors.deepPurple,
-                  disabledColor: Colors.grey.shade300,
-                ),
-                // Points display
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    decoration: BoxDecoration(
-                      color: currentVotes > 0
-                          ? Colors.deepPurple.withOpacity(0.1)
-                          : Colors.grey.withOpacity(0.05),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      currentVotes > 0
-                          ? '$currentVotes point${currentVotes > 1 ? 's' : ''}'
-                          : 'No votes',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: currentVotes > 0 ? Colors.deepPurple : Colors.grey,
-                      ),
+                  child: Text(
+                    '$currentVotes pts',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
+                )
+              else
+                const Icon(
+                  Icons.add_circle_outline,
+                  color: Colors.grey,
+                  size: 28,
                 ),
-                // Plus button
-                IconButton(
-                  onPressed: _remainingPoints > 0 ? () => _incrementVote(game.id) : null,
-                  icon: const Icon(Icons.add_circle_outline),
-                  color: Colors.deepPurple,
-                  disabledColor: Colors.grey.shade300,
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildSubmitButton() {
+  void _showVoteAllocationDialog(GameTemplate game) {
+    final currentVotes = _localVotes[game.id] ?? 0;
+    int selectedPoints = currentVotes > 0 ? currentVotes : 1;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AlertDialog(
+            title: Text(
+              game.name,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'How many points do you want to allocate?',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey.shade700,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      onPressed: selectedPoints > 0
+                          ? () {
+                              setDialogState(() {
+                                selectedPoints = (selectedPoints - 1).clamp(0, 999);
+                              });
+                            }
+                          : null,
+                      icon: const Icon(Icons.remove_circle),
+                      iconSize: 40,
+                      color: Colors.deepPurple,
+                    ),
+                    const SizedBox(width: 16),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 16,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.deepPurple.shade50,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Colors.deepPurple,
+                          width: 2,
+                        ),
+                      ),
+                      child: Text(
+                        '$selectedPoints',
+                        style: const TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.deepPurple,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    IconButton(
+                      onPressed: () {
+                        setDialogState(() {
+                          selectedPoints = (selectedPoints + 1).clamp(0, 999);
+                        });
+                      },
+                      icon: const Icon(Icons.add_circle),
+                      iconSize: 40,
+                      color: Colors.deepPurple,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Available: $_remainingPoints points',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              if (currentVotes > 0)
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _updateVotes(game.id, 0);
+                  },
+                  child: const Text(
+                    'Remove All',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: selectedPoints <= _remainingPoints + currentVotes
+                    ? () {
+                        Navigator.pop(context);
+                        _updateVotes(game.id, selectedPoints);
+                      }
+                    : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepPurple,
+                ),
+                child: const Text('Confirm'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  void _updateVotes(String gameId, int newPoints) {
+    setState(() {
+      if (newPoints == 0) {
+        _localVotes.remove(gameId);
+      } else {
+        _localVotes[gameId] = newPoints;
+      }
+    });
+    _animationController.forward(from: 0);
+  }
+
+  Widget _buildBottomActions() {
     final canSubmit = _getTotalAllocatedPoints() > 0 && !_isSubmitting;
     
     return Container(
@@ -395,6 +618,27 @@ class _GameVotingScreenState extends State<GameVotingScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // Choose for me button
+            if (_remainingPoints > 0)
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: OutlinedButton.icon(
+                  onPressed: _isSubmitting ? null : _allocateRandomly,
+                  icon: const Icon(Icons.casino),
+                  label: const Text('Choose for me'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.deepPurple,
+                    side: const BorderSide(color: Colors.deepPurple),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+            if (_remainingPoints > 0)
+              const SizedBox(height: 12),
+            // Submit button
             if (_getTotalAllocatedPoints() == 0)
               const Padding(
                 padding: EdgeInsets.only(bottom: 8),
@@ -444,24 +688,42 @@ class _GameVotingScreenState extends State<GameVotingScreen>
     );
   }
 
-  void _incrementVote(String gameId) {
-    if (_remainingPoints > 0) {
-      setState(() {
-        _localVotes[gameId] = (_localVotes[gameId] ?? 0) + 1;
-      });
-      _animationController.forward(from: 0);
-    }
-  }
+  void _allocateRandomly() async {
+    setState(() {
+      _isSubmitting = true;
+    });
 
-  void _decrementVote(String gameId) {
-    if ((_localVotes[gameId] ?? 0) > 0) {
+    try {
+      final allocations = widget.votingService.allocatePointsRandomly(widget.playerId);
+      
       setState(() {
-        _localVotes[gameId] = _localVotes[gameId]! - 1;
-        if (_localVotes[gameId] == 0) {
-          _localVotes.remove(gameId);
+        // Merge random allocations with existing votes
+        for (var entry in allocations.entries) {
+          _localVotes[entry.key] = (_localVotes[entry.key] ?? 0) + entry.value;
         }
+        _isSubmitting = false;
       });
-      _animationController.forward(from: 0);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Randomly allocated ${allocations.length} game(s)!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
