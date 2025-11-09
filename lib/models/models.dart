@@ -656,3 +656,193 @@ class VotingSession {
     return selectedGames.expand((round) => round).toList();
   }
 }
+
+/// Turn data model - Feature 3.3
+class Turn {
+  final String id;
+  final String gameId;
+  final String playerId;
+  final String playerName;
+  final int turnNumber;
+  final Map<String, dynamic> data;
+  final DateTime timestamp;
+  final bool validated;
+  final int? score;
+
+  Turn({
+    required this.id,
+    required this.gameId,
+    required this.playerId,
+    required this.playerName,
+    required this.turnNumber,
+    required this.data,
+    required this.timestamp,
+    this.validated = false,
+    this.score,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'gameId': gameId,
+        'playerId': playerId,
+        'playerName': playerName,
+        'turnNumber': turnNumber,
+        'data': data,
+        'timestamp': timestamp.toIso8601String(),
+        'validated': validated,
+        'score': score,
+      };
+
+  factory Turn.fromJson(Map<String, dynamic> json) => Turn(
+        id: json['id'],
+        gameId: json['gameId'],
+        playerId: json['playerId'],
+        playerName: json['playerName'],
+        turnNumber: json['turnNumber'],
+        data: json['data'],
+        timestamp: DateTime.parse(json['timestamp']),
+        validated: json['validated'] ?? false,
+        score: json['score'],
+      );
+}
+
+/// Turn notification model - Feature 3.3.4
+class TurnNotification {
+  final String id;
+  final String gameId;
+  final String gameName;
+  final String playerId;
+  final String playerName;
+  final String message;
+  final DateTime timestamp;
+  final bool read;
+
+  TurnNotification({
+    required this.id,
+    required this.gameId,
+    required this.gameName,
+    required this.playerId,
+    required this.playerName,
+    required this.message,
+    required this.timestamp,
+    this.read = false,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'gameId': gameId,
+        'gameName': gameName,
+        'playerId': playerId,
+        'playerName': playerName,
+        'message': message,
+        'timestamp': timestamp.toIso8601String(),
+        'read': read,
+      };
+
+  factory TurnNotification.fromJson(Map<String, dynamic> json) =>
+      TurnNotification(
+        id: json['id'],
+        gameId: json['gameId'],
+        gameName: json['gameName'],
+        playerId: json['playerId'],
+        playerName: json['playerName'],
+        message: json['message'],
+        timestamp: DateTime.parse(json['timestamp']),
+        read: json['read'] ?? false,
+      );
+}
+
+/// Game state snapshot - Feature 3.5
+class GameStateSnapshot {
+  final String id;
+  final String gameId;
+  final String lobbyId;
+  final Map<String, dynamic> state;
+  final int version;
+  final DateTime timestamp;
+  final bool synced;
+
+  GameStateSnapshot({
+    required this.id,
+    required this.gameId,
+    required this.lobbyId,
+    required this.state,
+    required this.version,
+    required this.timestamp,
+    this.synced = false,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'gameId': gameId,
+        'lobbyId': lobbyId,
+        'state': state,
+        'version': version,
+        'timestamp': timestamp.toIso8601String(),
+        'synced': synced,
+      };
+
+  factory GameStateSnapshot.fromJson(Map<String, dynamic> json) =>
+      GameStateSnapshot(
+        id: json['id'],
+        gameId: json['gameId'],
+        lobbyId: json['lobbyId'],
+        state: json['state'],
+        version: json['version'],
+        timestamp: DateTime.parse(json['timestamp']),
+        synced: json['synced'] ?? false,
+      );
+}
+
+/// Score record model - Feature 3.4
+class ScoreRecord {
+  final String id;
+  final String gameId;
+  final String playerId;
+  final int baseScore;
+  final int timeBonus;
+  final int accuracyBonus;
+  final double streakMultiplier;
+  final int finalScore;
+  final DateTime timestamp;
+  final bool validated;
+
+  ScoreRecord({
+    required this.id,
+    required this.gameId,
+    required this.playerId,
+    required this.baseScore,
+    required this.timeBonus,
+    required this.accuracyBonus,
+    required this.streakMultiplier,
+    required this.finalScore,
+    required this.timestamp,
+    this.validated = false,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'gameId': gameId,
+        'playerId': playerId,
+        'baseScore': baseScore,
+        'timeBonus': timeBonus,
+        'accuracyBonus': accuracyBonus,
+        'streakMultiplier': streakMultiplier,
+        'finalScore': finalScore,
+        'timestamp': timestamp.toIso8601String(),
+        'validated': validated,
+      };
+
+  factory ScoreRecord.fromJson(Map<String, dynamic> json) => ScoreRecord(
+        id: json['id'],
+        gameId: json['gameId'],
+        playerId: json['playerId'],
+        baseScore: json['baseScore'],
+        timeBonus: json['timeBonus'],
+        accuracyBonus: json['accuracyBonus'],
+        streakMultiplier: json['streakMultiplier'].toDouble(),
+        finalScore: json['finalScore'],
+        timestamp: DateTime.parse(json['timestamp']),
+        validated: json['validated'] ?? false,
+      );
+}

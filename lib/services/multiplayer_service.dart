@@ -3,6 +3,7 @@
  * Supports 2-10 players per lobby with turn-based gameplay
  */
 
+import 'dart:async';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import '../models/models.dart';
 
@@ -622,6 +623,39 @@ class MultiplayerService {
       }
       return false;
     });
+  }
+  
+  /// Emit voting update - Feature 3.2.3
+  void emitVoteUpdate(String lobbyId, String playerId, Map<String, int> votes) {
+    if (_socket == null) {
+      throw Exception('Not connected to server');
+    }
+
+    _socket!.emit('voting-update', {
+      'lobbyId': lobbyId,
+      'playerId': playerId,
+      'votes': votes,
+    });
+  }
+  
+  /// Listen for voting updates - Feature 3.2.3
+  void onVotingUpdate(Function(Map<String, dynamic>) callback) {
+    on('voting-update', callback);
+  }
+  
+  /// Listen for voting started - Feature 3.2.3
+  void onVotingStarted(Function(Map<String, dynamic>) callback) {
+    on('voting-started', callback);
+  }
+  
+  /// Listen for voting ended - Feature 3.2.3
+  void onVotingEnded(Function(Map<String, dynamic>) callback) {
+    on('voting-ended', callback);
+  }
+  
+  /// Listen for vote cast - Feature 3.2.3
+  void onVoteCast(Function(Map<String, dynamic>) callback) {
+    on('vote-cast', callback);
   }
 
   /// Emit events to listeners
