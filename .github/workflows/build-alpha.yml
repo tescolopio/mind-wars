@@ -45,7 +45,7 @@ jobs:
         run: flutter test
       
       - name: Build Alpha APK
-        run: flutter build apk --flavor alpha --release
+        run: flutter build apk --flavor alpha --release --dart-define=FLAVOR=alpha
       
       - name: Rename APK with version
         run: |

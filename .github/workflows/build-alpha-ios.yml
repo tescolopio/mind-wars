@@ -31,7 +31,7 @@ jobs:
       
       - name: Build iOS (no codesign)
         run: |
-          flutter build ios --release --no-codesign
+          flutter build ios --release --no-codesign --dart-define=FLAVOR=alpha
       
       - name: Build iOS Archive
         run: |

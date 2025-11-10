@@ -15,7 +15,7 @@ echo ""
 # Function to build Android alpha
 build_android() {
     echo "🤖 Building Android Alpha APK..."
-    flutter build apk --flavor alpha --release
+    flutter build apk --flavor alpha --release --dart-define=FLAVOR=alpha
     
     # Rename the APK with version
     OUTPUT_DIR="build/app/outputs/flutter-apk"
@@ -36,7 +36,7 @@ build_ios() {
         return 1
     fi
     
-    flutter build ios --release --no-codesign
+    flutter build ios --release --no-codesign --dart-define=FLAVOR=alpha
     
     echo "✅ iOS Alpha built successfully!"
     echo "📍 Location: build/ios/iphoneos/Runner.app"
