@@ -36,18 +36,36 @@ Essential business documents for strategy, planning, and market analysis:
 - [Market Analysis](business/MARKET_ANALYSIS.md) - Competitive landscape and opportunities
 - [Monetization Strategy](business/MONETIZATION_STRATEGY.md) - Revenue models and pricing
 - [User Acquisition](business/USER_ACQUISITION.md) - Growth and marketing plans
-- [Investor Relations](business/INVESTOR_RELATIONS.md) - Pitch decks and investor updates
+- [User Personas](business/USER_PERSONAS.md) - Target user personas and profiles
+- [User Stories](business/USER_STORIES.md) - Comprehensive user stories with acceptance criteria
 
 ### 🚀 Project Documentation
 Located in: `docs/project/`
 
 Project management, technical specifications, and development processes:
 - [Developer Onboarding](project/DEVELOPER_ONBOARDING.md) - Getting started guide
-- [Sprint Planning](project/SPRINT_PLANNING.md) - Sprint ceremonies and processes
 - [Technical Architecture](project/TECHNICAL_ARCHITECTURE.md) - System design and infrastructure
 - [API Documentation](project/API_DOCUMENTATION.md) - Backend API reference
 - [Testing Strategy](project/TESTING_STRATEGY.md) - QA and testing approach
-- [Deployment Guide](project/DEPLOYMENT_GUIDE.md) - CI/CD and release process
+
+**Epic Implementation Documents:**
+- [Epic 1 Summary](project/EPIC_1_SUMMARY.md) - Authentication & Onboarding
+- [Epic 1 Implementation](project/EPIC_1_IMPLEMENTATION.md) - Detailed implementation guide
+- [Epic 1 Screens](project/EPIC_1_SCREENS.md) - Screen specifications
+- [Epic 2 Summary](project/EPIC_2_SUMMARY.md) - Lobby Management & Multiplayer
+- [Epic 2 Implementation](project/EPIC_2_IMPLEMENTATION.md) - Detailed implementation guide
+- [Epic 2 Validation](project/EPIC_2_VALIDATION.md) - Validation checklist
+- [Epic 3 Implementation](project/EPIC_3_IMPLEMENTATION.md) - Core Gameplay Experience
+- [Epic 4 Implementation](project/EPIC_4_IMPLEMENTATION.md) - Cross-Platform & Reliability
+- [Epic 4 Testing](project/EPIC_4_TESTING.md) - Comprehensive testing report
+- [Epic 4 Checklist](project/EPIC_4_CHECKLIST.md) - Complete feature checklist
+
+**Project Management:**
+- [Project Status](project/PROJECT_STATUS.md) - Current project status and progress
+- [Phase 1 Complete](project/PHASE_1_COMPLETE.md) - Phase 1 completion summary
+- [Sprint Templates](project/SPRINT_TEMPLATES.md) - Sprint planning and retrospective templates
+- [Backlog Guide](project/BACKLOG_GUIDE.md) - Guide to navigating project documentation
+- [Validation](project/VALIDATION.md) - Implementation validation checklist
 
 ### 📱 Social & Community Documentation
 Located in: `docs/social/`
@@ -64,6 +82,7 @@ Community management, marketing, and social media strategies:
 Located in: `docs/games/`
 
 Individual game design documents and processes:
+- [Games Evaluation and Roadmap](games/GAMES_EVALUATION_AND_ROADMAP.md) - Game prioritization and implementation roadmap
 - [Design Process](games/DESIGN_PROCESS.md) - Game design workflow
 - [Game Design Template](games/GAME_DESIGN_TEMPLATE.md) - Standard GDD format
 - Individual game documents (one per game)
@@ -218,13 +237,21 @@ A: Move to `/archived` subdirectory within relevant folder and update status to 
 ### Main Project Documents (Root Level)
 These remain in the root directory for easy access:
 - [README.md](../README.md) - Project overview
-- [GAMES_EVALUATION_AND_ROADMAP.md](../GAMES_EVALUATION_AND_ROADMAP.md) - Game prioritization
 - [PRODUCT_BACKLOG.md](../PRODUCT_BACKLOG.md) - Prioritized feature backlog
 - [ROADMAP.md](../ROADMAP.md) - Development timeline
-- [USER_PERSONAS.md](../USER_PERSONAS.md) - Target user personas
-- [USER_STORIES.md](../USER_STORIES.md) - User stories and acceptance criteria
 - [ARCHITECTURE.md](../ARCHITECTURE.md) - High-level architecture
-- [BACKLOG_GUIDE.md](../BACKLOG_GUIDE.md) - Guide to backlog documentation
+- [VOTING_SYSTEM.md](../VOTING_SYSTEM.md) - Game voting system documentation
+
+### Migrated Documents
+These documents have been moved into the docs directory structure:
+- [GAMES_EVALUATION_AND_ROADMAP.md](games/GAMES_EVALUATION_AND_ROADMAP.md) - Game prioritization (moved to docs/games/)
+- [USER_PERSONAS.md](business/USER_PERSONAS.md) - Target user personas (moved to docs/business/)
+- [USER_STORIES.md](business/USER_STORIES.md) - User stories (moved to docs/business/)
+- [BACKLOG_GUIDE.md](project/BACKLOG_GUIDE.md) - Guide to backlog documentation (moved to docs/project/)
+- [Epic Implementation Documents](project/) - All EPIC_*.md files (moved to docs/project/)
+- [PROJECT_STATUS.md](project/PROJECT_STATUS.md) - Project status (moved to docs/project/)
+- [SPRINT_TEMPLATES.md](project/SPRINT_TEMPLATES.md) - Sprint templates (moved to docs/project/)
+- [VALIDATION.md](project/VALIDATION.md) - Validation checklist (moved to docs/project/)
 
 ### Related Repositories
 - [Mind Wars Backend](https://github.com/tescolopio/mind-wars-backend) - Server API
