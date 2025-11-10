@@ -279,12 +279,16 @@ class DailyChallengeSystem {
   }
 
   /// Get challenge history (last 7 days)
+  /// Date: 2025-11-10
+  /// Function: Fixed unused variable warning by removing unused 'today' variable
   List<DailyChallenge> getChallengeHistory({
     required GameContentGenerator generator,
     int days = 7,
   }) {
     final challenges = <DailyChallenge>[];
-    final today = DateTime.now();
+    // Date: 2025-11-10 - Removed unused 'today' variable
+    // TODO: This would need to be enhanced to generate consistent challenges
+    // for past dates using the same seed logic as getTodaysChallenge
 
     for (var i = 0; i < days; i++) {
       // Note: This would need to be enhanced to generate consistent challenges
