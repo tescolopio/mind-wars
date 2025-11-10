@@ -1,0 +1,61 @@
+name: Build Alpha iOS
+
+on:
+  # Manual trigger only for iOS (requires Apple Developer account)
+  workflow_dispatch:
+
+jobs:
+  build-ios-alpha:
+    name: Build iOS Alpha
+    runs-on: macos-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.x'
+          channel: 'stable'
+          cache: true
+      
+      - name: Install dependencies
+        run: flutter pub get
+      
+      - name: Run Flutter analyzer
+        run: flutter analyze
+      
+      - name: Run tests
+        run: flutter test
+      
+      - name: Build iOS (no codesign)
+        run: |
+          flutter build ios --release --no-codesign
+      
+      - name: Build iOS Archive
+        run: |
+          cd ios
+          xcodebuild -workspace Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -archivePath $PWD/build/Runner.xcarchive \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            archive
+      
+      - name: Upload iOS Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: mind-wars-alpha-ios
+          path: ios/build/Runner.xcarchive
+          retention-days: 30
+
+  # Note: For actual device testing on iOS, you'll need:
+  # 1. Apple Developer account
+  # 2. Certificates and provisioning profiles
+  # 3. TestFlight setup or ad-hoc distribution
+  # 
+  # This workflow builds without codesigning for demonstration.
+  # See: https://docs.flutter.dev/deployment/ios for full setup.

@@ -227,11 +227,66 @@ flutter build apk          # Android
 flutter build ios          # iOS
 ```
 
+## Alpha Builds
+
+Alpha builds allow you to test the app on your personal device before release.
+
+### Building Alpha Versions Locally
+
+Use the provided build script:
+
+```bash
+# Build Android alpha APK
+./build-alpha.sh android
+
+# Build iOS alpha (macOS only)
+./build-alpha.sh ios
+
+# Build both platforms
+./build-alpha.sh both
+```
+
+The Android APK will be available at: `build/app/outputs/flutter-apk/mind-wars-v{version}-alpha.apk`
+
+### Using GitHub Actions
+
+Alpha builds can be automatically generated via GitHub Actions:
+
+1. Go to the **Actions** tab in the repository
+2. Select **"Build Alpha APK"** workflow
+3. Click **"Run workflow"**
+4. Download the generated APK from the workflow artifacts
+
+### Installing Alpha Builds
+
+**Android:**
+1. Transfer the APK to your Android device
+2. Enable "Install from unknown sources" in your device settings
+3. Open the APK file to install
+4. The app will appear as "Mind Wars Alpha" with package ID `com.mindwars.app.alpha`
+
+**iOS:**
+1. Open `ios/Runner.xcworkspace` in Xcode
+2. Configure signing with your Apple Developer account
+3. Connect your device and select it as the target
+4. Click "Run" or use Product > Archive for distribution
+5. Alternatively, use TestFlight for distributing to testers
+
+### Alpha vs Production
+
+Alpha builds have:
+- Different bundle ID (`com.mindwars.app.alpha`) - can install alongside production
+- Version suffix `-alpha` (e.g., `1.0.0-alpha`)
+- Useful for testing new features without affecting production installs
+
 ## Development
 
 ```bash
 # Run the app
 flutter run
+
+# Run the app with alpha flavor (Android)
+flutter run --flavor alpha
 
 # Run tests
 flutter test

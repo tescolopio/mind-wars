@@ -55,6 +55,22 @@ android {
         vectorDrawables.useSupportLibrary = true
     }
 
+    // Product flavors for different build variants
+    flavorDimensions "version"
+    productFlavors {
+        production {
+            dimension "version"
+            applicationIdSuffix ""
+            versionNameSuffix ""
+        }
+        
+        alpha {
+            dimension "version"
+            applicationIdSuffix ".alpha"
+            versionNameSuffix "-alpha"
+        }
+    }
+
     buildTypes {
         release {
             // Signing config for release builds
