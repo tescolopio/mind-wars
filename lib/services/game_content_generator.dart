@@ -202,7 +202,6 @@ class GameContentGenerator {
   Puzzle _generateSudoku(Difficulty difficulty) {
     // Simplified Sudoku generation (4x4 for easy, 6x6 for medium, 9x9 for hard)
     final size = difficulty == Difficulty.easy ? 4 : difficulty == Difficulty.medium ? 6 : 9;
-    final cluesCount = (size * size * 0.4).round();
 
     return _SudokuPuzzle(
       difficulty: difficulty,

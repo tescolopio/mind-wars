@@ -5,7 +5,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mind_wars/services/hint_and_challenge_system.dart';
 import 'package:mind_wars/services/game_content_generator.dart';
-import 'package:mind_wars/models/models.dart';
 
 void main() {
   group('HintSystem', () {

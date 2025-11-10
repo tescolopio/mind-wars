@@ -60,7 +60,6 @@ class VotingService {
     }
 
     // Ensure enough games are available for the voting configuration
-    final totalGamesNeeded = totalRounds * gamesPerRound;
     if (games.length < gamesPerRound) {
       throw Exception(
           'Not enough games available. Need at least $gamesPerRound games per round, but only ${games.length} available.');

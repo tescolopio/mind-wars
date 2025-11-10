@@ -198,7 +198,7 @@ class LeaderboardRow extends StatelessWidget {
   final bool isCurrentPlayer;
 
   const LeaderboardRow({
-    Key: key,
+    Key? key,
     required this.rank,
     required this.playerName,
     required this.score,
@@ -367,7 +367,7 @@ class _ScoreRevealAnimationState extends State<ScoreRevealAnimation>
               _buildBreakdownItem(
                 'Accuracy Bonus',
                 widget.score.accuracyBonus,
-                Icons.target,
+                Icons.check_circle,
               ),
               const SizedBox(height: 16),
               Row(
