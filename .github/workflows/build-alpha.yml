@@ -12,6 +12,9 @@ on:
       - '**.md'
       - 'docs/**'
 
+permissions:
+  contents: write  # Needed for creating releases
+
 jobs:
   build-android-alpha:
     name: Build Android Alpha APK

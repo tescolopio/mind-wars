@@ -4,6 +4,9 @@ on:
   # Manual trigger only for iOS (requires Apple Developer account)
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build-ios-alpha:
     name: Build iOS Alpha
