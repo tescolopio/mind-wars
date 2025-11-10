@@ -25,7 +25,6 @@ class LobbyScreen extends StatefulWidget {
 class _LobbyScreenState extends State<LobbyScreen> {
   GameLobby? _lobby;
   bool _isLoading = true;
-  String? _errorMessage;
   final Map<String, bool> _typingPlayers = {};
 
   @override

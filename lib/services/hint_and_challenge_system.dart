@@ -3,7 +3,6 @@
  * Provides hints with score penalties
  */
 
-import '../models/models.dart';
 import 'game_content_generator.dart';
 
 class HintSystem {
@@ -288,7 +287,6 @@ class DailyChallengeSystem {
     final today = DateTime.now();
 
     for (var i = 0; i < days; i++) {
-      final date = today.subtract(Duration(days: i));
       // Note: This would need to be enhanced to generate consistent challenges
       // for past dates using the same seed logic as getTodaysChallenge
     }

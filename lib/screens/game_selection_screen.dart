@@ -27,7 +27,6 @@ class GameSelectionScreen extends StatefulWidget {
 class _GameSelectionScreenState extends State<GameSelectionScreen> {
   CognitiveCategory? _selectedCategory;
   String _searchQuery = '';
-  GameTemplate? _previewGame;
 
   List<GameTemplate> get _filteredGames {
     var games = GameCatalog.getAllGames();
@@ -190,9 +189,6 @@ class _GameSelectionScreenState extends State<GameSelectionScreen> {
       child: InkWell(
         onTap: () {
           if (widget.showPreview) {
-            setState(() {
-              _previewGame = game;
-            });
             _showGamePreview(game);
           } else {
             _selectGame(game);

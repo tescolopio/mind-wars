@@ -7,7 +7,6 @@ import 'package:mind_wars/services/turn_management_service.dart';
 import 'package:mind_wars/services/scoring_service.dart';
 import 'package:mind_wars/services/api_service.dart';
 import 'package:mind_wars/models/models.dart';
-import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 
 @GenerateMocks([ApiService])

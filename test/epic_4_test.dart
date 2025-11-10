@@ -146,7 +146,6 @@ void main() {
               // Portrait
               var mediaQuery = MediaQuery.of(context).copyWith(
                 size: const Size(360, 640),
-                orientation: Orientation.portrait,
               );
 
               return MediaQuery(
@@ -238,7 +237,7 @@ void main() {
             builder: (context) {
               final mediaQuery = MediaQuery.of(context).copyWith(
                 size: const Size(360, 640),
-                textScaleFactor: 1.0,
+                textScaler: const TextScaler.linear(1.0),
               );
 
               return MediaQuery(
@@ -268,7 +267,7 @@ void main() {
             builder: (context) {
               final mediaQuery = MediaQuery.of(context).copyWith(
                 size: const Size(360, 640),
-                textScaleFactor: 2.0, // Large text scale
+                textScaler: const TextScaler.linear(2.0), // Large text scale
               );
 
               return MediaQuery(

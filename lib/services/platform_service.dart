@@ -7,6 +7,7 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
 class PlatformService {
   static const MethodChannel _channel = MethodChannel('com.mindwars.app/platform');
@@ -239,6 +240,3 @@ class PlatformInfo {
     return '$manufacturer $model ($platform $version)';
   }
 }
-
-/// Import for EdgeInsets
-import 'package:flutter/widgets.dart';

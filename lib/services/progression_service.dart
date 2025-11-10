@@ -2,6 +2,7 @@
  * Progression Service - Handles leaderboards, badges, streaks, and scoring
  */
 
+import 'dart:math';
 import '../models/models.dart';
 import 'api_service.dart';
 
@@ -268,7 +269,7 @@ class ProgressionService {
   /// Calculate level from total score
   int calculateLevel(int totalScore) {
     // Each level requires 1000 more points than the previous
-    return (totalScore / 500).sqrt().floor() + 1;
+    return (sqrt(totalScore / 500)).floor() + 1;
   }
 
   /// Get points needed for next level

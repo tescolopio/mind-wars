@@ -120,7 +120,8 @@ class ResponsiveLayoutService {
     double? maxSize,
   }) {
     final screenSize = getScreenSize(context);
-    final textScaleFactor = MediaQuery.of(context).textScaleFactor;
+    final textScaler = MediaQuery.of(context).textScaler;
+    final textScaleFactor = textScaler.scale(1.0);
     
     double scaleFactor;
     switch (screenSize) {

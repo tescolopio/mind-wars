@@ -9,7 +9,6 @@ import 'package:mockito/annotations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mind_wars/services/auth_service.dart';
 import 'package:mind_wars/services/api_service.dart';
-import 'package:mind_wars/models/models.dart';
 
 @GenerateMocks([ApiService])
 import 'auth_service_test.mocks.dart';
