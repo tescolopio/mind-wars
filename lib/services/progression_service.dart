@@ -83,6 +83,11 @@ class ProgressionService {
       'description': 'Excel in language games',
       'icon': '📚',
     },
+    'streak_14': {
+      'name': 'Two Week Wonder',
+      'description': 'Maintain a 14-day streak',
+      'icon': '🌟',
+    },
   };
 
   /// Calculate unified score based on game performance
@@ -127,19 +132,35 @@ class ProgressionService {
     }
 
     final playerScore = gameScores[currentProgress.userId] ?? 0;
+    final newGamesPlayed = currentProgress.gamesPlayed + 1;
+    final newTotalScore = currentProgress.totalScore + playerScore;
+
+    // Create temporary progress with updated values to check for new badges
+    final tempProgress = UserProgress(
+      userId: currentProgress.userId,
+      level: currentProgress.level,
+      totalScore: newTotalScore,
+      gamesPlayed: newGamesPlayed,
+      currentStreak: newStreak,
+      longestStreak: currentProgress.longestStreak > newStreak
+          ? currentProgress.longestStreak
+          : newStreak,
+      badges: currentProgress.badges,
+      lastPlayedDate: currentProgress.lastPlayedDate,
+    );
 
     final updatedProgress = UserProgress(
       userId: currentProgress.userId,
-      level: calculateLevel(currentProgress.totalScore + playerScore),
-      totalScore: currentProgress.totalScore + playerScore,
-      gamesPlayed: currentProgress.gamesPlayed + 1,
+      level: calculateLevel(newTotalScore),
+      totalScore: newTotalScore,
+      gamesPlayed: newGamesPlayed,
       currentStreak: newStreak,
       longestStreak: currentProgress.longestStreak > newStreak
           ? currentProgress.longestStreak
           : newStreak,
       badges: [
         ...currentProgress.badges,
-        ...checkNewBadges(currentProgress, isWin),
+        ...checkNewBadges(tempProgress, isWin),
       ],
       lastPlayedDate: DateTime.now(),
     );
@@ -180,6 +201,15 @@ class ProgressionService {
         name: badges['streak_7']!['name']!,
         description: badges['streak_7']!['description']!,
         icon: badges['streak_7']!['icon']!,
+        earnedAt: now,
+      ));
+    }
+    if (progress.currentStreak >= 14 && !earnedBadgeIds.contains('streak_14')) {
+      newBadges.add(Badge(
+        id: 'streak_14',
+        name: badges['streak_14']!['name']!,
+        description: badges['streak_14']!['description']!,
+        icon: badges['streak_14']!['icon']!,
         earnedAt: now,
       ));
     }

@@ -5,6 +5,7 @@
  */
 
 import 'dart:math';
+import 'package:uuid/uuid.dart';
 import '../models/models.dart';
 
 /// Difficulty levels for puzzles
@@ -47,6 +48,12 @@ abstract class Puzzle {
 /// Game Content Generator Service
 class GameContentGenerator {
   final Random _random = Random();
+  final Uuid _uuid = Uuid();
+
+  /// Generate unique ID for puzzles
+  String _generatePuzzleId(String type) {
+    return '${type}_${_uuid.v4()}';
+  }
 
   /// Generate puzzle for a specific game type and difficulty - Feature 3.6.1
   Puzzle generatePuzzle({
@@ -154,6 +161,7 @@ class GameContentGenerator {
     cards.shuffle(_random);
 
     return _MemoryMatchPuzzle(
+      id: _generatePuzzleId('memory_match'),
       difficulty: difficulty,
       cards: cards,
       maxScore: _getMaxScore(difficulty),
@@ -170,6 +178,7 @@ class GameContentGenerator {
     final sequence = List.generate(length, (_) => _random.nextInt(9) + 1);
 
     return _SequenceRecallPuzzle(
+      id: _generatePuzzleId('sequence_recall'),
       difficulty: difficulty,
       sequence: sequence,
       maxScore: _getMaxScore(difficulty),
@@ -189,6 +198,7 @@ class GameContentGenerator {
     }
 
     return _PatternMemoryPuzzle(
+      id: _generatePuzzleId('pattern_memory'),
       difficulty: difficulty,
       gridSize: gridSize,
       pattern: pattern,
@@ -204,6 +214,7 @@ class GameContentGenerator {
     final size = difficulty == Difficulty.easy ? 4 : difficulty == Difficulty.medium ? 6 : 9;
 
     return _SudokuPuzzle(
+      id: _generatePuzzleId('sudoku_duel'),
       difficulty: difficulty,
       size: size,
       clues: {},
@@ -217,6 +228,7 @@ class GameContentGenerator {
     final itemsPerCategory = difficulty == Difficulty.easy ? 3 : difficulty == Difficulty.medium ? 4 : 5;
 
     return _LogicGridPuzzle(
+      id: _generatePuzzleId('logic_grid'),
       difficulty: difficulty,
       categories: categories,
       itemsPerCategory: itemsPerCategory,
@@ -230,6 +242,7 @@ class GameContentGenerator {
     final code = List.generate(codeLength, (_) => _random.nextInt(6) + 1);
 
     return _CodeBreakerPuzzle(
+      id: _generatePuzzleId('code_breaker'),
       difficulty: difficulty,
       code: code,
       maxScore: _getMaxScore(difficulty),
@@ -243,6 +256,7 @@ class GameContentGenerator {
     final differenceCount = difficulty == Difficulty.easy ? 3 : difficulty == Difficulty.medium ? 5 : 7;
 
     return _SpotDifferencePuzzle(
+      id: _generatePuzzleId('spot_difference'),
       difficulty: difficulty,
       differenceCount: differenceCount,
       maxScore: _getMaxScore(difficulty),
@@ -256,6 +270,7 @@ class GameContentGenerator {
     final sequence = List.generate(sequenceLength, (_) => colors[_random.nextInt(colors.length)]);
 
     return _ColorRushPuzzle(
+      id: _generatePuzzleId('color_rush'),
       difficulty: difficulty,
       sequence: sequence,
       maxScore: _getMaxScore(difficulty),
@@ -268,6 +283,7 @@ class GameContentGenerator {
     final distractorCount = difficulty == Difficulty.easy ? 10 : difficulty == Difficulty.medium ? 20 : 30;
 
     return _FocusFinderPuzzle(
+      id: _generatePuzzleId('focus_finder'),
       difficulty: difficulty,
       targetCount: targetCount,
       distractorCount: distractorCount,
@@ -282,6 +298,7 @@ class GameContentGenerator {
     final pieceCount = difficulty == Difficulty.easy ? 9 : difficulty == Difficulty.medium ? 16 : 25;
 
     return _PuzzleRacePuzzle(
+      id: _generatePuzzleId('puzzle_race'),
       difficulty: difficulty,
       pieceCount: pieceCount,
       maxScore: _getMaxScore(difficulty),
@@ -293,6 +310,7 @@ class GameContentGenerator {
     final rotationCount = difficulty == Difficulty.easy ? 5 : difficulty == Difficulty.medium ? 8 : 12;
 
     return _RotationMasterPuzzle(
+      id: _generatePuzzleId('rotation_master'),
       difficulty: difficulty,
       rotationCount: rotationCount,
       maxScore: _getMaxScore(difficulty),
@@ -304,6 +322,7 @@ class GameContentGenerator {
     final gridSize = difficulty == Difficulty.easy ? 5 : difficulty == Difficulty.medium ? 7 : 10;
 
     return _PathFinderPuzzle(
+      id: _generatePuzzleId('path_finder'),
       difficulty: difficulty,
       gridSize: gridSize,
       maxScore: _getMaxScore(difficulty),
@@ -320,6 +339,7 @@ class GameContentGenerator {
         List.generate(letterCount, (_) => letters[_random.nextInt(letters.length)]).join();
 
     return _WordBuilderPuzzle(
+      id: _generatePuzzleId('word_builder'),
       difficulty: difficulty,
       letters: selectedLetters,
       maxScore: _getMaxScore(difficulty),
@@ -338,6 +358,7 @@ class GameContentGenerator {
     final scrambled = (word.split('')..shuffle(_random)).join();
 
     return _AnagramAttackPuzzle(
+      id: _generatePuzzleId('anagram_attack'),
       difficulty: difficulty,
       scrambledWord: scrambled,
       solution: word,
@@ -350,6 +371,7 @@ class GameContentGenerator {
     final questionCount = difficulty == Difficulty.easy ? 5 : difficulty == Difficulty.medium ? 8 : 12;
 
     return _VocabularyShowdownPuzzle(
+      id: _generatePuzzleId('vocabulary_showdown'),
       difficulty: difficulty,
       questionCount: questionCount,
       maxScore: _getMaxScore(difficulty),
@@ -384,8 +406,9 @@ class _MemoryMatchPuzzle extends Puzzle {
     required List<String> cards,
     required int maxScore,
     required int timeLimit,
+    required String id,
   }) : super(
-          id: 'memory_match_${DateTime.now().millisecondsSinceEpoch}',
+          id: id,
           gameType: 'memory_match',
           category: CognitiveCategory.memory,
           difficulty: difficulty,
@@ -402,8 +425,9 @@ class _SequenceRecallPuzzle extends Puzzle {
     required List<int> sequence,
     required int maxScore,
     required int timeLimit,
+    required String id,
   }) : super(
-          id: 'sequence_recall_${DateTime.now().millisecondsSinceEpoch}',
+          id: id,
           gameType: 'sequence_recall',
           category: CognitiveCategory.memory,
           difficulty: difficulty,
@@ -421,8 +445,9 @@ class _PatternMemoryPuzzle extends Puzzle {
     required List<bool> pattern,
     required int maxScore,
     required int timeLimit,
+    required String id,
   }) : super(
-          id: 'pattern_memory_${DateTime.now().millisecondsSinceEpoch}',
+          id: id,
           gameType: 'pattern_memory',
           category: CognitiveCategory.memory,
           difficulty: difficulty,
@@ -440,8 +465,9 @@ class _SudokuPuzzle extends Puzzle {
     required Map<String, int> clues,
     required int maxScore,
     required int timeLimit,
+    required String id,
   }) : super(
-          id: 'sudoku_duel_${DateTime.now().millisecondsSinceEpoch}',
+          id: id,
           gameType: 'sudoku_duel',
           category: CognitiveCategory.logic,
           difficulty: difficulty,
@@ -459,8 +485,9 @@ class _LogicGridPuzzle extends Puzzle {
     required int itemsPerCategory,
     required int maxScore,
     required int timeLimit,
+    required String id,
   }) : super(
-          id: 'logic_grid_${DateTime.now().millisecondsSinceEpoch}',
+          id: id,
           gameType: 'logic_grid',
           category: CognitiveCategory.logic,
           difficulty: difficulty,
@@ -477,8 +504,9 @@ class _CodeBreakerPuzzle extends Puzzle {
     required List<int> code,
     required int maxScore,
     required int timeLimit,
+    required String id,
   }) : super(
-          id: 'code_breaker_${DateTime.now().millisecondsSinceEpoch}',
+          id: id,
           gameType: 'code_breaker',
           category: CognitiveCategory.logic,
           difficulty: difficulty,
@@ -495,8 +523,9 @@ class _SpotDifferencePuzzle extends Puzzle {
     required int differenceCount,
     required int maxScore,
     required int timeLimit,
+    required String id,
   }) : super(
-          id: 'spot_difference_${DateTime.now().millisecondsSinceEpoch}',
+          id: id,
           gameType: 'spot_difference',
           category: CognitiveCategory.attention,
           difficulty: difficulty,
@@ -513,8 +542,9 @@ class _ColorRushPuzzle extends Puzzle {
     required List<String> sequence,
     required int maxScore,
     required int timeLimit,
+    required String id,
   }) : super(
-          id: 'color_rush_${DateTime.now().millisecondsSinceEpoch}',
+          id: id,
           gameType: 'color_rush',
           category: CognitiveCategory.attention,
           difficulty: difficulty,
@@ -532,8 +562,9 @@ class _FocusFinderPuzzle extends Puzzle {
     required int distractorCount,
     required int maxScore,
     required int timeLimit,
+    required String id,
   }) : super(
-          id: 'focus_finder_${DateTime.now().millisecondsSinceEpoch}',
+          id: id,
           gameType: 'focus_finder',
           category: CognitiveCategory.attention,
           difficulty: difficulty,
@@ -550,8 +581,9 @@ class _PuzzleRacePuzzle extends Puzzle {
     required int pieceCount,
     required int maxScore,
     required int timeLimit,
+    required String id,
   }) : super(
-          id: 'puzzle_race_${DateTime.now().millisecondsSinceEpoch}',
+          id: id,
           gameType: 'puzzle_race',
           category: CognitiveCategory.spatial,
           difficulty: difficulty,
@@ -568,8 +600,9 @@ class _RotationMasterPuzzle extends Puzzle {
     required int rotationCount,
     required int maxScore,
     required int timeLimit,
+    required String id,
   }) : super(
-          id: 'rotation_master_${DateTime.now().millisecondsSinceEpoch}',
+          id: id,
           gameType: 'rotation_master',
           category: CognitiveCategory.spatial,
           difficulty: difficulty,
@@ -586,8 +619,9 @@ class _PathFinderPuzzle extends Puzzle {
     required int gridSize,
     required int maxScore,
     required int timeLimit,
+    required String id,
   }) : super(
-          id: 'path_finder_${DateTime.now().millisecondsSinceEpoch}',
+          id: id,
           gameType: 'path_finder',
           category: CognitiveCategory.spatial,
           difficulty: difficulty,
@@ -604,8 +638,9 @@ class _WordBuilderPuzzle extends Puzzle {
     required String letters,
     required int maxScore,
     required int timeLimit,
+    required String id,
   }) : super(
-          id: 'word_builder_${DateTime.now().millisecondsSinceEpoch}',
+          id: id,
           gameType: 'word_builder',
           category: CognitiveCategory.language,
           difficulty: difficulty,
@@ -623,8 +658,9 @@ class _AnagramAttackPuzzle extends Puzzle {
     required String solution,
     required int maxScore,
     required int timeLimit,
+    required String id,
   }) : super(
-          id: 'anagram_attack_${DateTime.now().millisecondsSinceEpoch}',
+          id: id,
           gameType: 'anagram_attack',
           category: CognitiveCategory.language,
           difficulty: difficulty,
@@ -641,8 +677,9 @@ class _VocabularyShowdownPuzzle extends Puzzle {
     required int questionCount,
     required int maxScore,
     required int timeLimit,
+    required String id,
   }) : super(
-          id: 'vocabulary_showdown_${DateTime.now().millisecondsSinceEpoch}',
+          id: id,
           gameType: 'vocabulary_showdown',
           category: CognitiveCategory.language,
           difficulty: difficulty,
