@@ -172,16 +172,16 @@ class ScoringService {
   /// Calculate time bonus (max 500 points)
   int _calculateTimeBonus(int timeSeconds) {
     // Fast completion = higher bonus
-    // < 30 seconds: 500 points
-    // < 60 seconds: 300 points
-    // < 120 seconds: 150 points
-    // < 300 seconds: 50 points
+    // <= 30 seconds: 500 points
+    // <= 60 seconds: 300 points
+    // <= 120 seconds: 150 points
+    // <= 300 seconds: 50 points
     // > 300 seconds: 0 points
 
-    if (timeSeconds < 30) return 500;
-    if (timeSeconds < 60) return 300;
-    if (timeSeconds < 120) return 150;
-    if (timeSeconds < 300) return 50;
+    if (timeSeconds <= 30) return 500;
+    if (timeSeconds <= 60) return 300;
+    if (timeSeconds <= 120) return 150;
+    if (timeSeconds <= 300) return 50;
     return 0;
   }
 
