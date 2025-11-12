@@ -68,7 +68,7 @@ This document outlines the architecture, infrastructure, and backlog items requi
 │  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐      │
 │  │   Mobile     │    │   Mobile     │    │   Mobile     │      │
 │  │   Client     │───▶│   Client     │───▶│   Client     │      │
-│  │  (iOS/Droid) │    │  (iOS/Droid) │    │  (iOS/Droid) │      │
+│  │  (iOS/Android) │  │  (iOS/Android) │  │  (iOS/Android) │    │
 │  └──────────────┘    └──────────────┘    └──────────────┘      │
 │         │                    │                    │              │
 │         └────────────────────┼────────────────────┘              │
