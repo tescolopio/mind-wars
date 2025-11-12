@@ -94,10 +94,24 @@ class OfflineService {
           )
         ''');
         
+        // Local users table for alpha testing
+        await db.execute('''
+          CREATE TABLE local_users (
+            id TEXT PRIMARY KEY,
+            username TEXT NOT NULL UNIQUE,
+            email TEXT NOT NULL UNIQUE,
+            password_hash TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            synced INTEGER DEFAULT 0
+          )
+        ''');
+        
         // Create indexes for performance
         await db.execute('CREATE INDEX idx_turn_queue_lobby ON turn_queue(lobby_id)');
         await db.execute('CREATE INDEX idx_turn_queue_synced ON turn_queue(synced)');
         await db.execute('CREATE INDEX idx_sync_queue_retry ON sync_queue(retry_count)');
+        await db.execute('CREATE INDEX idx_local_users_email ON local_users(email)');
+        await db.execute('CREATE INDEX idx_local_users_username ON local_users(username)');
       },
     );
   }
