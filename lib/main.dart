@@ -18,6 +18,9 @@ import 'screens/login_screen.dart';
 import 'screens/registration_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/profile_setup_screen.dart';
+import 'screens/offline_game_play_screen.dart';
+import 'games/game_catalog.dart';
+import 'models/models.dart';
 
 // Alpha mode flag - set to false when backend is ready
 const bool kAlphaMode = true;
@@ -330,44 +333,1025 @@ class LobbyListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Available Lobbies')),
-      body: const Center(child: Text('Lobby List - Coming Soon')),
+      appBar: AppBar(title: const Text('Multiplayer')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            // Info Banner
+            if (kAlphaMode)
+              Card(
+                color: Colors.orange[100],
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.info, color: Colors.orange),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Multiplayer features require server connectivity.\n\n'
+                          'In alpha mode, try "Play Offline" to practice games solo.',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.orange[900],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            
+            const SizedBox(height: 24),
+            
+            // Illustration
+            Icon(
+              Icons.people,
+              size: 100,
+              color: Colors.grey[300],
+            ),
+            
+            const SizedBox(height: 24),
+            
+            Text(
+              'Multiplayer Coming Soon',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            
+            const SizedBox(height: 12),
+            
+            Text(
+              'Create lobbies, invite friends, and compete in real-time when the servers are ready!',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Colors.grey[600],
+                  ),
+              textAlign: TextAlign.center,
+            ),
+            
+            const SizedBox(height: 32),
+            
+            FilledButton.icon(
+              onPressed: () {
+                Navigator.pushNamed(context, '/offline');
+              },
+              icon: const Icon(Icons.offline_bolt),
+              label: const Text('Play Offline Instead'),
+              style: FilledButton.styleFrom(
+                minimumSize: const Size(double.infinity, 48),
+              ),
+            ),
+            
+            const SizedBox(height: 12),
+            
+            OutlinedButton.icon(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: const Icon(Icons.arrow_back),
+              label: const Text('Back to Home'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
 
-class LeaderboardScreen extends StatelessWidget {
+class LeaderboardScreen extends StatefulWidget {
   const LeaderboardScreen({super.key});
 
   @override
+  State<LeaderboardScreen> createState() => _LeaderboardScreenState();
+}
+
+class _LeaderboardScreenState extends State<LeaderboardScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Leaderboard')),
-      body: const Center(child: Text('Leaderboard - Coming Soon')),
+      appBar: AppBar(
+        title: const Text('Leaderboard'),
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(text: 'Weekly', icon: Icon(Icons.calendar_today)),
+            Tab(text: 'All Time', icon: Icon(Icons.emoji_events)),
+          ],
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _buildLeaderboardTab(context, isWeekly: true),
+          _buildLeaderboardTab(context, isWeekly: false),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLeaderboardTab(BuildContext context, {required bool isWeekly}) {
+    // Mock data for alpha testing
+    final mockEntries = [
+      {'rank': 1, 'name': 'AlphaGamer1', 'score': 1250, 'badge': '🥇'},
+      {'rank': 2, 'name': 'BrainChamp', 'score': 1180, 'badge': '🥈'},
+      {'rank': 3, 'name': 'MindMaster', 'score': 1050, 'badge': '🥉'},
+      {'rank': 4, 'name': 'PuzzlePro', 'score': 980, 'badge': ''},
+      {'rank': 5, 'name': 'LogicLord', 'score': 920, 'badge': ''},
+      {'rank': 6, 'name': 'WordWizard', 'score': 850, 'badge': ''},
+      {'rank': 7, 'name': 'MemoryKing', 'score': 780, 'badge': ''},
+      {'rank': 8, 'name': 'QuickThinker', 'score': 720, 'badge': ''},
+    ];
+
+    return Column(
+      children: [
+        // Info Banner
+        if (kAlphaMode)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            color: Colors.orange[100],
+            child: Row(
+              children: [
+                const Icon(Icons.info, color: Colors.orange, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Alpha Mode: Showing sample data. Real leaderboards will be available in production.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.orange[900],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        
+        // Podium for top 3
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildPodiumItem(context, mockEntries[1], height: 100),
+              const SizedBox(width: 16),
+              _buildPodiumItem(context, mockEntries[0], height: 140),
+              const SizedBox(width: 16),
+              _buildPodiumItem(context, mockEntries[2], height: 80),
+            ],
+          ),
+        ),
+        
+        const Divider(height: 1),
+        
+        // Rest of leaderboard
+        Expanded(
+          child: ListView.builder(
+            itemCount: mockEntries.length - 3,
+            itemBuilder: (context, index) {
+              final entry = mockEntries[index + 3];
+              return ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+                  child: Text(
+                    '#${entry['rank']}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+                title: Text(
+                  entry['name'] as String,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+                trailing: Text(
+                  '${entry['score']} pts',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPodiumItem(
+    BuildContext context,
+    Map<String, dynamic> entry,
+    {required double height},
+  ) {
+    final rank = entry['rank'] as int;
+    Color color;
+    
+    switch (rank) {
+      case 1:
+        color = Colors.amber;
+        break;
+      case 2:
+        color = Colors.grey[400]!;
+        break;
+      case 3:
+        color = Colors.brown[300]!;
+        break;
+      default:
+        color = Colors.grey;
+    }
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          entry['badge'] as String,
+          style: const TextStyle(fontSize: 32),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          entry['name'] as String,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 12,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 4),
+        Text(
+          '${entry['score']} pts',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          width: 80,
+          height: height,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(8),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Center(
+            child: Text(
+              '#$rank',
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+    final user = authService.currentUser;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
-      body: const Center(child: Text('Profile - Coming Soon')),
+      appBar: AppBar(
+        title: const Text('Profile'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => _navigateToSettings(context),
+          ),
+        ],
+      ),
+      body: user == null
+          ? const Center(child: Text('Not logged in'))
+          : SafeArea(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      // Profile Header
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Column(
+                            children: [
+                              CircleAvatar(
+                                radius: 50,
+                                backgroundColor: Theme.of(context).colorScheme.primary,
+                                child: Text(
+                                  user.username[0].toUpperCase(),
+                                  style: const TextStyle(
+                                    fontSize: 40,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                user.username,
+                                style: Theme.of(context).textTheme.headlineMedium,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                user.email,
+                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                      color: Colors.grey[600],
+                                    ),
+                              ),
+                              const SizedBox(height: 16),
+                              if (kAlphaMode)
+                                Chip(
+                                  avatar: const Icon(Icons.science, size: 16),
+                                  label: const Text('ALPHA TESTER'),
+                                  backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 24),
+                      
+                      // Stats Section
+                      Text(
+                        'Statistics',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 12),
+                      
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildStatCard(
+                              context,
+                              Icons.games,
+                              'Games Played',
+                              '0',
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildStatCard(
+                              context,
+                              Icons.emoji_events,
+                              'Wins',
+                              '0',
+                            ),
+                          ),
+                        ],
+                      ),
+                      
+                      const SizedBox(height: 12),
+                      
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildStatCard(
+                              context,
+                              Icons.stars,
+                              'Total Score',
+                              '0',
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildStatCard(
+                              context,
+                              Icons.local_fire_department,
+                              'Streak',
+                              '0 days',
+                            ),
+                          ),
+                        ],
+                      ),
+                      
+                      const SizedBox(height: 24),
+                      
+                      // Achievements
+                      Text(
+                        'Achievements',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 12),
+                      
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            children: [
+                              const Icon(
+                                Icons.emoji_events_outlined,
+                                size: 48,
+                                color: Colors.grey,
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                'No achievements yet',
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Play games to unlock achievements!',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: Colors.grey[600],
+                                    ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 24),
+                      
+                      // Actions
+                      FilledButton.icon(
+                        onPressed: () => _editProfile(context),
+                        icon: const Icon(Icons.edit),
+                        label: const Text('Edit Profile'),
+                        style: FilledButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 48),
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 12),
+                      
+                      OutlinedButton.icon(
+                        onPressed: () => _logout(context),
+                        icon: const Icon(Icons.logout),
+                        label: const Text('Logout'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.red,
+                          minimumSize: const Size(double.infinity, 48),
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 24),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+    );
+  }
+
+  Widget _buildStatCard(
+    BuildContext context,
+    IconData icon,
+    String label,
+    String value,
+  ) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Icon(
+              icon,
+              size: 32,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: Theme.of(context).textTheme.bodySmall,
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _editProfile(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit Profile'),
+        content: const Text(
+          'Profile editing will be available in the next update.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _navigateToSettings(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SettingsScreen(),
+      ),
+    );
+  }
+
+  void _logout(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Logout'),
+        content: const Text('Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              final authService = Provider.of<AuthService>(context, listen: false);
+              await authService.logout();
+              
+              if (context.mounted) {
+                Navigator.of(context).popUntil((route) => route.isFirst);
+                Navigator.of(context).pushReplacementNamed('/login');
+              }
+            },
+            child: const Text('Logout'),
+          ),
+        ],
+      ),
     );
   }
 }
 
-class OfflineScreen extends StatelessWidget {
-  const OfflineScreen({super.key});
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Offline Mode')),
-      body: const Center(child: Text('Offline Mode - Coming Soon')),
+      appBar: AppBar(
+        title: const Text('Settings'),
+      ),
+      body: ListView(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.palette),
+            title: const Text('Theme'),
+            subtitle: const Text('System default'),
+            onTap: () {
+              // Theme settings
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.notifications),
+            title: const Text('Notifications'),
+            subtitle: const Text('Enabled'),
+            trailing: Switch(
+              value: true,
+              onChanged: (value) {
+                // Handle notification toggle
+              },
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.volume_up),
+            title: const Text('Sound Effects'),
+            subtitle: const Text('Enabled'),
+            trailing: Switch(
+              value: true,
+              onChanged: (value) {
+                // Handle sound toggle
+              },
+            ),
+          ),
+          const Divider(),
+          if (kAlphaMode)
+            ListTile(
+              leading: const Icon(Icons.science, color: Colors.orange),
+              title: const Text('Alpha Mode'),
+              subtitle: const Text('Local authentication enabled'),
+              trailing: const Icon(Icons.info_outline),
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    icon: const Icon(Icons.science, color: Colors.orange, size: 48),
+                    title: const Text('Alpha Mode'),
+                    content: const Text(
+                      'You are using Mind Wars in Alpha mode.\n\n'
+                      'Features:\n'
+                      '• Local authentication without backend\n'
+                      '• Offline gameplay\n'
+                      '• Practice mode for all games\n\n'
+                      'Note: Progress will not sync to servers until production mode is enabled.',
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Got it'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ListTile(
+            leading: const Icon(Icons.info),
+            title: const Text('About'),
+            onTap: () {
+              showAboutDialog(
+                context: context,
+                applicationName: 'Mind Wars',
+                applicationVersion: '1.0.0-alpha',
+                applicationIcon: const Icon(Icons.psychology, size: 48),
+                children: [
+                  const Text(
+                    'Async Multiplayer Cognitive Games Platform\n\n'
+                    'Challenge your mind across multiple cognitive categories.',
+                  ),
+                ],
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.help),
+            title: const Text('Help & Support'),
+            onTap: () {
+              // Open help
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.privacy_tip),
+            title: const Text('Privacy Policy'),
+            onTap: () {
+              // Open privacy policy
+            },
+          ),
+        ],
+      ),
     );
+  }
+}
+
+class OfflineScreen extends StatefulWidget {
+  const OfflineScreen({super.key});
+
+  @override
+  State<OfflineScreen> createState() => _OfflineScreenState();
+}
+
+class _OfflineScreenState extends State<OfflineScreen> {
+  CognitiveCategory? _selectedCategory;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Play Offline'),
+        elevation: 2,
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Header
+                Card(
+                  elevation: 0,
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.offline_bolt,
+                          size: 48,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Practice Mode',
+                          style: Theme.of(context).textTheme.headlineMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Play games offline to practice and improve your skills',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                
+                const SizedBox(height: 24),
+                
+                // Category Filter
+                Text(
+                  'Select Category',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    _buildCategoryChip(context, null, 'All Games'),
+                    ...CognitiveCategory.values.map(
+                      (category) => _buildCategoryChip(
+                        context,
+                        category,
+                        _getCategoryName(category),
+                      ),
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 24),
+                
+                // Games Grid
+                Text(
+                  _selectedCategory == null 
+                      ? 'All Games' 
+                      : '${_getCategoryName(_selectedCategory!)} Games',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 12),
+                _buildGamesGrid(context),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCategoryChip(
+    BuildContext context,
+    CognitiveCategory? category,
+    String label,
+  ) {
+    final isSelected = _selectedCategory == category;
+    
+    return FilterChip(
+      label: Text(label),
+      selected: isSelected,
+      onSelected: (selected) {
+        setState(() {
+          _selectedCategory = selected ? category : null;
+        });
+      },
+      backgroundColor: Colors.grey[100],
+      selectedColor: Theme.of(context).colorScheme.primaryContainer,
+    );
+  }
+
+  Widget _buildGamesGrid(BuildContext context) {
+    final games = _selectedCategory == null
+        ? GameCatalog.getAllGames()
+        : GameCatalog.getGamesByCategory(_selectedCategory!);
+
+    if (games.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(32.0),
+          child: Text('No games in this category'),
+        ),
+      );
+    }
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.85,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+      ),
+      itemCount: games.length,
+      itemBuilder: (context, index) {
+        final game = games[index];
+        return _buildGameCard(context, game);
+      },
+    );
+  }
+
+  Widget _buildGameCard(BuildContext context, GameTemplate game) {
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () {
+          _showGameDetails(context, game);
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                game.icon,
+                style: const TextStyle(fontSize: 48),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                game.name,
+                style: Theme.of(context).textTheme.titleMedium,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _getCategoryName(game.category),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Colors.grey[600],
+                ),
+              ),
+              const Spacer(),
+              FilledButton.icon(
+                onPressed: () {
+                  _startGame(context, game);
+                },
+                icon: const Icon(Icons.play_arrow, size: 18),
+                label: const Text('Play'),
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 36),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showGameDetails(BuildContext context, GameTemplate game) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        maxChildSize: 0.9,
+        minChildSize: 0.4,
+        expand: false,
+        builder: (context, scrollController) {
+          return SingleChildScrollView(
+            controller: scrollController,
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Center(
+                    child: Text(
+                      game.icon,
+                      style: const TextStyle(fontSize: 64),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    game.name,
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Chip(
+                    label: Text(_getCategoryName(game.category)),
+                    avatar: const Icon(Icons.category, size: 16),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Description',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    game.description,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'How to Play',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    game.rules,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      const Icon(Icons.people, size: 20),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${game.minPlayers}-${game.maxPlayers} Players',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 32),
+                  FilledButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _startGame(context, game);
+                    },
+                    icon: const Icon(Icons.play_arrow),
+                    label: const Text('Start Playing'),
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 48),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _startGame(BuildContext context, GameTemplate game) {
+    // Navigate to game play screen
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => OfflineGamePlayScreen(gameTemplate: game),
+      ),
+    );
+  }
+
+  String _getCategoryName(CognitiveCategory category) {
+    switch (category) {
+      case CognitiveCategory.memory:
+        return 'Memory';
+      case CognitiveCategory.logic:
+        return 'Logic';
+      case CognitiveCategory.attention:
+        return 'Attention';
+      case CognitiveCategory.spatial:
+        return 'Spatial';
+      case CognitiveCategory.language:
+        return 'Language';
+    }
   }
 }

@@ -2,6 +2,8 @@
 
 This guide explains how to build, install, and test alpha versions of Mind Wars.
 
+**📖 NEW**: See **[ALPHA_USER_STORIES.md](ALPHA_USER_STORIES.md)** for comprehensive user stories, testing workflows, Epics, Features, and Tasks specifically designed for Alpha testing without backend servers.
+
 ## What is an Alpha Build?
 
 An alpha build is a pre-release version of the app that:

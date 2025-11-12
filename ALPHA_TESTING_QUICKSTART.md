@@ -4,6 +4,8 @@
 
 This guide helps you get started with Mind Wars alpha testing. The app now supports **local authentication** so you can create accounts and login without requiring a backend server.
 
+**📖 For Comprehensive Testing**: See **[ALPHA_USER_STORIES.md](ALPHA_USER_STORIES.md)** for detailed user stories, Epics, Features, Tasks, and structured testing workflows for Alpha testing.
+
 ## 🚀 Getting Started
 
 ### 1. Build and Run the App
@@ -68,7 +70,7 @@ You can create multiple accounts on the same device:
 
 Try these scenarios to help us test:
 
-### Registration
+### Registration & Authentication
 - ✅ Create account with valid credentials
 - ✅ Try weak passwords (should fail)
 - ✅ Try invalid emails (should fail)
@@ -85,6 +87,21 @@ Try these scenarios to help us test:
 - ✅ Create multiple accounts
 - ✅ Logout and login to different accounts
 - ✅ Verify each account has its own data
+
+### Offline Games Testing
+- ✅ Play each of the 5 games
+- ✅ Test hint system (score should decrease)
+- ✅ Complete a game and check final score
+- ✅ Try all difficulty levels
+- ✅ Navigate between different games
+- ✅ Check if progress is saved
+
+### UI/UX Testing
+- ✅ Navigate through all screens
+- ✅ Test on different screen sizes
+- ✅ Check landscape and portrait modes
+- ✅ Verify all buttons work
+- ✅ Test back button behavior
 
 ## ❓ Troubleshooting
 
@@ -113,6 +130,7 @@ Please report any issues with:
 
 Help us validate these features:
 
+### Authentication
 - [ ] Account creation process
 - [ ] Login flow
 - [ ] Auto-login (remember me)
@@ -121,8 +139,26 @@ Help us validate these features:
 - [ ] Duplicate prevention
 - [ ] Multiple accounts
 - [ ] Logout functionality
+
+### Offline Gameplay
+- [ ] Game selection interface
+- [ ] Memory Match gameplay
+- [ ] Word Builder gameplay  
+- [ ] Sequence Recall gameplay
+- [ ] Anagram Attack gameplay
+- [ ] Code Breaker gameplay
+- [ ] Scoring system
+- [ ] Hint system
+- [ ] Game completion flow
+
+### User Interface
+- [ ] Profile screen
+- [ ] Settings screen
+- [ ] Leaderboard display
+- [ ] Navigation flow
+- [ ] Responsive design
 - [ ] App performance
-- [ ] UI/UX flow
+- [ ] UI/UX clarity
 
 ## 🐛 Reporting Issues
 
@@ -145,11 +181,53 @@ Found a bug? Please report it with:
 ## 🎮 Next Steps
 
 Once you're logged in:
-1. Explore the home screen
-2. Try the lobby system
-3. Test the games
-4. Check the leaderboard
-5. Customize your profile
+1. **Play Offline Games** - Try the 5 fully playable games!
+2. **Explore the home screen** - Check out the main menu
+3. **View your profile** - See your stats and settings
+4. **Check the leaderboard** - Browse rankings (sample data)
+
+### 🎯 Playing Games
+
+Mind Wars includes **5 fully functional games** you can play offline:
+
+#### 1. Memory Match 🃏
+- **Category**: Memory
+- **How to Play**: Flip cards to find matching pairs
+- **Tip**: Try to remember card positions
+
+#### 2. Word Builder 📝  
+- **Category**: Language
+- **How to Play**: Create words from letter tiles
+- **Tip**: Look for common patterns like -ING, -ED, -ER
+
+#### 3. Sequence Recall 🔢
+- **Category**: Memory  
+- **How to Play**: Watch sequences and repeat them
+- **Tip**: Break sequences into chunks
+
+#### 4. Anagram Attack 🔤
+- **Category**: Language
+- **How to Play**: Unscramble words as fast as you can
+- **Tip**: Look for common letter combinations
+
+#### 5. Code Breaker 🔐
+- **Category**: Logic
+- **How to Play**: Guess the secret code using feedback
+- **Tip**: Use previous guesses to narrow down options
+
+### How to Access Games
+
+1. From the **Home Screen**, tap **"Play Offline"**
+2. Browse games by **category** or view **all games**
+3. Tap a game card to see **details and rules**
+4. Tap **"Play"** to start the game
+
+### Game Features
+
+- ⏱️ **Time Tracking**: See how long each game takes
+- ⭐ **Scoring**: Earn points for correct moves
+- 💡 **Hints**: Get help (with small score penalty)
+- 📊 **Stats**: View your performance after completing
 
 ## 🔮 Coming Soon
 

@@ -39,6 +39,14 @@ Essential business documents for strategy, planning, and market analysis:
 - [User Personas](business/USER_PERSONAS.md) - Target user personas and profiles
 - [User Stories](business/USER_STORIES.md) - Comprehensive user stories with acceptance criteria
 
+**Alpha Testing:**
+- [Alpha User Stories](../ALPHA_USER_STORIES.md) - ⭐ User stories for alpha testing without backend servers (Epics, Features, Tasks)
+- [Alpha Testing Guide](../ALPHA_TESTING.md) - Alpha build process and installation
+- [Alpha Testing Quickstart](../ALPHA_TESTING_QUICKSTART.md) - Quick start guide for testers
+- [Alpha Auth Setup](../ALPHA_AUTH_SETUP.md) - Technical authentication setup
+- [Alpha Mode Config](../ALPHA_MODE_CONFIG.md) - Configuration and mode switching
+- [Alpha Build Setup](../ALPHA_BUILD_SETUP.md) - Build setup guide
+
 ### 🚀 Project Documentation
 Located in: `docs/project/`
 
@@ -66,6 +74,9 @@ Project management, technical specifications, and development processes:
 - [Sprint Templates](project/SPRINT_TEMPLATES.md) - Sprint planning and retrospective templates
 - [Backlog Guide](project/BACKLOG_GUIDE.md) - Guide to navigating project documentation
 - [Validation](project/VALIDATION.md) - Implementation validation checklist
+
+**Beta Testing:**
+- [Beta Admin User Stories](project/BETA_ADMIN_USER_STORIES.md) - ⭐ NEW: Admin environment requirements and workflows for beta testing
 
 ### 📱 Social & Community Documentation
 Located in: `docs/social/`
