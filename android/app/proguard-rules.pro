@@ -44,6 +44,17 @@
 -dontwarn com.google.android.play.core.tasks.OnSuccessListener
 -dontwarn com.google.android.play.core.tasks.Task
 
+# Provider - State Management (reflection-based)
+-keep class androidx.lifecycle.** { *; }
+-keep class * extends androidx.lifecycle.ViewModel { *; }
+-keepclassmembers class * extends androidx.lifecycle.ViewModel {
+    <init>(...);
+}
+
+# Flutter SVG - Keep SVG rendering classes
+-keep class com.caverock.androidsvg.** { *; }
+-dontwarn com.caverock.androidsvg.**
+
 # Preserve line number information for debugging stack traces
 -keepattributes SourceFile,LineNumberTable
 
