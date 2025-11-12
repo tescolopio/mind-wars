@@ -110,7 +110,7 @@ This document outlines the architecture, infrastructure, and backlog items requi
 
 | Component | Technology | Purpose |
 |-----------|-----------|---------|
-| **Container Runtime** | Docker 24+ | Containerization platform |
+| **Container Runtime** | Docker 24.x | Containerization platform |
 | **Orchestration** | Docker Compose (Phase 1-2), Kubernetes (Phase 3) | Service orchestration |
 | **Load Balancer** | Nginx or Traefik | Traffic distribution & SSL termination |
 | **REST API** | Node.js + Express | RESTful endpoints for game logic |
