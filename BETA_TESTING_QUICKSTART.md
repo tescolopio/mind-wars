@@ -54,10 +54,18 @@ DOMAIN=beta.mindwars.app
 ```
 
 ### 3. Start Services
+
+> **Note:**  
+> The following uses the Docker Compose v2 syntax (`docker compose`).  
+> If you have Docker Compose v1 (deprecated), use `docker-compose` (with a hyphen) instead.
+
 ```bash
 # Start all containers
+# Docker Compose v2 (recommended)
 docker compose -f docker-compose.beta.yml up -d
 
+# Docker Compose v1 (deprecated)
+docker-compose -f docker-compose.beta.yml up -d
 # Check service health
 docker compose ps
 ```
