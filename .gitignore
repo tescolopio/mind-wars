@@ -30,6 +30,9 @@ migrate_working_dir/
 # Web related
 lib/generated_plugin_registrant.dart
 
+# Android generated files
+**/android/**/GeneratedPluginRegistrant.java
+
 # Symbolication related
 app.*.symbols
 
