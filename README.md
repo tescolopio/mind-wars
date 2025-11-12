@@ -143,6 +143,7 @@ Core features first, polish iteratively. Optimistic updates with server confirma
 ### 📚 Product Documentation
 - **[USER_PERSONAS.md](docs/business/USER_PERSONAS.md)** - 8 detailed user personas (Family, Friends, Office/Colleagues)
 - **[USER_STORIES.md](docs/business/USER_STORIES.md)** - Comprehensive user stories with acceptance criteria
+- **[ALPHA_USER_STORIES.md](ALPHA_USER_STORIES.md)** - ⭐ Alpha testing user stories (Epics, Features, Tasks for pre-server testing)
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - Technical architecture and implementation analysis
 - **[VALIDATION.md](docs/project/VALIDATION.md)** - Implementation validation checklist
 - **[VOTING_SYSTEM.md](VOTING_SYSTEM.md)** - Game voting system documentation
@@ -230,6 +231,8 @@ flutter build ios          # iOS
 ## Alpha Builds
 
 Alpha builds allow you to test the app on your personal device before release.
+
+**📖 For Alpha Testers**: See **[ALPHA_USER_STORIES.md](ALPHA_USER_STORIES.md)** for comprehensive user stories, testing workflows, and acceptance criteria specific to Alpha testing without backend servers.
 
 ### Building Alpha Versions Locally
 

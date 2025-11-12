@@ -4,6 +4,8 @@
 
 This guide helps you get started with Mind Wars alpha testing. The app now supports **local authentication** so you can create accounts and login without requiring a backend server.
 
+**📖 For Comprehensive Testing**: See **[ALPHA_USER_STORIES.md](ALPHA_USER_STORIES.md)** for detailed user stories, Epics, Features, Tasks, and structured testing workflows for Alpha testing.
+
 ## 🚀 Getting Started
 
 ### 1. Build and Run the App
