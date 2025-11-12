@@ -111,7 +111,7 @@ Foundation     Services       Data & Test    Go-Live
 |-----------|---------------|------------------------|
 | **API Server** | Local development only | Cloud-hosted, auto-scaling |
 | **Socket.io Server** | Local development only | Cloud-hosted, Redis-backed |
-| **Database** | None (SQLite client-only) | Managed PostgreSQL/MongoDB |
+| **Database** | None (SQLite client-only) | Cloud Firestore (NoSQL) |
 | **File Storage** | None | CDN for assets |
 | **Authentication** | JWT logic only | OAuth providers integrated |
 | **Monitoring** | Basic logs | APM, error tracking, metrics |
