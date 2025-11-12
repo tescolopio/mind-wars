@@ -396,7 +396,7 @@ graph TD
 
 **Target Personas**: Beta Testers (all user personas)
 
-**Story Points**: 47 points
+**Story Points**: 46 points
 
 ---
 
