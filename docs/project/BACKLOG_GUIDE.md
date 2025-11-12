@@ -54,7 +54,7 @@ This is your quick reference guide to navigate the Mind Wars backlog system. Use
    - **Audience**: Engineers working on voting feature
 
 ### 🧪 Beta Testing & Operations
-9. **[BETA_ADMIN_USER_STORIES.md](BETA_ADMIN_USER_STORIES.md)** (50KB) - ⭐ NEW: Beta admin requirements
+9. **[BETA_ADMIN_USER_STORIES.md](BETA_ADMIN_USER_STORIES.md)** (53KB) - ⭐ NEW: Beta admin requirements
    - **Use When**: Planning beta testing infrastructure and operations
    - **Key Content**: Admin epics, features, tasks for user support, deployments, monitoring
    - **Audience**: Product Manager, DevOps, Support Team
