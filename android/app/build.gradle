@@ -1,3 +1,10 @@
+// Android build configuration for Mind Wars app
+// Note: Launcher icons (ic_launcher.png) in res/mipmap-* directories must be:
+//   - Valid, non-corrupted PNG files to avoid AAPT2 compilation errors
+//   - Properly sized for each density (mdpi:48px, hdpi:72px, xhdpi:96px, xxhdpi:144px, xxxhdpi:192px)
+//   - Stripped of problematic metadata using tools like ImageMagick or optipng
+// See android/app/src/main/res/README.md for more details on icon requirements
+
 plugins {
     id "com.android.application"
     id "kotlin-android"
@@ -77,6 +84,8 @@ android {
             signingConfig signingConfigs.debug
             
             // Code shrinking and obfuscation
+            // Note: Ensure all resources (especially PNG files) are valid before enabling
+            // shrinkResources, as AAPT2 will fail on corrupted image files during compilation
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
