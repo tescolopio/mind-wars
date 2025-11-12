@@ -115,7 +115,7 @@ This document outlines the architecture, infrastructure, and backlog items requi
 | **Load Balancer** | Nginx or Traefik | Traffic distribution & SSL termination |
 | **REST API** | Node.js + Express | RESTful endpoints for game logic |
 | **WebSocket Server** | Node.js + Socket.io | Real-time multiplayer communication |
-| **Database** | PostgreSQL 15+ | Primary data store |
+| **Database** | PostgreSQL 15.x | Primary data store |
 | **Cache** | Redis 7+ | Session storage & real-time data |
 | **Monitoring** | Prometheus + Grafana | Metrics & visualization |
 | **Logging** | ELK Stack (Elasticsearch, Logstash, Kibana) | Centralized logging |
