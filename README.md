@@ -147,6 +147,7 @@ Core features first, polish iteratively. Optimistic updates with server confirma
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - Technical architecture and implementation analysis
 - **[VALIDATION.md](docs/project/VALIDATION.md)** - Implementation validation checklist
 - **[VOTING_SYSTEM.md](VOTING_SYSTEM.md)** - Game voting system documentation
+- **[BETA_ADMIN_USER_STORIES.md](docs/project/BETA_ADMIN_USER_STORIES.md)** - ⭐ NEW: Beta testing admin requirements and workflows
 
 ### 🧪 Testing & Quality Assurance
 - **[ALPHA_TESTING.md](ALPHA_TESTING.md)** - Alpha testing guide for local builds and early testing
