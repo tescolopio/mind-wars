@@ -148,7 +148,7 @@ Alpha testers can now:
 ## Files Modified
 
 ### New Files
-- `lib/screens/offline_game_play_screen.dart` (774 lines)
+- `lib/screens/offline_game_play_screen.dart` (1,118 lines)
 
 ### Modified Files
 - `lib/main.dart` (1,357 lines) - Added 4 complete screens
