@@ -113,8 +113,8 @@ This document outlines the architecture, infrastructure, and backlog items requi
 | **Container Runtime** | Docker 24.x | Containerization platform |
 | **Orchestration** | Docker Compose (Phase 1-2), Kubernetes (Phase 3) | Service orchestration |
 | **Load Balancer** | Nginx or Traefik | Traffic distribution & SSL termination |
-| **REST API** | Node.js + Express | RESTful endpoints for game logic |
-| **WebSocket Server** | Node.js + Socket.io | Real-time multiplayer communication |
+| **REST API** | Node.js 18.x + Express | RESTful endpoints for game logic |
+| **WebSocket Server** | Node.js 18.x + Socket.io | Real-time multiplayer communication |
 | **Database** | PostgreSQL 15.x | Primary data store |
 | **Cache** | Redis 7.x | Session storage & real-time data |
 | **Monitoring** | Prometheus + Grafana | Metrics & visualization |
@@ -298,7 +298,7 @@ server {
 
 **Story Points**: 13  
 **Acceptance Criteria**:
-- Node.js/Express server running in Docker
+- Node.js 18.x/Express server running in Docker
 - All required endpoints implemented (auth, lobbies, games, leaderboards, sync)
 - JWT authentication middleware
 - Request validation and error handling

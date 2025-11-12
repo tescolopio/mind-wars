@@ -997,7 +997,7 @@ The Beta Testing Phase runs in parallel with Phases 2-3 and focuses on deploying
 
 **Features**:
 - **Feature 13.1**: Docker Environment Setup (13 pts) - Multi-container architecture with Docker Compose
-- **Feature 13.2**: Backend API Server Implementation (13 pts) - Node.js/Express REST API
+- **Feature 13.2**: Backend API Server Implementation (13 pts) - Node.js 18.x/Express REST API
 - **Feature 13.3**: Socket.io Multiplayer Server (13 pts) - Real-time WebSocket communication
 - **Feature 13.4**: Database Schema & Migrations (8 pts) - PostgreSQL with persistence
 - **Feature 13.5**: Load Balancing & SSL Configuration (8 pts) - Nginx with Let's Encrypt SSL
@@ -1005,7 +1005,7 @@ The Beta Testing Phase runs in parallel with Phases 2-3 and focuses on deploying
 
 **Technology Stack**:
 - Docker 24+ & Docker Compose for containerization
-- Node.js + Express for REST API
+- Node.js 18.x + Express for REST API
 - Socket.io for real-time multiplayer
 - PostgreSQL 15+ for primary database
 - Redis 7+ for session cache
