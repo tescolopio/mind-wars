@@ -9,7 +9,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mind_wars/services/auth_service.dart';
 import 'package:mind_wars/services/local_auth_service.dart';
 import 'package:mind_wars/services/api_service.dart';
-import 'package:mind_wars/services/offline_service.dart';
 
 void main() {
   // Initialize FFI for testing

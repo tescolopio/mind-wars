@@ -277,16 +277,3 @@ class AuthService {
     return 'An error occurred. Please try again';
   }
 }
-
-/// Authentication result wrapper
-class AuthResult {
-  final bool success;
-  final User? user;
-  final String? error;
-  
-  AuthResult({
-    required this.success,
-    this.user,
-    this.error,
-  });
-}

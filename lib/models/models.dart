@@ -850,3 +850,16 @@ class ScoreRecord {
         validated: json['validated'] ?? false,
       );
 }
+
+/// Authentication result wrapper
+class AuthResult {
+  final bool success;
+  final User? user;
+  final String? error;
+
+  AuthResult({
+    required this.success,
+    this.user,
+    this.error,
+  });
+}
