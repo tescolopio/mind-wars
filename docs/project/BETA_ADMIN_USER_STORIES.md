@@ -542,7 +542,7 @@ The admin team consists of:
 
 **Target Personas**: Alex (Community Manager), Sarah (Product Manager)
 
-**Story Points**: 34
+**Story Points**: 44
 
 ---
 
