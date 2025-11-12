@@ -88,7 +88,7 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 - **Total Epics**: 16 (12 product + 4 beta infrastructure)
 - **Total Features**: 55+ (35 product + 20 beta infrastructure)
 - **Total Tasks**: 220+
-- **Total Story Points**: 527 (Phase 1: 183, Phase 2: 112, Phase 3: 90, Beta: 142)
+- **Total Story Points**: 532 (Phase 1: 183, Phase 2: 112, Phase 3: 90, Beta: 147)
 - **Estimated MVP Duration**: 2-2.5 months (Phase 1)
 - **Estimated Full v1.0 + Beta Infrastructure**: 6-8 months (Phases 1-3 + Beta)
 
@@ -980,7 +980,7 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 The Beta Testing Phase runs in parallel with Phases 2-3 and focuses on deploying backend infrastructure to enable beta testers to play together in a controlled Docker environment. This phase establishes the server-side architecture needed for multiplayer gameplay, user authentication, and game session management.
 
 **Duration**: 6-8 weeks (3-4 sprints)  
-**Total Story Points**: 142 points  
+**Total Story Points**: 147 points  
 **Team**: DevOps + Backend team (can run parallel to frontend Phase 2-3 work)  
 **Goal**: Deploy production-ready backend infrastructure for beta testing
 
@@ -992,7 +992,7 @@ The Beta Testing Phase runs in parallel with Phases 2-3 and focuses on deploying
 ### Epic 13: Beta Testing Infrastructure
 **Epic Priority**: P0 - Critical  
 **Business Value**: Enables beta testing environment for controlled rollout  
-**Epic Story Points**: 55 points  
+**Epic Story Points**: 60 points  
 **Dependencies**: Phase 1 completion (Epics 1-4)
 
 **Features**:
@@ -1001,6 +1001,7 @@ The Beta Testing Phase runs in parallel with Phases 2-3 and focuses on deploying
 - **Feature 13.3**: Socket.io Multiplayer Server (13 pts) - Real-time WebSocket communication
 - **Feature 13.4**: Database Schema & Migrations (8 pts) - PostgreSQL with persistence
 - **Feature 13.5**: Load Balancing & SSL Configuration (8 pts) - Nginx with Let's Encrypt SSL
+- **Feature 13.6**: Email Service Configuration (5 pts) - SendGrid/AWS SES for transactional emails
 
 **Technology Stack**:
 - Docker 24+ & Docker Compose for containerization

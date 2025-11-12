@@ -232,7 +232,7 @@ server {
 
 ## Beta Testing Backlog
 
-### Total Beta Testing Story Points: 142 points
+### Total Beta Testing Story Points: 147 points
 **Estimated Duration**: 6-8 weeks (3-4 sprints)
 
 ---
@@ -241,7 +241,7 @@ server {
 
 **Epic Priority**: P0 - Critical  
 **Business Value**: Enables beta testing environment for controlled rollout  
-**Epic Story Points**: 55 points  
+**Epic Story Points**: 60 points  
 **Dependencies**: Phase 1 completion (Epics 1-4)
 
 ### Feature 13.1: Docker Environment Setup ⭐ P0
@@ -482,6 +482,41 @@ server {
   - Rate limiting per IP
   - Request size limits
   - DDoS protection basics
+
+### Feature 13.6: Email Service Configuration ⭐ P0
+
+**Story**: As a DevOps engineer, I want to configure an email service so that the system can send transactional emails to beta testers
+
+**Story Points**: 5  
+**Acceptance Criteria**:
+- Email service provider configured (SendGrid, AWS SES, or SMTP)
+- API keys/credentials stored securely in environment variables
+- Email templates for transactional emails defined
+- Email sending functionality tested
+- Bounce and complaint handling configured
+- Email rate limits understood and documented
+- Fallback SMTP option available
+
+**Tasks**:
+- [ ] **Task 13.6.1**: Select and configure email service provider (2 pts)
+  - Evaluate options (SendGrid, AWS SES, Mailgun, SMTP)
+  - Create account and obtain API keys
+  - Configure domain verification (SPF, DKIM records)
+  - Set up sender email address (e.g., noreply@mindwars.app)
+  
+- [ ] **Task 13.6.2**: Configure email service in backend (2 pts)
+  - Install email service SDK (e.g., @sendgrid/mail, aws-sdk)
+  - Add email service credentials to environment variables
+  - Create email service wrapper module
+  - Implement retry logic for failed sends
+  - Add email sending to API server configuration
+
+- [ ] **Task 13.6.3**: Test email delivery and configure monitoring (1 pt)
+  - Test welcome email sending
+  - Set up bounce and complaint handling webhooks
+  - Configure email sending rate limits
+  - Add email delivery metrics to monitoring
+  - Document email service configuration and troubleshooting
 
 ---
 
