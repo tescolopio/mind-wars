@@ -116,7 +116,7 @@ This document outlines the architecture, infrastructure, and backlog items requi
 | **REST API** | Node.js + Express | RESTful endpoints for game logic |
 | **WebSocket Server** | Node.js + Socket.io | Real-time multiplayer communication |
 | **Database** | PostgreSQL 15.x | Primary data store |
-| **Cache** | Redis 7+ | Session storage & real-time data |
+| **Cache** | Redis 7.x | Session storage & real-time data |
 | **Monitoring** | Prometheus + Grafana | Metrics & visualization |
 | **Logging** | ELK Stack (Elasticsearch, Logstash, Kibana) | Centralized logging |
 | **File Storage** | MinIO or S3-compatible | User uploads & game assets |
