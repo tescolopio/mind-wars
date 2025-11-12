@@ -139,6 +139,7 @@ Core features first, polish iteratively. Optimistic updates with server confirma
 - **[PRODUCT_BACKLOG.md](PRODUCT_BACKLOG.md)** - Prioritized backlog with Epics, Features, and Tasks (P0-P3)
 - **[ROADMAP.md](ROADMAP.md)** - Visual 6-month roadmap with milestones and success metrics
 - **[SPRINT_TEMPLATES.md](docs/project/SPRINT_TEMPLATES.md)** - Sprint planning, standup, review, and retrospective templates
+- **[BETA_TESTING_ARCHITECTURE.md](BETA_TESTING_ARCHITECTURE.md)** - ⭐ NEW: Beta testing infrastructure with Docker deployment guide
 
 ### 📚 Product Documentation
 - **[USER_PERSONAS.md](docs/business/USER_PERSONAS.md)** - 8 detailed user personas (Family, Friends, Office/Colleagues)
