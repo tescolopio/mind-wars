@@ -693,7 +693,7 @@ The admin team consists of:
 
 **Target Personas**: Jennifer (Technical Admin), Sarah (Product Manager)
 
-**Story Points**: 44
+**Story Points**: 60
 
 ---
 
