@@ -1361,7 +1361,7 @@ WEEKLY SYNTHESIS
 
 **Total Story Points**: 73
 
-**Total Estimated Effort**: 228 story points (~8-10 weeks for small team)
+**Total Estimated Effort**: 289 story points (~8-10 weeks for small team)
 
 ---
 
