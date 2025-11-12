@@ -11,7 +11,7 @@ This guide provides a quick reference for deploying Mind Wars backend infrastruc
 
 ## Prerequisites
 
-- Docker 24+ installed
+- Docker 24.0 or later installed
 - Docker Compose v2 installed
 - Domain name configured (e.g., beta.mindwars.app)
 - Server with at least 4 CPU, 8GB RAM, 50GB SSD
