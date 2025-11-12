@@ -481,13 +481,14 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
     }
 
     // Simple validation - in production, check against dictionary
+    final wordLength = _wordBuilt!.length;
     setState(() {
       _wordsFound!.add(_wordBuilt!);
-      _score += _wordBuilt!.length * 2;
+      _score += wordLength * 2;
       _wordBuilt = '';
     });
 
-    _showMessage('Word accepted! +${_wordBuilt!.length * 2} points', success: true);
+    _showMessage('Word accepted! +${wordLength * 2} points', success: true);
   }
 
   Widget _buildSequenceRecallGame(BuildContext context) {
