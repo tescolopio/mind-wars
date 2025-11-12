@@ -4,9 +4,9 @@
 
 This document provides a prioritized, actionable backlog of work for the Mind Wars mobile application development. It is organized by priority levels and development phases, with clear links to user personas and their needs.
 
-**Last Updated**: November 10, 2025  
-**Version**: 1.1  
-**Status**: Phase 1 Complete ✅ | Phase 2 Planning
+**Last Updated**: November 12, 2025  
+**Version**: 1.2  
+**Status**: Phase 1 Complete ✅ | Phase 2 Planning | Beta Testing Architecture Defined
 
 ---
 
@@ -19,11 +19,12 @@ This document provides a prioritized, actionable backlog of work for the Mind Wa
 5. [Phase 1: MVP - Core Experience (Months 1-2)](#phase-1-mvp---core-experience-months-1-2)
 6. [Phase 2: Social & Progression (Months 3-4)](#phase-2-social--progression-months-3-4)
 7. [Phase 3: Polish & Scale (Months 5-6)](#phase-3-polish--scale-months-5-6)
-8. [Phase 4: Advanced Features (Future)](#phase-4-advanced-features-future)
-9. [MoSCoW Tagging](#moscow-tagging)
-10. [Final Recommendations](#final-recommendations)
-11. [Backlog Grooming Guidelines](#backlog-grooming-guidelines)
-12. [Sprint Planning Recommendations](#sprint-planning-recommendations)
+8. [Beta Testing Phase: Server Infrastructure (Parallel to Phase 2-3)](#beta-testing-phase-server-infrastructure-parallel-to-phase-2-3)
+9. [Phase 4: Advanced Features (Future)](#phase-4-advanced-features-future)
+10. [MoSCoW Tagging](#moscow-tagging)
+11. [Final Recommendations](#final-recommendations)
+12. [Backlog Grooming Guidelines](#backlog-grooming-guidelines)
+13. [Sprint Planning Recommendations](#sprint-planning-recommendations)
 
 ---
 
@@ -988,6 +989,172 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 
 ---
 
+## Beta Testing Phase: Server Infrastructure (Parallel to Phase 2-3)
+
+### Overview
+The Beta Testing Phase runs in parallel with Phases 2-3 and focuses on deploying backend infrastructure to enable beta testers to play together in a controlled Docker environment. This phase establishes the server-side architecture needed for multiplayer gameplay, user authentication, and game session management.
+
+**Duration**: 6-8 weeks (3-4 sprints)  
+**Total Story Points**: 147 points  
+**Team**: DevOps + Backend team (can run parallel to frontend Phase 2-3 work)  
+**Goal**: Deploy production-ready backend infrastructure for beta testing
+
+### Beta Testing Phases
+1. **Internal Beta** (2-4 weeks): Development team + friends/family (10-20 users)
+2. **Closed Beta** (4-6 weeks): Invited testers from target personas (50-100 users)
+3. **Open Beta** (4-8 weeks): Public sign-up with approval (500-1000 users)
+
+### Epic 13: Beta Testing Infrastructure
+**Epic Priority**: P0 - Critical  
+**Business Value**: Enables beta testing environment for controlled rollout  
+**Epic Story Points**: 60 points  
+**Dependencies**: Phase 1 completion (Epics 1-4)
+
+**Features**:
+- **Feature 13.1**: Docker Environment Setup (13 pts) - Multi-container architecture with Docker Compose
+- **Feature 13.2**: Backend API Server Implementation (13 pts) - Node.js 18.x/Express REST API
+- **Feature 13.3**: Socket.io Multiplayer Server (13 pts) - Real-time WebSocket communication
+- **Feature 13.4**: Database Schema & Migrations (8 pts) - PostgreSQL with persistence
+- **Feature 13.5**: Load Balancing & SSL Configuration (8 pts) - Nginx with Let's Encrypt SSL
+- **Feature 13.6**: Email Service Configuration (5 pts) - SendGrid/AWS SES for transactional emails
+
+**Technology Stack**:
+- Docker 24+ & Docker Compose for containerization
+- Node.js 18.x + Express for REST API
+- Socket.io for real-time multiplayer
+- PostgreSQL 15+ for primary database
+- Redis 7+ for session cache
+- Nginx for load balancing & SSL termination
+
+### Epic 14: Beta User Authentication & Management
+**Epic Priority**: P0 - Critical  
+**Business Value**: Enables secure user access for beta testers  
+**Epic Story Points**: 34 points  
+**Dependencies**: Epic 13 (Infrastructure)
+
+**Features**:
+- **Feature 14.1**: Beta Tester Registration System (8 pts) - Invitation code-based registration
+- **Feature 14.2**: JWT Token Authentication (8 pts) - Secure token-based auth
+- **Feature 14.3**: Beta Tester Role Management (8 pts) - Admin, moderator, tester roles
+- **Feature 14.4**: Session Management & Rate Limiting (5 pts) - Security controls
+- **Feature 14.5**: Beta Tester Profile Management (5 pts) - User profiles and preferences
+
+**Key Capabilities**:
+- Invitation code system for controlled beta access
+- JWT tokens (15 min access, 7 day refresh)
+- Role-based access control
+- Session management with Redis
+- Rate limiting to prevent abuse
+
+### Epic 15: Beta Lobby & Game Session Management
+**Epic Priority**: P0 - Critical  
+**Business Value**: Core multiplayer functionality for beta testing  
+**Epic Story Points**: 34 points  
+**Dependencies**: Epic 13 (Infrastructure), Epic 14 (Authentication)
+
+**Features**:
+- **Feature 15.1**: Game Lobby Creation & Discovery (8 pts) - Create/join lobbies with unique codes
+- **Feature 15.2**: Lobby Host Controls (8 pts) - Start game, kick players, transfer host
+- **Feature 15.3**: Game Session State Management (8 pts) - Track turns, disconnections, timeouts
+- **Feature 15.4**: Turn-Based Gameplay Flow (5 pts) - Submit, validate, and broadcast turns
+- **Feature 15.5**: Game Voting System (5 pts) - Democratic game selection
+
+**Key Capabilities**:
+- Private lobbies with shareable codes (e.g., "FAMILY42")
+- Support for 2-10 players per lobby
+- Real-time lobby updates via Socket.io
+- Server-side turn validation
+- Game voting with point allocation
+
+### Epic 16: Beta Monitoring & Analytics
+**Epic Priority**: P1 - High  
+**Business Value**: Insights for improving beta and production  
+**Epic Story Points**: 21 points  
+**Dependencies**: Epic 13 (Infrastructure)
+
+**Features**:
+- **Feature 16.1**: Application Metrics & Monitoring (8 pts) - Prometheus + Grafana
+- **Feature 16.2**: Centralized Logging (8 pts) - ELK stack (Elasticsearch, Logstash, Kibana)
+- **Feature 16.3**: User Analytics & Events (5 pts) - Track user behavior
+
+**Key Capabilities**:
+- Real-time metrics for API, Socket.io, database
+- Centralized logging with searchable logs
+- User behavior analytics
+- Alert rules for critical issues
+- Dashboards for system health
+
+### Beta Testing Pipeline
+
+**User Journey**: Registration → Lobby → Game
+```
+1. Beta tester receives invitation code
+2. Registers via mobile app with invitation code
+3. Creates or joins lobby with shareable code
+4. Votes on games to play
+5. Plays games in turn-based fashion
+6. Server validates moves and calculates scores
+7. Leaderboards and badges update
+```
+
+**Infrastructure**:
+```
+Mobile Clients (iOS/Android)
+         ↓
+    Load Balancer (Nginx + SSL)
+         ↓
+    ┌────────────────────┐
+    │  API Server        │  Socket.io Server
+    │  (REST)            │  (WebSocket)
+    └────────────────────┘
+         ↓
+    ┌────────────────────┐
+    │  PostgreSQL        │  Redis
+    │  (Database)        │  (Cache)
+    └────────────────────┘
+         ↓
+    Monitoring (Prometheus + Grafana)
+```
+
+### Deployment Strategy
+
+**Phase 1: Single-Host Deployment** (Internal Beta, 10-20 users)
+- Single Docker host (4 CPU, 8GB RAM)
+- All containers on one host
+- Local database storage
+
+**Phase 2: Vertical Scaling** (Closed Beta, 50-100 users)
+- Larger host (8 CPU, 16GB RAM)
+- Optimized database with connection pooling
+- Redis caching
+
+**Phase 3: Horizontal Scaling** (Open Beta, 500-1000 users)
+- Kubernetes cluster (3+ nodes)
+- Multiple API/Socket.io replicas
+- Database read replicas
+- Redis cluster
+
+### Security Considerations
+- SSL/TLS encryption (Let's Encrypt)
+- JWT token authentication
+- Server-side game validation (anti-cheat)
+- Rate limiting per IP and user
+- Role-based access control
+- Invitation code system for beta access
+
+### Success Metrics
+- **Uptime**: >99% during beta period
+- **API Latency**: p95 <500ms
+- **Lobby Completion Rate**: >70%
+- **Crash Rate**: <0.5%
+- **User Satisfaction**: >4.0/5.0
+
+### Documentation
+For comprehensive details on beta testing architecture, Docker deployment, and infrastructure setup, see:
+- **[BETA_TESTING_ARCHITECTURE.md](BETA_TESTING_ARCHITECTURE.md)** - Complete beta testing infrastructure guide with detailed Epics, Features, and Tasks
+
+---
+
 ## Phase 4: Advanced Features (Future)
 
 ### Epic 10: Advanced Social Features
@@ -1159,6 +1326,12 @@ This epic covers the complete migration from local Docker deployment to a produc
 - Epic 7: Offline & Analytics - **Could**
 - Epic 8: Cross-Platform Support (Complete) - **Should**
 - Epic 9: User Feedback & Quality - **Could**
+
+**Beta Testing Phase (Must Have - Parallel to Phases 2-3)**:
+- Epic 13: Beta Testing Infrastructure - **Must**
+- Epic 14: Beta User Authentication & Management - **Must**
+- Epic 15: Beta Lobby & Game Session Management - **Must**
+- Epic 16: Beta Monitoring & Analytics - **Should**
 
 **Phase 4 (Won't Have - Post-Launch)**:
 - Epic 10: Advanced Social Features - **Won't**
