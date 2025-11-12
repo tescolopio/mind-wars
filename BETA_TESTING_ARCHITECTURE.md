@@ -193,8 +193,6 @@ redis:
   command: redis-server --requirepass ${REDIS_PASSWORD}
   volumes:
     - redis_data:/data
-  ports:
-    - "6379:6379"
 ```
 
 **Use Cases:**
