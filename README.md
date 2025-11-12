@@ -148,6 +148,10 @@ Core features first, polish iteratively. Optimistic updates with server confirma
 - **[VALIDATION.md](docs/project/VALIDATION.md)** - Implementation validation checklist
 - **[VOTING_SYSTEM.md](VOTING_SYSTEM.md)** - Game voting system documentation
 
+### 🧪 Testing & Quality Assurance
+- **[ALPHA_TESTING.md](ALPHA_TESTING.md)** - Alpha testing guide for local builds and early testing
+- **[BETA_TESTING_USER_STORIES.md](BETA_TESTING_USER_STORIES.md)** - ⭐ NEW: Beta testing program with epics, features, tasks, and user journeys
+
 ### 🎯 Epic Implementation Summaries (NEW)
 - **[EPIC_1_SUMMARY.md](docs/project/EPIC_1_SUMMARY.md)** - Authentication & Onboarding implementation
 - **[EPIC_2_SUMMARY.md](docs/project/EPIC_2_SUMMARY.md)** - Lobby Management & Multiplayer implementation
@@ -281,6 +285,27 @@ Alpha builds have:
 - Different bundle ID (`com.mindwars.app.alpha`) - can install alongside production
 - Version suffix `-alpha` (e.g., `1.0.0-alpha`)
 - Useful for testing new features without affecting production installs
+
+## Beta Testing
+
+Beta testing validates production readiness with real users in a controlled environment. See **[BETA_TESTING_USER_STORIES.md](BETA_TESTING_USER_STORIES.md)** for:
+
+- **Beta Testing Program**: Complete epics, features, and tasks for beta testing infrastructure
+- **Beta Tester Journey**: Detailed user journey from invitation through launch
+- **Testing Campaigns**: Structured testing scenarios and focus areas
+- **Feedback Collection**: In-app feedback, surveys, and analytics
+- **Success Metrics**: KPIs and targets for beta testing program
+
+### Beta vs Alpha
+
+| Aspect | Alpha | Beta |
+|--------|-------|------|
+| **Environment** | Local builds, dev servers | Hosted production-like servers |
+| **Distribution** | Manual APK, TestFlight | TestFlight + Google Play Beta Track |
+| **User Base** | Internal team, close contacts | Invited external users (50-100+) |
+| **Duration** | 1-2 weeks | 4-6 weeks |
+| **Focus** | Core functionality | Real-world usage, UX, edge cases |
+| **Monitoring** | Basic logging | Full analytics, crash reporting, APM |
 
 ## Development
 
