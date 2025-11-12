@@ -1239,7 +1239,7 @@ Internal Communication:
 
 ### 2. Authentication & Authorization
 - **JWT Tokens**: Short-lived access tokens (15 min), refresh tokens (7 days)
-- **Password Security**: Bcrypt hashing with salt (10 rounds)
+- **Password Security**: Bcrypt hashing with salt (12 rounds, per [OWASP recommendation](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html) for improved security)
 - **Session Management**: Max 3 concurrent sessions per user
 - **Role-Based Access**: Admin, moderator, tester roles with permission checks
 - **Invitation Codes**: Beta registration requires valid invitation code
