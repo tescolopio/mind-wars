@@ -245,7 +245,7 @@ The admin team consists of:
 
 **Target Personas**: Marcus (Support Admin), Sarah (Product Manager)
 
-**Story Points**: 42
+**Story Points**: 50
 
 ---
 
