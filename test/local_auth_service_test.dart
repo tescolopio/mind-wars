@@ -5,6 +5,7 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mind_wars/services/local_auth_service.dart';
 
 void main() {
@@ -19,6 +20,9 @@ void main() {
     late LocalAuthService authService;
 
     setUp(() async {
+      // Initialize SharedPreferences with empty values for testing
+      SharedPreferences.setMockInitialValues({});
+      
       // Create in-memory database for testing
       database = await openDatabase(
         inMemoryDatabasePath,
