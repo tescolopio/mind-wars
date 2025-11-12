@@ -140,6 +140,7 @@ Core features first, polish iteratively. Optimistic updates with server confirma
 - **[ROADMAP.md](ROADMAP.md)** - Visual 6-month roadmap with milestones and success metrics
 - **[SPRINT_TEMPLATES.md](docs/project/SPRINT_TEMPLATES.md)** - Sprint planning, standup, review, and retrospective templates
 - **[BETA_TESTING_ARCHITECTURE.md](BETA_TESTING_ARCHITECTURE.md)** - ⭐ NEW: Beta testing infrastructure with Docker deployment guide
+- **[BETA_TESTING_QUICKSTART.md](BETA_TESTING_QUICKSTART.md)** - ⭐ NEW: Quick start guide for deploying beta infrastructure
 
 ### 📚 Product Documentation
 - **[USER_PERSONAS.md](docs/business/USER_PERSONAS.md)** - 8 detailed user personas (Family, Friends, Office/Colleagues)

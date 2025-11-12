@@ -1534,6 +1534,17 @@ volumes:
 
 ---
 
+## Related Documents
+
+- [PRODUCT_BACKLOG.md](PRODUCT_BACKLOG.md) - Main product backlog (Epics 1-12) and Beta Testing Phase (Epics 13-16)
+- [BETA_TESTING_QUICKSTART.md](BETA_TESTING_QUICKSTART.md) - Quick start guide for deploying beta infrastructure
+- [ALPHA_TESTING.md](ALPHA_TESTING.md) - Alpha testing guide for mobile builds
+- [ARCHITECTURE.md](ARCHITECTURE.md) - Technical architecture overview
+- [README.md](README.md) - Project overview and setup
+- [docs/project/API_DOCUMENTATION.md](docs/project/API_DOCUMENTATION.md) - API endpoint documentation
+
+---
+
 **Document Status**: Planning Phase  
 **Next Review**: After Epic 13 completion  
 **Owner**: DevOps Team & Backend Team  
