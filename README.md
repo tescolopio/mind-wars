@@ -146,6 +146,7 @@ Core features first, polish iteratively. Optimistic updates with server confirma
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - Technical architecture and implementation analysis
 - **[VALIDATION.md](docs/project/VALIDATION.md)** - Implementation validation checklist
 - **[VOTING_SYSTEM.md](VOTING_SYSTEM.md)** - Game voting system documentation
+- **[BETA_ADMIN_USER_STORIES.md](docs/project/BETA_ADMIN_USER_STORIES.md)** - ⭐ NEW: Beta testing admin requirements and workflows
 
 ### 🎯 Epic Implementation Summaries (NEW)
 - **[EPIC_1_SUMMARY.md](docs/project/EPIC_1_SUMMARY.md)** - Authentication & Onboarding implementation

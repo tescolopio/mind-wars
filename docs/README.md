@@ -67,6 +67,9 @@ Project management, technical specifications, and development processes:
 - [Backlog Guide](project/BACKLOG_GUIDE.md) - Guide to navigating project documentation
 - [Validation](project/VALIDATION.md) - Implementation validation checklist
 
+**Beta Testing:**
+- [Beta Admin User Stories](project/BETA_ADMIN_USER_STORIES.md) - ⭐ NEW: Admin environment requirements and workflows for beta testing
+
 ### 📱 Social & Community Documentation
 Located in: `docs/social/`
 

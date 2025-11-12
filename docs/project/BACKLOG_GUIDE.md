@@ -53,8 +53,14 @@ This is your quick reference guide to navigate the Mind Wars backlog system. Use
    - **Key Content**: Voting mechanics, Socket.io events
    - **Audience**: Engineers working on voting feature
 
+### 🧪 Beta Testing & Operations
+9. **[BETA_ADMIN_USER_STORIES.md](BETA_ADMIN_USER_STORIES.md)** (50KB) - ⭐ NEW: Beta admin requirements
+   - **Use When**: Planning beta testing infrastructure and operations
+   - **Key Content**: Admin epics, features, tasks for user support, deployments, monitoring
+   - **Audience**: Product Manager, DevOps, Support Team
+
 ### 📖 General
-9. **[README.md](../../README.md)** (9KB) - Project overview
+10. **[README.md](../../README.md)** (9KB) - Project overview
    - **Use When**: Onboarding new team members
    - **Key Content**: Features, tech stack, setup instructions
    - **Audience**: Everyone, especially new team members
