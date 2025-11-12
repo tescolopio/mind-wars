@@ -515,7 +515,7 @@ server {
 
 - [ ] **Task 14.1.2**: Implement registration validation (2 pts)
   - Email format validation
-  - Password strength validation (8+ chars, mixed case, numbers)
+  - Password strength validation (8+ chars, mixed case, numbers, special characters)
   - Duplicate email check
   - Invitation code validation
 
