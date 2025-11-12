@@ -1173,7 +1173,7 @@ Track these metrics during alpha testing:
 
 Use this checklist to track alpha testing progress:
 
-### Epic 1: Local Authentication ✅
+### Epic 1: Local Authentication
 - [ ] Feature 1.1: Local Account Creation (8 pts)
 - [ ] Feature 1.2: Local Account Login (5 pts)
 - [ ] Feature 1.3: Multiple Account Management (5 pts)
