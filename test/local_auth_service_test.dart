@@ -9,8 +9,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mind_wars/services/local_auth_service.dart';
 
 void main() {
-  // Initialize FFI for testing
+  // Initialize FFI and Flutter bindings for testing
   setUpAll(() {
+    TestWidgetsFlutterBinding.ensureInitialized();
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
   });
@@ -20,7 +21,7 @@ void main() {
     late LocalAuthService authService;
 
     setUp(() async {
-      // Initialize SharedPreferences with empty values for testing
+      // Reset SharedPreferences mock with empty values for each test
       SharedPreferences.setMockInitialValues({});
       
       // Create in-memory database for testing
