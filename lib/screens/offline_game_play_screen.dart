@@ -1,0 +1,774 @@
+/**
+ * Offline Game Play Screen
+ * Allows alpha testers to play games in offline/practice mode
+ */
+
+import 'package:flutter/material.dart';
+import 'dart:math';
+import '../games/game_catalog.dart';
+import '../models/models.dart';
+
+class OfflineGamePlayScreen extends StatefulWidget {
+  final GameTemplate gameTemplate;
+
+  const OfflineGamePlayScreen({
+    Key? key,
+    required this.gameTemplate,
+  }) : super(key: key);
+
+  @override
+  State<OfflineGamePlayScreen> createState() => _OfflineGamePlayScreenState();
+}
+
+class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
+  late DateTime _startTime;
+  int _score = 0;
+  int _hintsUsed = 0;
+  bool _gameCompleted = false;
+  
+  // Memory Match game state
+  List<String>? _memoryCards;
+  List<bool>? _memoryRevealed;
+  List<int>? _memoryMatched;
+  int? _memoryFirstCard;
+  
+  // Word Builder game state
+  List<String>? _wordLetters;
+  String? _wordBuilt;
+  Set<String>? _wordsFound;
+  
+  // Sequence Recall game state
+  List<int>? _sequence;
+  List<int>? _userSequence;
+  bool? _sequenceShowing;
+  int? _sequenceLevel;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTime = DateTime.now();
+    _initializeGame();
+  }
+
+  void _initializeGame() {
+    switch (widget.gameTemplate.id) {
+      case 'memory_match':
+        _initializeMemoryMatch();
+        break;
+      case 'word_builder':
+        _initializeWordBuilder();
+        break;
+      case 'sequence_recall':
+        _initializeSequenceRecall();
+        break;
+      default:
+        // Generic initialization for other games
+        break;
+    }
+  }
+
+  void _initializeMemoryMatch() {
+    final symbols = ['🌟', '🎨', '🎭', '🎪', '🎯', '🎲', '🎸', '🎹'];
+    _memoryCards = [...symbols, ...symbols];
+    _memoryCards!.shuffle(Random());
+    _memoryRevealed = List.filled(_memoryCards!.length, false);
+    _memoryMatched = [];
+    _memoryFirstCard = null;
+  }
+
+  void _initializeWordBuilder() {
+    final consonants = ['B', 'C', 'D', 'F', 'G', 'H', 'L', 'M', 'N', 'P', 'R', 'S', 'T'];
+    final vowels = ['A', 'E', 'I', 'O', 'U'];
+    
+    _wordLetters = [];
+    for (var i = 0; i < 5; i++) {
+      _wordLetters!.add(consonants[Random().nextInt(consonants.length)]);
+    }
+    for (var i = 0; i < 4; i++) {
+      _wordLetters!.add(vowels[Random().nextInt(vowels.length)]);
+    }
+    _wordLetters!.shuffle(Random());
+    _wordBuilt = '';
+    _wordsFound = {};
+  }
+
+  void _initializeSequenceRecall() {
+    _sequenceLevel = 1;
+    _sequence = [];
+    _userSequence = [];
+    _sequenceShowing = false;
+    _generateSequence();
+  }
+
+  void _generateSequence() {
+    _sequence = List.generate(
+      3 + _sequenceLevel!,
+      (index) => Random().nextInt(4),
+    );
+    _userSequence = [];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.gameTemplate.name),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.lightbulb_outline),
+            onPressed: _showHint,
+            tooltip: 'Get Hint',
+          ),
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            onPressed: _showRules,
+            tooltip: 'Game Rules',
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Score Header
+            _buildScoreHeader(context),
+            
+            const Divider(height: 1),
+            
+            // Game Content
+            Expanded(
+              child: _buildGameContent(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildScoreHeader(BuildContext context) {
+    final elapsed = DateTime.now().difference(_startTime);
+    final minutes = elapsed.inMinutes;
+    final seconds = elapsed.inSeconds % 60;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      color: Theme.of(context).colorScheme.surfaceVariant,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildStatItem(
+            context,
+            Icons.timer,
+            'Time',
+            '$minutes:${seconds.toString().padLeft(2, '0')}',
+          ),
+          _buildStatItem(
+            context,
+            Icons.stars,
+            'Score',
+            _score.toString(),
+          ),
+          _buildStatItem(
+            context,
+            Icons.lightbulb,
+            'Hints',
+            _hintsUsed.toString(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatItem(
+    BuildContext context,
+    IconData icon,
+    String label,
+    String value,
+  ) {
+    return Column(
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: Theme.of(context).colorScheme.primary),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: Theme.of(context).textTheme.labelSmall,
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGameContent(BuildContext context) {
+    if (_gameCompleted) {
+      return _buildCompletionScreen(context);
+    }
+
+    switch (widget.gameTemplate.id) {
+      case 'memory_match':
+        return _buildMemoryMatchGame(context);
+      case 'word_builder':
+        return _buildWordBuilderGame(context);
+      case 'sequence_recall':
+        return _buildSequenceRecallGame(context);
+      default:
+        return _buildGenericGame(context);
+    }
+  }
+
+  Widget _buildMemoryMatchGame(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 4,
+          childAspectRatio: 1,
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
+        ),
+        itemCount: _memoryCards!.length,
+        itemBuilder: (context, index) {
+          final isRevealed = _memoryRevealed![index];
+          final isMatched = _memoryMatched!.contains(index);
+          
+          return Card(
+            elevation: isMatched ? 0 : 4,
+            color: isMatched 
+                ? Colors.green[100]
+                : (isRevealed ? Colors.white : Theme.of(context).colorScheme.primary),
+            child: InkWell(
+              onTap: isMatched || isRevealed ? null : () => _onMemoryCardTap(index),
+              child: Center(
+                child: Text(
+                  (isRevealed || isMatched) ? _memoryCards![index] : '?',
+                  style: TextStyle(
+                    fontSize: 32,
+                    color: isMatched 
+                        ? Colors.green[700]
+                        : (isRevealed ? Colors.black : Colors.white),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _onMemoryCardTap(int index) {
+    setState(() {
+      _memoryRevealed![index] = true;
+      
+      if (_memoryFirstCard == null) {
+        _memoryFirstCard = index;
+      } else {
+        // Check for match
+        if (_memoryCards![_memoryFirstCard!] == _memoryCards![index]) {
+          _memoryMatched!.add(_memoryFirstCard!);
+          _memoryMatched!.add(index);
+          _score += 10;
+          
+          // Check if game is complete
+          if (_memoryMatched!.length == _memoryCards!.length) {
+            _completeGame();
+          }
+        } else {
+          // No match - hide cards after delay
+          Future.delayed(const Duration(milliseconds: 800), () {
+            if (mounted) {
+              setState(() {
+                _memoryRevealed![_memoryFirstCard!] = false;
+                _memoryRevealed![index] = false;
+              });
+            }
+          });
+        }
+        
+        _memoryFirstCard = null;
+      }
+    });
+  }
+
+  Widget _buildWordBuilderGame(BuildContext context) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    Text(
+                      'Build words from these letters:',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 16),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: _wordLetters!.map((letter) {
+                        return Chip(
+                          label: Text(
+                            letter,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    TextField(
+                      decoration: const InputDecoration(
+                        labelText: 'Your Word',
+                        hintText: 'Type a word...',
+                        border: OutlineInputBorder(),
+                      ),
+                      textCapitalization: TextCapitalization.characters,
+                      onChanged: (value) {
+                        setState(() {
+                          _wordBuilt = value.toUpperCase();
+                        });
+                      },
+                      onSubmitted: (value) => _submitWord(),
+                    ),
+                    const SizedBox(height: 12),
+                    FilledButton.icon(
+                      onPressed: _wordBuilt!.isEmpty ? null : _submitWord,
+                      icon: const Icon(Icons.check),
+                      label: const Text('Submit Word'),
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 48),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            if (_wordsFound!.isNotEmpty) ...[
+              Text(
+                'Words Found (${_wordsFound!.length})',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: _wordsFound!.map((word) {
+                  return Chip(
+                    label: Text(word),
+                    backgroundColor: Colors.green[100],
+                  );
+                }).toList(),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _submitWord() {
+    if (_wordBuilt!.length < 3) {
+      _showMessage('Word must be at least 3 letters');
+      return;
+    }
+
+    // Check if letters are available
+    final lettersUsed = <String>[];
+    for (var i = 0; i < _wordBuilt!.length; i++) {
+      lettersUsed.add(_wordBuilt![i]);
+    }
+
+    final availableLetters = List<String>.from(_wordLetters!);
+    for (var letter in lettersUsed) {
+      if (!availableLetters.remove(letter)) {
+        _showMessage('Letter $letter not available');
+        return;
+      }
+    }
+
+    if (_wordsFound!.contains(_wordBuilt)) {
+      _showMessage('Word already found');
+      return;
+    }
+
+    // Simple validation - in production, check against dictionary
+    setState(() {
+      _wordsFound!.add(_wordBuilt!);
+      _score += _wordBuilt!.length * 2;
+      _wordBuilt = '';
+    });
+
+    _showMessage('Word accepted! +${_wordBuilt!.length * 2} points', success: true);
+  }
+
+  Widget _buildSequenceRecallGame(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Text(
+                    'Level $_sequenceLevel',
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    _sequenceShowing!
+                        ? 'Watch the sequence...'
+                        : 'Repeat the sequence',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          Expanded(
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 1.5,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+              ),
+              itemCount: 4,
+              itemBuilder: (context, index) {
+                final colors = [
+                  Colors.red,
+                  Colors.blue,
+                  Colors.green,
+                  Colors.yellow,
+                ];
+                
+                return Card(
+                  color: colors[index],
+                  elevation: 4,
+                  child: InkWell(
+                    onTap: _sequenceShowing! ? null : () => _onSequenceButtonTap(index),
+                    child: Center(
+                      child: Text(
+                        (index + 1).toString(),
+                        style: const TextStyle(
+                          fontSize: 48,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 16),
+          if (!_sequenceShowing!)
+            FilledButton.icon(
+              onPressed: _showSequence,
+              icon: const Icon(Icons.visibility),
+              label: const Text('Show Sequence Again'),
+              style: FilledButton.styleFrom(
+                minimumSize: const Size(double.infinity, 48),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  void _showSequence() async {
+    setState(() {
+      _sequenceShowing = true;
+      _userSequence = [];
+    });
+
+    for (var i = 0; i < _sequence!.length; i++) {
+      await Future.delayed(const Duration(milliseconds: 800));
+      // Flash the button (would need more state management for visual feedback)
+    }
+
+    await Future.delayed(const Duration(milliseconds: 500));
+    
+    if (mounted) {
+      setState(() {
+        _sequenceShowing = false;
+      });
+    }
+  }
+
+  void _onSequenceButtonTap(int index) {
+    setState(() {
+      _userSequence!.add(index);
+      
+      // Check if correct so far
+      if (_userSequence!.length <= _sequence!.length) {
+        if (_userSequence![_userSequence!.length - 1] != 
+            _sequence![_userSequence!.length - 1]) {
+          // Wrong!
+          _showMessage('Wrong sequence! Try again');
+          _userSequence = [];
+          return;
+        }
+        
+        // Check if complete
+        if (_userSequence!.length == _sequence!.length) {
+          _score += 10 * _sequenceLevel!;
+          _sequenceLevel = _sequenceLevel! + 1;
+          _showMessage('Correct! Moving to level $_sequenceLevel', success: true);
+          _generateSequence();
+          _showSequence();
+        }
+      }
+    });
+  }
+
+  Widget _buildGenericGame(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              widget.gameTemplate.icon,
+              style: const TextStyle(fontSize: 80),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              widget.gameTemplate.name,
+              style: Theme.of(context).textTheme.headlineMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'This game is coming soon!',
+              style: Theme.of(context).textTheme.bodyLarge,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Practice with Memory Match, Word Builder, or Sequence Recall for now.',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.grey[600],
+                  ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            OutlinedButton.icon(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.arrow_back),
+              label: const Text('Back to Game Selection'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCompletionScreen(BuildContext context) {
+    final elapsed = DateTime.now().difference(_startTime);
+    final minutes = elapsed.inMinutes;
+    final seconds = elapsed.inSeconds % 60;
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.emoji_events,
+              size: 100,
+              color: Colors.amber,
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Congratulations!',
+              style: Theme.of(context).textTheme.headlineLarge,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'You completed ${widget.gameTemplate.name}',
+              style: Theme.of(context).textTheme.titleLarge,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  children: [
+                    _buildResultRow(context, 'Final Score', _score.toString()),
+                    const Divider(height: 24),
+                    _buildResultRow(
+                      context,
+                      'Time',
+                      '$minutes:${seconds.toString().padLeft(2, '0')}',
+                    ),
+                    const Divider(height: 24),
+                    _buildResultRow(context, 'Hints Used', _hintsUsed.toString()),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 32),
+            FilledButton.icon(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.replay),
+              label: const Text('Play Again'),
+              style: FilledButton.styleFrom(
+                minimumSize: const Size(double.infinity, 48),
+              ),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              icon: const Icon(Icons.arrow_back),
+              label: const Text('Back to Games'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildResultRow(BuildContext context, String label, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        Text(
+          value,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+        ),
+      ],
+    );
+  }
+
+  void _completeGame() {
+    setState(() {
+      _gameCompleted = true;
+    });
+  }
+
+  void _showHint() {
+    setState(() {
+      _hintsUsed++;
+      _score = max(0, _score - 5); // Penalty for using hint
+    });
+
+    String hintText = 'Hint: ';
+    switch (widget.gameTemplate.id) {
+      case 'memory_match':
+        hintText += 'Try to remember the positions of matching pairs!';
+        break;
+      case 'word_builder':
+        hintText += 'Look for common word patterns like -ING, -ED, or -ER';
+        break;
+      case 'sequence_recall':
+        hintText += 'Break the sequence into smaller chunks to remember it better';
+        break;
+      default:
+        hintText += 'Take your time and think carefully about each move';
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        icon: const Icon(Icons.lightbulb, size: 48, color: Colors.amber),
+        title: const Text('Hint'),
+        content: Text(hintText),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Got it!'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showRules() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(widget.gameTemplate.name),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Description',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              Text(widget.gameTemplate.description),
+              const SizedBox(height: 16),
+              Text(
+                'How to Play',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              Text(widget.gameTemplate.rules),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showMessage(String message, {bool success = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: success ? Colors.green : null,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+}
