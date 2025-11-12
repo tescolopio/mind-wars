@@ -42,6 +42,19 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
   List<int>? _userSequence;
   bool? _sequenceShowing;
   int? _sequenceLevel;
+  
+  // Anagram Attack game state
+  String? _targetWord;
+  String? _scrambledWord;
+  String? _userAnswer;
+  int? _anagramLevel;
+  List<String>? _anagramWords;
+  
+  // Code Breaker game state
+  List<int>? _secretCode;
+  List<List<int>>? _guesses;
+  List<Map<String, int>>? _feedback; // correct position and correct number
+  int? _codeLength;
 
   @override
   void initState() {
@@ -60,6 +73,12 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
         break;
       case 'sequence_recall':
         _initializeSequenceRecall();
+        break;
+      case 'anagram_attack':
+        _initializeAnagramAttack();
+        break;
+      case 'code_breaker':
+        _initializeCodeBreaker();
         break;
       default:
         // Generic initialization for other games
@@ -106,6 +125,46 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
       (index) => Random().nextInt(4),
     );
     _userSequence = [];
+  }
+
+  void _initializeAnagramAttack() {
+    _anagramLevel = 1;
+    _anagramWords = [
+      'LISTEN', 'SILENT', 'GARDEN', 'DANGER', 'MASTER', 'STREAM',
+      'CREATION', 'REACTION', 'TRIANGLE', 'INTEGRAL', 'HEART', 'EARTH',
+      'BELOW', 'ELBOW', 'ANGLE', 'ANGEL', 'NIGHT', 'THING',
+    ];
+    _nextAnagram();
+  }
+
+  void _nextAnagram() {
+    if (_anagramWords!.isEmpty) {
+      _completeGame();
+      return;
+    }
+    
+    _targetWord = _anagramWords!.removeAt(Random().nextInt(_anagramWords!.length));
+    _scrambledWord = _scrambleWord(_targetWord!);
+    _userAnswer = '';
+  }
+
+  String _scrambleWord(String word) {
+    final chars = word.split('');
+    chars.shuffle(Random());
+    // Make sure it's actually scrambled
+    if (chars.join() == word && word.length > 1) {
+      final temp = chars[0];
+      chars[0] = chars[1];
+      chars[1] = temp;
+    }
+    return chars.join();
+  }
+
+  void _initializeCodeBreaker() {
+    _codeLength = 4;
+    _secretCode = List.generate(_codeLength!, (_) => Random().nextInt(6) + 1);
+    _guesses = [];
+    _feedback = [];
   }
 
   @override
@@ -220,6 +279,10 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
         return _buildWordBuilderGame(context);
       case 'sequence_recall':
         return _buildSequenceRecallGame(context);
+      case 'anagram_attack':
+        return _buildAnagramAttackGame(context);
+      case 'code_breaker':
+        return _buildCodeBreakerGame(context);
       default:
         return _buildGenericGame(context);
     }
@@ -551,6 +614,281 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
     });
   }
 
+  Widget _buildAnagramAttackGame(BuildContext context) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  children: [
+                    Text(
+                      'Unscramble This Word',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      _scrambledWord ?? '',
+                      style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 8,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                    ),
+                    const SizedBox(height: 32),
+                    TextField(
+                      decoration: const InputDecoration(
+                        labelText: 'Your Answer',
+                        hintText: 'Type the unscrambled word...',
+                        border: OutlineInputBorder(),
+                      ),
+                      textCapitalization: TextCapitalization.characters,
+                      onChanged: (value) {
+                        setState(() {
+                          _userAnswer = value.toUpperCase();
+                        });
+                      },
+                      onSubmitted: (value) => _checkAnagram(),
+                    ),
+                    const SizedBox(height: 16),
+                    FilledButton.icon(
+                      onPressed: _userAnswer!.isEmpty ? null : _checkAnagram,
+                      icon: const Icon(Icons.check),
+                      label: const Text('Submit Answer'),
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 48),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Words remaining: ${_anagramWords!.length}',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Colors.grey[600],
+                  ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _checkAnagram() {
+    if (_userAnswer!.toUpperCase() == _targetWord!.toUpperCase()) {
+      setState(() {
+        _score += 15;
+        _anagramLevel = _anagramLevel! + 1;
+      });
+      _showMessage('Correct! +15 points', success: true);
+      
+      Future.delayed(const Duration(milliseconds: 800), () {
+        if (mounted) {
+          setState(() {
+            _nextAnagram();
+          });
+        }
+      });
+    } else {
+      _showMessage('Try again! The word is ${_targetWord!.length} letters long');
+    }
+  }
+
+  Widget _buildCodeBreakerGame(BuildContext context) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    Text(
+                      'Break the Code!',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Guess the $_codeLength-digit code (1-6)',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.check_circle, color: Colors.green, size: 16),
+                        const Text(' = Correct position   '),
+                        const Icon(Icons.circle, color: Colors.amber, size: 16),
+                        const Text(' = Wrong position'),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Previous guesses
+            if (_guesses!.isNotEmpty) ...[
+              Text(
+                'Previous Guesses',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              ..._guesses!.asMap().entries.map((entry) {
+                final idx = entry.key;
+                final guess = entry.value;
+                final feedback = _feedback![idx];
+                
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: guess.map((digit) => Container(
+                            width: 40,
+                            height: 40,
+                            margin: const EdgeInsets.symmetric(horizontal: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Center(
+                              child: Text(
+                                digit.toString(),
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          )).toList(),
+                        ),
+                        Row(
+                          children: [
+                            ...List.generate(
+                              feedback['correct']!,
+                              (_) => const Icon(Icons.check_circle, color: Colors.green, size: 20),
+                            ),
+                            ...List.generate(
+                              feedback['wrongPosition']!,
+                              (_) => const Icon(Icons.circle, color: Colors.amber, size: 20),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+              const SizedBox(height: 16),
+            ],
+            // Number pad for input
+            Text(
+              'Make Your Guess',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                childAspectRatio: 1.5,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+              ),
+              itemCount: 6,
+              itemBuilder: (context, index) {
+                return ElevatedButton(
+                  onPressed: () => _addCodeDigit(index + 1),
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    (index + 1).toString(),
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<int> _currentCodeGuess = [];
+
+  void _addCodeDigit(int digit) {
+    if (_currentCodeGuess.length < _codeLength!) {
+      setState(() {
+        _currentCodeGuess.add(digit);
+      });
+
+      if (_currentCodeGuess.length == _codeLength!) {
+        _checkCode();
+      }
+    }
+  }
+
+  void _checkCode() {
+    final correct = _currentCodeGuess
+        .asMap()
+        .entries
+        .where((e) => e.value == _secretCode![e.key])
+        .length;
+
+    if (correct == _codeLength!) {
+      setState(() {
+        _score += 50;
+        _guesses!.add(List.from(_currentCodeGuess));
+        _feedback!.add({'correct': correct, 'wrongPosition': 0});
+      });
+      _showMessage('Code cracked! +50 points', success: true);
+      _completeGame();
+      return;
+    }
+
+    // Calculate wrong position
+    final codeDigitCounts = <int, int>{};
+    final guessDigitCounts = <int, int>{};
+    
+    for (var i = 0; i < _codeLength!; i++) {
+      if (_currentCodeGuess[i] != _secretCode![i]) {
+        codeDigitCounts[_secretCode![i]] = (codeDigitCounts[_secretCode![i]] ?? 0) + 1;
+        guessDigitCounts[_currentCodeGuess[i]] = (guessDigitCounts[_currentCodeGuess[i]] ?? 0) + 1;
+      }
+    }
+
+    var wrongPosition = 0;
+    for (var digit in guessDigitCounts.keys) {
+      wrongPosition += min(guessDigitCounts[digit]!, codeDigitCounts[digit] ?? 0);
+    }
+
+    setState(() {
+      _guesses!.add(List.from(_currentCodeGuess));
+      _feedback!.add({'correct': correct, 'wrongPosition': wrongPosition});
+      _currentCodeGuess = [];
+    });
+
+    _showMessage('$correct correct, $wrongPosition wrong position');
+  }
+
   Widget _buildGenericGame(BuildContext context) {
     return Center(
       child: Padding(
@@ -576,7 +914,7 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Practice with Memory Match, Word Builder, or Sequence Recall for now.',
+              'Try these playable games: Memory Match, Word Builder, Sequence Recall, Anagram Attack, or Code Breaker.',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Colors.grey[600],
                   ),
@@ -705,6 +1043,12 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
         break;
       case 'sequence_recall':
         hintText += 'Break the sequence into smaller chunks to remember it better';
+        break;
+      case 'anagram_attack':
+        hintText += 'Try rearranging common letter combinations like TH, ER, or ING';
+        break;
+      case 'code_breaker':
+        hintText += 'Use the feedback from previous guesses to narrow down possibilities';
         break;
       default:
         hintText += 'Take your time and think carefully about each move';
