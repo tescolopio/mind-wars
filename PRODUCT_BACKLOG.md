@@ -84,12 +84,13 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 8. **The Office Team Builder** (Jennifer, 35) - Team-building & morale
 
 ### Backlog Statistics
-- **Total Epics**: 12 (9 active in Phases 1-3, 3 future)
-- **Total Features**: 40+ (35 in Phases 1-3)
-- **Total Tasks**: 150+
-- **Total Story Points**: 385 (Phase 1: 183, Phase 2: 112, Phase 3: 90)
+- **Total Epics**: 13 (9 active in Phases 1-3, 3 future, 1 cloud migration)
+- **Total Features**: 53+ (35 in Phases 1-3, 13 in Cloud Migration, 5+ future)
+- **Total Tasks**: 190+ (150+ app development, 40+ cloud migration)
+- **Total Story Points**: 529 (Phase 1: 183, Phase 2: 112, Phase 3: 90, Cloud Migration: 144)
 - **Estimated MVP Duration**: 2-2.5 months (Phase 1)
 - **Estimated Full v1.0**: 5-6 months (Phases 1-3)
+- **Estimated Production Launch**: 7-8 months (including Cloud Migration)
 
 ---
 
@@ -134,11 +135,12 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 
 ## Development Phases
 
-### Phase 1: MVP - Core Experience (Months 1-2)
+### Phase 1: MVP - Core Experience (Months 1-2) ✅
 **Goal**: Launch-ready core multiplayer cognitive games platform with offline support  
 **Team Velocity Target**: 40-50 story points per 2-week sprint  
 **Total Story Points**: 183 points  
-**MoSCoW**: Must Have
+**MoSCoW**: Must Have  
+**Status**: COMPLETE ✅
 
 ### Phase 2: Social & Progression (Months 3-4)
 **Goal**: Rich social experience with retention hooks and enhanced scoring  
@@ -152,7 +154,20 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 **Total Story Points**: 90 points  
 **MoSCoW**: Could Have
 
-### Phase 4: Advanced Features (Future)
+### Phase 4: Production Cloud Migration (Months 7-8)
+**Goal**: Deploy to production cloud infrastructure and launch to users  
+**Team Velocity Target**: 35-40 story points per 2-week sprint  
+**Total Story Points**: 144 points  
+**MoSCoW**: Should Have (for production launch)  
+**Documentation**: [CLOUD_MIGRATION_PLAN.md](docs/project/CLOUD_MIGRATION_PLAN.md)
+
+**Migration Phases**:
+- Weeks 1-2: Cloud Foundation Setup (34 pts)
+- Weeks 3-4: Backend Services Deployment (42 pts)
+- Weeks 5-6: Data Migration & Testing (34 pts)
+- Weeks 7-8: Production Launch (34 pts)
+
+### Phase 5: Advanced Features (Future)
 **Goal**: Competitive differentiation and scaling  
 **MoSCoW**: Won't Have (Post-Launch)  
 **Total Story Points**: TBD
@@ -1075,6 +1090,50 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 
 ---
 
+### Epic 13: Production Cloud Migration
+**Epic Priority**: P1 - High (Post Phase 1)  
+**Business Value**: Enable production launch and scalability  
+**Epic Story Points**: 144 points (8 weeks)  
+**MoSCoW**: Should Have (for production launch)  
+**Personas**: All personas (indirect - enables platform)
+
+This epic covers the complete migration from local Docker deployment to a production cloud environment. See [CLOUD_MIGRATION_PLAN.md](docs/project/CLOUD_MIGRATION_PLAN.md) for detailed planning.
+
+#### Migration Phases Overview
+
+**Phase 1: Cloud Foundation Setup (Weeks 1-2) - 34 pts**
+- Feature 13.1: Cloud Account & Project Setup (8 pts)
+- Feature 13.2: Database Infrastructure (13 pts)
+- Feature 13.3: CI/CD Pipeline Foundation (13 pts)
+
+**Phase 2: Backend Services Deployment (Weeks 3-4) - 42 pts**
+- Feature 13.4: RESTful API Deployment (13 pts)
+- Feature 13.5: Socket.io Server Deployment (13 pts)
+- Feature 13.6: Cloud Functions Deployment (8 pts)
+- Feature 13.7: Authentication Integration (8 pts)
+
+**Phase 3: Data Migration & Testing (Weeks 5-6) - 34 pts**
+- Feature 13.8: Data Migration Strategy (13 pts)
+- Feature 13.9: Load Testing & Performance Optimization (13 pts)
+- Feature 13.10: Comprehensive Testing (8 pts)
+
+**Phase 4: Production Launch (Weeks 7-8) - 34 pts**
+- Feature 13.11: Production Deployment (13 pts)
+- Feature 13.12: Monitoring & Alerting Setup (13 pts)
+- Feature 13.13: Documentation & Knowledge Transfer (8 pts)
+
+**Success Criteria**:
+- 99.9% uptime SLA achieved
+- API response time < 500ms (p95)
+- Support 10,000+ concurrent users
+- Zero data loss during migration
+- Mobile apps approved and published
+- Comprehensive monitoring operational
+
+**For detailed Epic breakdown, Features, and Tasks, see**: [CLOUD_MIGRATION_PLAN.md](docs/project/CLOUD_MIGRATION_PLAN.md)
+
+---
+
 ## MoSCoW Tagging
 
 | Tag | Meaning | Priority Level |
@@ -1105,6 +1164,7 @@ Mind Wars is designed for private group competitions called **"Mind Wars"** - mu
 - Epic 10: Advanced Social Features - **Won't**
 - Epic 11: Advanced Progression - **Won't**
 - Epic 12: Monetization - **Won't**
+- Epic 13: Production Cloud Migration - **Should** (Post Phase 1)
 
 ---
 
@@ -1414,6 +1474,59 @@ A backlog item is "Done" when:
 
 ---
 
+## Complete Project Timeline
+
+### Overall Timeline Visualization
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                    MIND WARS COMPLETE DEVELOPMENT ROADMAP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Months 1-2      Months 3-4      Months 5-6      Months 7-8       Month 9+
+┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐    ┌──────────┐
+│ PHASE 1  │   │ PHASE 2  │   │ PHASE 3  │   │ PHASE 4  │    │ PHASE 5  │
+│   MVP    │   │  Social  │   │  Polish  │   │  Cloud   │    │ Advanced │
+│   Core   │   │   & Pro  │   │  & Scale │   │Migration │    │ Features │
+└──────────┘   └──────────┘   └──────────┘   └──────────┘    └──────────┘
+✅ COMPLETE       Planned        Planned        Planned         Future
+
+183 pts        112 pts         90 pts         144 pts          TBD
+4-5 sprints    3 sprints       2-3 sprints    4 sprints
+```
+
+### Detailed Timeline
+
+| Phase | Duration | Story Points | Key Milestones | Status |
+|-------|----------|--------------|----------------|--------|
+| **Phase 1: MVP** | Months 1-2 | 183 pts | Authentication, Lobbies, Core Games, Cross-Platform | ✅ COMPLETE |
+| **Phase 2: Social** | Months 3-4 | 112 pts | Chat, Badges, Leaderboards, Streaks | 📋 Planned |
+| **Phase 3: Polish** | Months 5-6 | 90 pts | Offline Mode, Analytics, Optimization | 📋 Planned |
+| **Phase 4: Cloud** | Months 7-8 | 144 pts | Cloud Infrastructure, Production Deployment | 📋 Planned |
+| **Phase 5: Advanced** | Month 9+ | TBD | Voice Chat, Tournaments, Premium Features | 🔮 Future |
+
+### Production Launch Path
+
+**To Production Launch (8 months)**:
+```
+Phase 1 (2 months) → Phase 2 (2 months) → Phase 3 (2 months) → Phase 4 (2 months)
+     ✅                   📋                   📋                   📋
+   COMPLETE            Planned              Planned              Planned
+```
+
+**Critical Path to Launch**:
+1. ✅ **Months 1-2**: Build core application (Phase 1) - COMPLETE
+2. 📋 **Months 3-4**: Add social features (Phase 2)
+3. 📋 **Months 5-6**: Polish and optimize (Phase 3)
+4. 📋 **Months 7-8**: Deploy to production cloud (Phase 4)
+5. 🚀 **Month 8**: Production Launch to 10,000+ users
+
+**Post-Launch Enhancement**:
+- Month 9+: Advanced features (Phase 5)
+- Continuous: Optimization, monitoring, user feedback
+
+---
+
 ## Appendix
 
 ### Related Documents
@@ -1423,6 +1536,7 @@ A backlog item is "Done" when:
 - [README.md](README.md) - Project overview and setup
 - [VALIDATION.md](VALIDATION.md) - Implementation validation checklist
 - [VOTING_SYSTEM.md](VOTING_SYSTEM.md) - Game voting system details
+- [CLOUD_MIGRATION_PLAN.md](docs/project/CLOUD_MIGRATION_PLAN.md) - ⭐ NEW: Detailed cloud migration planning
 
 ### Glossary
 - **Epic**: Large body of work (1-2 months, multiple features)
@@ -1434,19 +1548,21 @@ A backlog item is "Done" when:
 - **Mind War**: Private group competition (Family/Friends/Colleagues)
 - **Persona**: Representative user archetype
 - **MVP**: Minimum Viable Product (Phase 1)
+- **Cloud Migration**: Moving from local Docker to production cloud infrastructure
 
 ### Change Log
 | Date | Version | Changes | Author |
 |------|---------|---------|--------|
 | Nov 2025 | 1.0 | Initial backlog creation based on updated personas | Product Team |
 | Nov 10, 2025 | 1.1 | Updated with Phase 1 completion status - all 183 story points marked complete | Product Team |
+| Nov 12, 2025 | 1.2 | Added Epic 13: Production Cloud Migration (144 pts, 8 weeks) | Product Team |
 
 ---
 
-**Document Status**: Phase 1 Complete ✅ | Phase 2 Planning  
+**Document Status**: Phase 1 Complete ✅ | Phase 2 Planning | Cloud Migration Planning  
 **Next Review**: After Phase 2 Sprint 1  
 **Owner**: Product Manager  
-**Contributors**: Engineering Team, Design Team, Persona Research Team
+**Contributors**: Engineering Team, Design Team, Persona Research Team, DevOps Team
 
 ---
 
@@ -1456,3 +1572,4 @@ A backlog item is "Done" when:
 - *Technical discoveries and constraints*
 - *Market and competitive changes*
 - *Persona validation and evolution*
+- *Cloud infrastructure and deployment insights*

@@ -139,6 +139,7 @@ Core features first, polish iteratively. Optimistic updates with server confirma
 - **[PRODUCT_BACKLOG.md](PRODUCT_BACKLOG.md)** - Prioritized backlog with Epics, Features, and Tasks (P0-P3)
 - **[ROADMAP.md](ROADMAP.md)** - Visual 6-month roadmap with milestones and success metrics
 - **[SPRINT_TEMPLATES.md](docs/project/SPRINT_TEMPLATES.md)** - Sprint planning, standup, review, and retrospective templates
+- **[CLOUD_MIGRATION_PLAN.md](docs/project/CLOUD_MIGRATION_PLAN.md)** - ⭐ NEW: Production cloud migration strategy (Epic 13)
 
 ### 📚 Product Documentation
 - **[USER_PERSONAS.md](docs/business/USER_PERSONAS.md)** - 8 detailed user personas (Family, Friends, Office/Colleagues)
@@ -456,6 +457,36 @@ await offlineService.syncWithServer(
 - ✅ Security-first (server-side validation, anti-cheating)
 - ✅ Mobile-first design (5" touch screens scaling to 12" tablets)
 - ✅ Analytics instrumentation
+
+## Production Deployment
+
+### Current Status
+Phase 1 development is complete (✅). The application is ready for backend deployment and production launch.
+
+### Cloud Migration Plan
+See **[CLOUD_MIGRATION_PLAN.md](docs/project/CLOUD_MIGRATION_PLAN.md)** for comprehensive production deployment strategy:
+
+**Epic 13: Production Cloud Migration** (144 story points, 8 weeks)
+- **Phase 1**: Cloud Foundation Setup (Weeks 1-2)
+- **Phase 2**: Backend Services Deployment (Weeks 3-4)
+- **Phase 3**: Data Migration & Testing (Weeks 5-6)
+- **Phase 4**: Production Launch (Weeks 7-8)
+
+**Target Infrastructure**: Google Cloud Platform (GCP) with Firebase
+- Cloud Run for API and Socket.io servers
+- Cloud Firestore for database
+- Firebase Authentication for OAuth
+- Redis Memorystore for caching
+- Cloud Functions for microservices
+- Full monitoring and alerting
+
+**Success Criteria**:
+- 99.9% uptime SLA
+- API response time < 500ms (p95)
+- Support 10,000+ concurrent users
+- App Store and Play Store approved
+
+For detailed deployment procedures, architecture diagrams, and migration tasks, see the [Cloud Migration Plan](docs/project/CLOUD_MIGRATION_PLAN.md).
 
 ## License
 
