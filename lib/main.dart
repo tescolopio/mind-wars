@@ -2,12 +2,14 @@
  * Mind Wars - Main Application Entry Point
  * Mobile-First: Designed for 5" touch screens, scales up
  * Flutter app for iOS 14+ and Android 8+
+ * Alpha Mode: Local authentication without backend server
  */
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'services/api_service.dart';
 import 'services/auth_service.dart';
+import 'services/local_auth_service.dart';
 import 'services/multiplayer_service.dart';
 import 'services/offline_service.dart';
 import 'services/progression_service.dart';
@@ -17,117 +19,186 @@ import 'screens/registration_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/profile_setup_screen.dart';
 
-void main() {
+// Alpha mode flag - set to false when backend is ready
+const bool kAlphaMode = true;
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MindWarsApp());
 }
 
-class MindWarsApp extends StatelessWidget {
+class MindWarsApp extends StatefulWidget {
   const MindWarsApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<MindWarsApp> createState() => _MindWarsAppState();
+}
+
+class _MindWarsAppState extends State<MindWarsApp> {
+  late Future<void> _initFuture;
+  late ApiService _apiService;
+  late AuthService _authService;
+  late OfflineService _offlineService;
+  late MultiplayerService _multiplayerService;
+  late ProgressionService _progressionService;
+
+  @override
+  void initState() {
+    super.initState();
+    _initFuture = _initializeServices();
+  }
+
+  Future<void> _initializeServices() async {
     // Initialize services
-    final apiService = ApiService(
+    _apiService = ApiService(
       baseUrl: 'https://api.mindwars.app', // Configure your API endpoint
     );
     
-    final authService = AuthService(apiService: apiService);
-    final multiplayerService = MultiplayerService();
-    final offlineService = OfflineService();
-    final progressionService = ProgressionService(apiService: apiService);
+    _offlineService = OfflineService();
+    _multiplayerService = MultiplayerService();
+    _progressionService = ProgressionService(apiService: _apiService);
+    
+    // Initialize database for local auth in alpha mode
+    if (kAlphaMode) {
+      final database = await _offlineService.database;
+      final localAuthService = LocalAuthService(database: database);
+      _authService = AuthService(
+        apiService: _apiService,
+        localAuthService: localAuthService,
+        isAlphaMode: true,
+      );
+    } else {
+      _authService = AuthService(
+        apiService: _apiService,
+        isAlphaMode: false,
+      );
+    }
+  }
 
-    return MultiProvider(
-      providers: [
-        Provider<ApiService>.value(value: apiService),
-        Provider<AuthService>.value(value: authService),
-        Provider<MultiplayerService>.value(value: multiplayerService),
-        Provider<OfflineService>.value(value: offlineService),
-        Provider<ProgressionService>.value(value: progressionService),
-      ],
-      child: MaterialApp(
-        title: 'Mind Wars',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          // Mobile-First: Material Design 3 with touch-friendly sizing
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF6200EE),
-            brightness: Brightness.light,
-          ),
-          
-          // Touch-friendly sizes for 5" screens
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              minimumSize: const Size(120, 48), // Touch-friendly
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<void>(
+      future: _initFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          // Show loading screen while initializing
+          return MaterialApp(
+            home: Scaffold(
+              body: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0xFF6200EE),
+                      Color(0xFF9D46FF),
+                    ],
+                  ),
+                ),
+                child: const Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                ),
               ),
             ),
-          ),
-          
-          cardTheme: CardTheme(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+          );
+        }
+
+        return MultiProvider(
+          providers: [
+            Provider<ApiService>.value(value: _apiService),
+            Provider<AuthService>.value(value: _authService),
+            Provider<MultiplayerService>.value(value: _multiplayerService),
+            Provider<OfflineService>.value(value: _offlineService),
+            Provider<ProgressionService>.value(value: _progressionService),
+          ],
+          child: MaterialApp(
+            title: kAlphaMode ? 'Mind Wars Alpha' : 'Mind Wars',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              // Mobile-First: Material Design 3 with touch-friendly sizing
+              useMaterial3: true,
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: const Color(0xFF6200EE),
+                brightness: Brightness.light,
+              ),
+              
+              // Touch-friendly sizes for 5" screens
+              elevatedButtonTheme: ElevatedButtonThemeData(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(120, 48), // Touch-friendly
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                ),
+              ),
+              
+              cardTheme: CardTheme(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              ),
+              
+              appBarTheme: const AppBarTheme(
+                centerTitle: true,
+                elevation: 0,
+              ),
+              
+              // Typography optimized for mobile
+              textTheme: const TextTheme(
+                displayLarge: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                ),
+                displayMedium: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
+                displaySmall: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+                headlineMedium: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+                bodyLarge: TextStyle(fontSize: 16),
+                bodyMedium: TextStyle(fontSize: 14),
+              ),
             ),
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          ),
-          
-          appBarTheme: const AppBarTheme(
-            centerTitle: true,
-            elevation: 0,
-          ),
-          
-          // Typography optimized for mobile
-          textTheme: const TextTheme(
-            displayLarge: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
+            
+            darkTheme: ThemeData(
+              useMaterial3: true,
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: const Color(0xFF6200EE),
+                brightness: Brightness.dark,
+              ),
             ),
-            displayMedium: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-            ),
-            displaySmall: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-            headlineMedium: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-            ),
-            bodyLarge: TextStyle(fontSize: 16),
-            bodyMedium: TextStyle(fontSize: 14),
+            
+            themeMode: ThemeMode.system,
+            
+            // Initial route - splash screen handles navigation
+            initialRoute: '/',
+            
+            routes: {
+              '/': (context) => const SplashScreen(),
+              '/login': (context) => const LoginScreen(),
+              '/register': (context) => const RegistrationScreen(),
+              '/onboarding': (context) => const OnboardingScreen(),
+              '/profile-setup': (context) => const ProfileSetupScreen(),
+              '/home': (context) => const HomeScreen(),
+              '/lobby-list': (context) => const LobbyListScreen(),
+              '/leaderboard': (context) => const LeaderboardScreen(),
+              '/profile': (context) => const ProfileScreen(),
+              '/offline': (context) => const OfflineScreen(),
+            },
           ),
-        ),
-        
-        darkTheme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF6200EE),
-            brightness: Brightness.dark,
-          ),
-        ),
-        
-        themeMode: ThemeMode.system,
-        
-        // Initial route - splash screen handles navigation
-        initialRoute: '/',
-        
-        routes: {
-          '/': (context) => const SplashScreen(),
-          '/login': (context) => const LoginScreen(),
-          '/register': (context) => const RegistrationScreen(),
-          '/onboarding': (context) => const OnboardingScreen(),
-          '/profile-setup': (context) => const ProfileSetupScreen(),
-          '/home': (context) => const HomeScreen(),
-          '/lobby-list': (context) => const LobbyListScreen(),
-          '/leaderboard': (context) => const LeaderboardScreen(),
-          '/profile': (context) => const ProfileScreen(),
-          '/offline': (context) => const OfflineScreen(),
-        },
-      ),
+        );
+      },
     );
   }
 }

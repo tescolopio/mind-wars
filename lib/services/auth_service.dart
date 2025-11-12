@@ -2,14 +2,19 @@
  * Authentication Service
  * Manages user authentication state, token storage, and session management
  * Security-First: JWT tokens stored securely, auto-login support
+ * Alpha Mode: Uses local authentication without backend
  */
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'api_service.dart';
+import 'local_auth_service.dart';
 import '../models/models.dart';
 
 class AuthService {
   final ApiService _apiService;
+  final LocalAuthService? _localAuthService;
+  final bool _isAlphaMode;
+  
   static const String _tokenKey = 'auth_token';
   static const String _userIdKey = 'user_id';
   static const String _usernameKey = 'username';
@@ -18,13 +23,22 @@ class AuthService {
   
   User? _currentUser;
   
-  AuthService({required ApiService apiService}) : _apiService = apiService;
+  AuthService({
+    required ApiService apiService,
+    LocalAuthService? localAuthService,
+    bool isAlphaMode = true, // Default to alpha mode for testing
+  })  : _apiService = apiService,
+        _localAuthService = localAuthService,
+        _isAlphaMode = isAlphaMode;
   
   /// Get current authenticated user
   User? get currentUser => _currentUser;
   
   /// Check if user is authenticated
   bool get isAuthenticated => _currentUser != null;
+  
+  /// Check if running in alpha mode
+  bool get isAlphaMode => _isAlphaMode;
   
   /// Register a new user
   /// Validates email, password strength, and handles errors
@@ -33,6 +47,20 @@ class AuthService {
     required String email,
     required String password,
   }) async {
+    // Use local auth in alpha mode
+    if (_isAlphaMode && _localAuthService != null) {
+      final result = await _localAuthService!.register(
+        username: username,
+        email: email,
+        password: password,
+      );
+      if (result.success) {
+        _currentUser = result.user;
+      }
+      return result;
+    }
+    
+    // Use API auth in production mode
     try {
       // Client-side validation before API call
       final validationError = _validateRegistration(username, email, password);
@@ -66,6 +94,20 @@ class AuthService {
     required String password,
     bool autoLogin = false,
   }) async {
+    // Use local auth in alpha mode
+    if (_isAlphaMode && _localAuthService != null) {
+      final result = await _localAuthService!.login(
+        email: email,
+        password: password,
+        autoLogin: autoLogin,
+      );
+      if (result.success) {
+        _currentUser = result.user;
+      }
+      return result;
+    }
+    
+    // Use API auth in production mode
     try {
       // Call API
       final response = await _apiService.login(email, password);
@@ -89,6 +131,14 @@ class AuthService {
   
   /// Logout user and clear stored data
   Future<void> logout() async {
+    // Use local auth in alpha mode
+    if (_isAlphaMode && _localAuthService != null) {
+      await _localAuthService!.logout();
+      _currentUser = null;
+      return;
+    }
+    
+    // Use API auth in production mode
     try {
       await _apiService.logout();
     } catch (e) {
@@ -102,6 +152,16 @@ class AuthService {
   /// Attempt to restore session from stored token
   /// Used for auto-login on app launch
   Future<bool> restoreSession() async {
+    // Use local auth in alpha mode
+    if (_isAlphaMode && _localAuthService != null) {
+      final restored = await _localAuthService!.restoreSession();
+      if (restored) {
+        _currentUser = _localAuthService!.currentUser;
+      }
+      return restored;
+    }
+    
+    // Use API auth in production mode
     try {
       final prefs = await SharedPreferences.getInstance();
       final autoLogin = prefs.getBool(_autoLoginKey) ?? false;
