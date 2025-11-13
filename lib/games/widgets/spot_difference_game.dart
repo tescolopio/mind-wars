@@ -141,7 +141,6 @@ class _SpotDifferenceGameState extends BaseGameState<SpotDifferenceGame> {
                     ),
                     itemCount: _gridSize * _gridSize,
                     itemBuilder: (context, index) {
-                      final isDifference = _differences.contains(index);
                       final isFound = _found.contains(index);
                       
                       return GestureDetector(
