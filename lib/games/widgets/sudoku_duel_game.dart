@@ -116,7 +116,19 @@ class _SudokuDuelGameState extends BaseGameState<SudokuDuelGame> {
         if (cell != 0 && !seen.add(cell)) return false;
       }
     }
-    
+
+    // Check 2x2 boxes
+    for (var boxRow = 0; boxRow < 4; boxRow += 2) {
+      for (var boxCol = 0; boxCol < 4; boxCol += 2) {
+        final seen = <int>{};
+        for (var i = 0; i < 2; i++) {
+          for (var j = 0; j < 2; j++) {
+            final cell = _board[boxRow + i][boxCol + j];
+            if (cell != 0 && !seen.add(cell)) return false;
+          }
+        }
+      }
+    }
     return true;
   }
 
