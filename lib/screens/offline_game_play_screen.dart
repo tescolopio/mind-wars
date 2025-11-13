@@ -1,11 +1,12 @@
 /**
- * Offline Game Play Screen
+ * Offline Game Play Screen - Refactored
  * Allows alpha testers to play games in offline/practice mode
+ * Uses modular game widgets for cleaner architecture
  */
 
 import 'package:flutter/material.dart';
-import 'dart:math';
 import '../games/game_catalog.dart';
+import '../games/widgets/game_widgets.dart';
 
 class OfflineGamePlayScreen extends StatefulWidget {
   final GameTemplate gameTemplate;
@@ -26,164 +27,11 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
   bool _gameCompleted = false;
   bool _gameStarted = false;
   int _countdown = 0;
-  
-  // Memory Match game state
-  List<String>? _memoryCards;
-  List<bool>? _memoryRevealed;
-  List<int>? _memoryMatched;
-  int? _memoryFirstCard;
-  bool _memoryLocked = false;
-  
-  // Word Builder game state
-  List<String>? _wordLetters;
-  String? _wordBuilt;
-  Set<String>? _wordsFound;
-  final TextEditingController _wordBuilderController = TextEditingController();
-  
-  // Sequence Recall game state
-  List<int>? _sequence;
-  List<int>? _userSequence;
-  bool? _sequenceShowing;
-  int? _sequenceLevel;
-  int? _currentFlashingButton;
-  
-  // Anagram Attack game state
-  String? _targetWord;
-  String? _scrambledWord;
-  String? _userAnswer;
-  int? _anagramLevel;
-  List<String>? _anagramWords;
-  final TextEditingController _anagramController = TextEditingController();
-  
-  // Code Breaker game state
-  List<int>? _secretCode;
-  List<List<int>>? _guesses;
-  List<Map<String, int>>? _feedback; // correct position and correct number
-  int? _codeLength;
 
   @override
   void initState() {
     super.initState();
     _startTime = DateTime.now();
-    _initializeGame();
-  }
-
-  @override
-  void dispose() {
-    _wordBuilderController.dispose();
-    _anagramController.dispose();
-    super.dispose();
-  }
-
-  void _initializeGame() {
-    switch (widget.gameTemplate.id) {
-      case 'memory_match':
-        _initializeMemoryMatch();
-        break;
-      case 'word_builder':
-        _initializeWordBuilder();
-        break;
-      case 'sequence_recall':
-        _initializeSequenceRecall();
-        break;
-      case 'anagram_attack':
-        _initializeAnagramAttack();
-        break;
-      case 'code_breaker':
-        _initializeCodeBreaker();
-        break;
-      default:
-        // Generic initialization for other games
-        break;
-    }
-  }
-
-  void _initializeMemoryMatch() {
-    final symbols = ['🌟', '🎨', '🎭', '🎪', '🎯', '🎲', '🎸', '🎹'];
-    _memoryCards = [...symbols, ...symbols];
-    _memoryCards!.shuffle(Random());
-    _memoryRevealed = List.filled(_memoryCards!.length, false);
-    _memoryMatched = [];
-    _memoryFirstCard = null;
-  }
-
-  void _initializeWordBuilder() {
-    final consonants = ['B', 'C', 'D', 'F', 'G', 'H', 'L', 'M', 'N', 'P', 'R', 'S', 'T'];
-    final vowels = ['A', 'E', 'I', 'O', 'U'];
-    
-    _wordLetters = [];
-    for (var i = 0; i < 5; i++) {
-      _wordLetters!.add(consonants[Random().nextInt(consonants.length)]);
-    }
-    for (var i = 0; i < 4; i++) {
-      _wordLetters!.add(vowels[Random().nextInt(vowels.length)]);
-    }
-    _wordLetters!.shuffle(Random());
-    _wordBuilt = '';
-    _wordsFound = {};
-  }
-
-  void _initializeSequenceRecall() {
-    _sequenceLevel = 1;
-    _sequence = [];
-    _userSequence = [];
-    _sequenceShowing = false;
-    _currentFlashingButton = null;
-    _generateSequence();
-  }
-
-  void _generateSequence() {
-    _sequence = List.generate(
-      3 + _sequenceLevel!,
-      (index) => Random().nextInt(4),
-    );
-    _userSequence = [];
-  }
-
-  void _initializeAnagramAttack() {
-    _anagramLevel = 1;
-    _anagramWords = [
-      'LISTEN', 'SILENT', 'GARDEN', 'DANGER', 'MASTER', 'STREAM',
-      'CREATION', 'REACTION', 'TRIANGLE', 'INTEGRAL', 'HEART', 'EARTH',
-      'BELOW', 'ELBOW', 'ANGLE', 'ANGEL', 'NIGHT', 'THING',
-    ];
-    _nextAnagram();
-  }
-
-  void _nextAnagram() {
-    if (_anagramWords!.isEmpty) {
-      _completeGame();
-      return;
-    }
-    
-    _targetWord = _anagramWords!.removeAt(Random().nextInt(_anagramWords!.length));
-    _scrambledWord = _scrambleWord(_targetWord!);
-    _userAnswer = '';
-    _anagramController.clear();
-  }
-
-  String _scrambleWord(String word) {
-    final chars = word.split('');
-    var attempts = 0;
-    do {
-      chars.shuffle(Random());
-      attempts++;
-    } while (chars.join() == word && attempts < 10 && word.length > 1);
-    
-    // Final check - if still not scrambled, manually swap
-    if (chars.join() == word && word.length > 1) {
-      final temp = chars[0];
-      chars[0] = chars[1];
-      chars[1] = temp;
-    }
-    return chars.join();
-  }
-
-  void _initializeCodeBreaker() {
-    _codeLength = 4;
-    _secretCode = List.generate(_codeLength!, (_) => Random().nextInt(6) + 1);
-    _guesses = [];
-    _feedback = [];
   }
 
   @override
@@ -209,9 +57,7 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
           children: [
             // Score Header
             _buildScoreHeader(context),
-            
             const Divider(height: 1),
-            
             // Game Content
             Expanded(
               child: _buildGameContent(context),
@@ -299,20 +145,53 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
       return _buildCountdownScreen(context);
     }
 
+    // Build the appropriate game widget
+    return _buildGameWidget(context);
+  }
+
+  Widget _buildGameWidget(BuildContext context) {
     switch (widget.gameTemplate.id) {
       case 'memory_match':
-        return _buildMemoryMatchGame(context);
-      case 'word_builder':
-        return _buildWordBuilderGame(context);
+        return MemoryMatchGame(
+          onGameComplete: _onGameComplete,
+          onScoreUpdate: _onScoreUpdate,
+        );
       case 'sequence_recall':
-        return _buildSequenceRecallGame(context);
+        return SequenceRecallGame(
+          onGameComplete: _onGameComplete,
+          onScoreUpdate: _onScoreUpdate,
+        );
+      case 'word_builder':
+        return WordBuilderGame(
+          onGameComplete: _onGameComplete,
+          onScoreUpdate: _onScoreUpdate,
+        );
       case 'anagram_attack':
-        return _buildAnagramAttackGame(context);
+        return AnagramAttackGame(
+          onGameComplete: _onGameComplete,
+          onScoreUpdate: _onScoreUpdate,
+        );
       case 'code_breaker':
-        return _buildCodeBreakerGame(context);
+        return CodeBreakerGame(
+          onGameComplete: _onGameComplete,
+          onScoreUpdate: _onScoreUpdate,
+        );
       default:
         return _buildGenericGame(context);
     }
+  }
+
+  void _onScoreUpdate(int newScore) {
+    setState(() {
+      _score = newScore;
+    });
+  }
+
+  void _onGameComplete(int finalScore) {
+    setState(() {
+      _score = finalScore;
+      _gameCompleted = true;
+    });
   }
 
   Widget _buildStartScreen(BuildContext context) {
@@ -418,758 +297,6 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
         });
       }
     }
-    
-    // After countdown, start sequence recall if it's that game
-    if (mounted && widget.gameTemplate.id == 'sequence_recall') {
-      await Future.delayed(const Duration(milliseconds: 500));
-      if (mounted) {
-        _showSequence();
-      }
-    }
-  }
-
-  Widget _buildMemoryMatchGame(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4,
-          childAspectRatio: 1,
-          crossAxisSpacing: 8,
-          mainAxisSpacing: 8,
-        ),
-        itemCount: _memoryCards!.length,
-        itemBuilder: (context, index) {
-          final isRevealed = _memoryRevealed![index];
-          final isMatched = _memoryMatched!.contains(index);
-          
-          return Card(
-            elevation: isMatched ? 0 : 4,
-            color: isMatched 
-                ? Colors.green[100]
-                : (isRevealed ? Colors.white : Theme.of(context).colorScheme.primary),
-            child: InkWell(
-              onTap: isMatched || isRevealed ? null : () => _onMemoryCardTap(index),
-              child: Center(
-                child: Text(
-                  (isRevealed || isMatched) ? _memoryCards![index] : '?',
-                  style: TextStyle(
-                    fontSize: 32,
-                    color: isMatched 
-                        ? Colors.green[700]
-                        : (isRevealed ? Colors.black : Colors.white),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  void _onMemoryCardTap(int index) {
-    if (_memoryLocked) return;
-    
-    setState(() {
-      _memoryRevealed![index] = true;
-      
-      if (_memoryFirstCard == null) {
-        _memoryFirstCard = index;
-      } else {
-        // Check for match
-        if (_memoryCards![_memoryFirstCard!] == _memoryCards![index]) {
-          _memoryMatched!.add(_memoryFirstCard!);
-          _memoryMatched!.add(index);
-          _score += 10;
-          _memoryFirstCard = null;
-          
-          // Check if game is complete
-          if (_memoryMatched!.length == _memoryCards!.length) {
-            _completeGame();
-          }
-        } else {
-          // No match - lock cards and hide after delay
-          _memoryLocked = true;
-          final firstCard = _memoryFirstCard!;
-          _memoryFirstCard = null;
-          
-          Future.delayed(const Duration(milliseconds: 800), () {
-            if (mounted) {
-              setState(() {
-                _memoryRevealed![firstCard] = false;
-                _memoryRevealed![index] = false;
-                _memoryLocked = false;
-              });
-            }
-          });
-        }
-      }
-    });
-  }
-
-  Widget _buildWordBuilderGame(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    Text(
-                      'Build words from these letters:',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 16),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: _wordLetters!.map((letter) {
-                        return Chip(
-                          label: Text(
-                            letter,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: _wordBuilderController,
-                      decoration: const InputDecoration(
-                        labelText: 'Your Word',
-                        hintText: 'Type a word...',
-                        border: OutlineInputBorder(),
-                      ),
-                      textCapitalization: TextCapitalization.characters,
-                      onChanged: (value) {
-                        setState(() {
-                          _wordBuilt = value.toUpperCase();
-                        });
-                      },
-                      onSubmitted: (value) => _submitWord(),
-                    ),
-                    const SizedBox(height: 12),
-                    FilledButton.icon(
-                      onPressed: _wordBuilt!.isEmpty ? null : _submitWord,
-                      icon: const Icon(Icons.check),
-                      label: const Text('Submit Word'),
-                      style: FilledButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 48),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            if (_wordsFound!.isNotEmpty) ...[
-              Text(
-                'Words Found (${_wordsFound!.length})',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: _wordsFound!.map((word) {
-                  return Chip(
-                    label: Text(word),
-                    backgroundColor: Colors.green[100],
-                  );
-                }).toList(),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _submitWord() {
-    if (_wordBuilt!.length < 3) {
-      _showMessage('Word must be at least 3 letters');
-      return;
-    }
-
-    // Check if letters are available
-    final lettersUsed = <String>[];
-    for (var i = 0; i < _wordBuilt!.length; i++) {
-      lettersUsed.add(_wordBuilt![i]);
-    }
-
-    final availableLetters = List<String>.from(_wordLetters!);
-    for (var letter in lettersUsed) {
-      if (!availableLetters.remove(letter)) {
-        _showMessage('Letter $letter not available');
-        return;
-      }
-    }
-
-    if (_wordsFound!.contains(_wordBuilt)) {
-      _showMessage('Word already found');
-      return;
-    }
-
-    // Simple validation - in production, check against dictionary
-    final wordLength = _wordBuilt!.length;
-    setState(() {
-      _wordsFound!.add(_wordBuilt!);
-      _score += wordLength * 2;
-      _wordBuilt = '';
-      _wordBuilderController.clear();
-    });
-
-    _showMessage('Word accepted! +${wordLength * 2} points', success: true);
-  }
-
-  Widget _buildSequenceRecallGame(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  Text(
-                    'Level $_sequenceLevel',
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    _sequenceShowing!
-                        ? 'Watch the sequence...'
-                        : 'Repeat the sequence',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-          Expanded(
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 1.5,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-              ),
-              itemCount: 4,
-              itemBuilder: (context, index) {
-                final colors = [
-                  Colors.red,
-                  Colors.blue,
-                  Colors.green,
-                  Colors.yellow,
-                ];
-                
-                final isFlashing = _currentFlashingButton == index;
-                
-                return Card(
-                  color: colors[index],
-                  elevation: isFlashing ? 12 : 4,
-                  child: InkWell(
-                    onTap: _sequenceShowing! ? null : () => _onSequenceButtonTap(index),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: isFlashing 
-                            ? Border.all(color: Colors.white, width: 4)
-                            : null,
-                        boxShadow: isFlashing
-                            ? [
-                                BoxShadow(
-                                  color: Colors.white.withOpacity(0.8),
-                                  blurRadius: 20,
-                                  spreadRadius: 5,
-                                )
-                              ]
-                            : null,
-                      ),
-                      child: Center(
-                        child: Text(
-                          (index + 1).toString(),
-                          style: TextStyle(
-                            fontSize: isFlashing ? 56 : 48,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 16),
-          if (!_sequenceShowing!)
-            FilledButton.icon(
-              onPressed: _showSequence,
-              icon: const Icon(Icons.visibility),
-              label: const Text('Show Sequence Again'),
-              style: FilledButton.styleFrom(
-                minimumSize: const Size(double.infinity, 48),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  void _showSequence() async {
-    setState(() {
-      _sequenceShowing = true;
-      _userSequence = [];
-      _currentFlashingButton = null;
-    });
-
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    for (var i = 0; i < _sequence!.length; i++) {
-      if (!mounted) return;
-      
-      setState(() {
-        _currentFlashingButton = _sequence![i];
-      });
-      
-      await Future.delayed(const Duration(milliseconds: 600));
-      
-      if (!mounted) return;
-      
-      setState(() {
-        _currentFlashingButton = null;
-      });
-      
-      await Future.delayed(const Duration(milliseconds: 300));
-    }
-
-    await Future.delayed(const Duration(milliseconds: 200));
-    
-    if (mounted) {
-      setState(() {
-        _sequenceShowing = false;
-      });
-    }
-  }
-
-  void _onSequenceButtonTap(int index) {
-    setState(() {
-      _userSequence!.add(index);
-      
-      // Check if correct so far
-      if (_userSequence!.length <= _sequence!.length) {
-        if (_userSequence![_userSequence!.length - 1] != 
-            _sequence![_userSequence!.length - 1]) {
-          // Wrong!
-          _showMessage('Wrong sequence! Try again');
-          _userSequence = [];
-          return;
-        }
-        
-        // Check if complete
-        if (_userSequence!.length == _sequence!.length) {
-          _score += 10 * _sequenceLevel!;
-          _sequenceLevel = _sequenceLevel! + 1;
-          _showMessage('Correct! Moving to level $_sequenceLevel', success: true);
-          _generateSequence();
-          _showSequence();
-        }
-      }
-    });
-  }
-
-  Widget _buildAnagramAttackGame(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  children: [
-                    Text(
-                      'Unscramble This Word',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      _scrambledWord ?? '',
-                      style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 8,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '${_targetWord!.length} letters',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey[600],
-                          ),
-                    ),
-                    const SizedBox(height: 24),
-                    TextField(
-                      controller: _anagramController,
-                      decoration: InputDecoration(
-                        labelText: 'Your Answer',
-                        hintText: 'Type the unscrambled word...',
-                        border: const OutlineInputBorder(),
-                        helperText: 'Enter ${_targetWord!.length} letters',
-                      ),
-                      textCapitalization: TextCapitalization.characters,
-                      onChanged: (value) {
-                        setState(() {
-                          _userAnswer = value.toUpperCase();
-                        });
-                      },
-                      onSubmitted: (value) => _checkAnagram(),
-                    ),
-                    const SizedBox(height: 16),
-                    FilledButton.icon(
-                      onPressed: _userAnswer!.isEmpty ? null : _checkAnagram,
-                      icon: const Icon(Icons.check),
-                      label: const Text('Submit Answer'),
-                      style: FilledButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 48),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Words remaining: ${_anagramWords!.length}',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Colors.grey[600],
-                  ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _checkAnagram() {
-    final cleanUserAnswer = _userAnswer!.trim().toUpperCase();
-    final cleanTargetWord = _targetWord!.trim().toUpperCase();
-    
-    if (cleanUserAnswer.length != cleanTargetWord.length) {
-      _showMessage('Your answer has ${cleanUserAnswer.length} letters, but the word has ${cleanTargetWord.length} letters');
-      return;
-    }
-    
-    if (cleanUserAnswer == cleanTargetWord) {
-      setState(() {
-        _score += 15;
-        _anagramLevel = _anagramLevel! + 1;
-      });
-      _showMessage('Correct! +15 points', success: true);
-      
-      Future.delayed(const Duration(milliseconds: 800), () {
-        if (mounted) {
-          setState(() {
-            _nextAnagram();
-          });
-        }
-      });
-    } else {
-      _showMessage('Try again! The word is ${cleanTargetWord.length} letters long');
-    }
-  }
-
-  Widget _buildCodeBreakerGame(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    Text(
-                      'Break the Code!',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Guess the $_codeLength-digit code (1-6)',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.check_circle, color: Colors.green, size: 16),
-                        const Text(' = Correct position   '),
-                        const Icon(Icons.circle, color: Colors.amber, size: 16),
-                        const Text(' = Wrong position'),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            // Previous guesses
-            if (_guesses!.isNotEmpty) ...[
-              Text(
-                'Previous Guesses',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 8),
-              ..._guesses!.asMap().entries.map((entry) {
-                final idx = entry.key;
-                final guess = entry.value;
-                final feedback = _feedback![idx];
-                
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  elevation: 3,
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: guess.map((digit) => Container(
-                            width: 48,
-                            height: 48,
-                            margin: const EdgeInsets.symmetric(horizontal: 4),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primaryContainer,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: Theme.of(context).colorScheme.primary,
-                                width: 2,
-                              ),
-                            ),
-                            child: Center(
-                              child: Text(
-                                digit.toString(),
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).colorScheme.onPrimaryContainer,
-                                ),
-                              ),
-                            ),
-                          )).toList(),
-                        ),
-                        Row(
-                          children: [
-                            ...List.generate(
-                              feedback['correct']!,
-                              (_) => const Icon(Icons.check_circle, color: Colors.green, size: 24),
-                            ),
-                            ...List.generate(
-                              feedback['wrongPosition']!,
-                              (_) => const Icon(Icons.circle, color: Colors.amber, size: 24),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }).toList(),
-              const SizedBox(height: 16),
-            ],
-            // Current guess display
-            if (_currentCodeGuess.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              Card(
-                color: Theme.of(context).colorScheme.tertiaryContainer,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Current Guess',
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ..._currentCodeGuess.map((digit) => Container(
-                            width: 48,
-                            height: 48,
-                            margin: const EdgeInsets.symmetric(horizontal: 4),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.tertiary,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Center(
-                              child: Text(
-                                digit.toString(),
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).colorScheme.onTertiary,
-                                ),
-                              ),
-                            ),
-                          )).toList(),
-                          ...List.generate(
-                            _codeLength! - _currentCodeGuess.length,
-                            (_) => Container(
-                              width: 48,
-                              height: 48,
-                              margin: const EdgeInsets.symmetric(horizontal: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[300],
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  '?',
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              OutlinedButton.icon(
-                onPressed: () {
-                  setState(() {
-                    _currentCodeGuess = [];
-                  });
-                },
-                icon: const Icon(Icons.backspace),
-                label: const Text('Clear'),
-              ),
-              const SizedBox(height: 16),
-            ],
-            // Number pad for input
-            Text(
-              'Make Your Guess',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                childAspectRatio: 1.5,
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
-              ),
-              itemCount: 6,
-              itemBuilder: (context, index) {
-                return ElevatedButton(
-                  onPressed: () => _addCodeDigit(index + 1),
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: Text(
-                    (index + 1).toString(),
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  List<int> _currentCodeGuess = [];
-
-  void _addCodeDigit(int digit) {
-    if (_currentCodeGuess.length < _codeLength!) {
-      setState(() {
-        _currentCodeGuess.add(digit);
-      });
-
-      if (_currentCodeGuess.length == _codeLength!) {
-        _checkCode();
-      }
-    }
-  }
-
-  void _checkCode() {
-    final correct = _currentCodeGuess
-        .asMap()
-        .entries
-        .where((e) => e.value == _secretCode![e.key])
-        .length;
-
-    if (correct == _codeLength!) {
-      setState(() {
-        _score += 50;
-        _guesses!.add(List.from(_currentCodeGuess));
-        _feedback!.add({'correct': correct, 'wrongPosition': 0});
-      });
-      _showMessage('Code cracked! +50 points', success: true);
-      _completeGame();
-      return;
-    }
-
-    // Calculate wrong position
-    final codeDigitCounts = <int, int>{};
-    final guessDigitCounts = <int, int>{};
-    
-    for (var i = 0; i < _codeLength!; i++) {
-      if (_currentCodeGuess[i] != _secretCode![i]) {
-        codeDigitCounts[_secretCode![i]] = (codeDigitCounts[_secretCode![i]] ?? 0) + 1;
-        guessDigitCounts[_currentCodeGuess[i]] = (guessDigitCounts[_currentCodeGuess[i]] ?? 0) + 1;
-      }
-    }
-
-    var wrongPosition = 0;
-    for (var digit in guessDigitCounts.keys) {
-      wrongPosition += min(guessDigitCounts[digit]!, codeDigitCounts[digit] ?? 0);
-    }
-
-    setState(() {
-      _guesses!.add(List.from(_currentCodeGuess));
-      _feedback!.add({'correct': correct, 'wrongPosition': wrongPosition});
-      _currentCodeGuess = [];
-    });
-
-    _showMessage('$correct correct, $wrongPosition wrong position');
   }
 
   Widget _buildGenericGame(BuildContext context) {
@@ -1304,16 +431,10 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
     );
   }
 
-  void _completeGame() {
-    setState(() {
-      _gameCompleted = true;
-    });
-  }
-
   void _showHint() {
     setState(() {
       _hintsUsed++;
-      _score = max(0, _score - 5); // Penalty for using hint
+      _score = _score > 5 ? _score - 5 : 0; // Penalty for using hint
     });
 
     String hintText = 'Hint: ';
@@ -1385,16 +506,6 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
             child: const Text('Close'),
           ),
         ],
-      ),
-    );
-  }
-
-  void _showMessage(String message, {bool success = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: success ? Colors.green : null,
-        duration: const Duration(seconds: 2),
       ),
     );
   }
