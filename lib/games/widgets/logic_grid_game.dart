@@ -52,11 +52,34 @@ class _LogicGridGameState extends BaseGameState<LogicGridGame> {
     _userAnswers = {for (var person in _people) person: null};
     
     // Generate clues
-    _clues = [
-      'Match each person with their color',
-      '${_people[0]} has ${_solution[_people[0]]}',
-      '${_people[1]} does not have ${shuffledColors[(shuffledColors.indexOf(_solution[_people[1]]!) + 1) % 3]}',
-    ];
+    _clues = ['Match each person with their color'];
+
+    // Build a pool of possible clues
+    List<String> possibleClues = [];
+    // Positive clues: "X has Y"
+    for (var person in _people) {
+      possibleClues.add('$person has ${_solution[person]}');
+    }
+    // Negative clues: "X does not have Y" (for all incorrect color assignments)
+    for (var person in _people) {
+      for (var color in _colors) {
+        if (_solution[person] != color) {
+          possibleClues.add('$person does not have $color');
+        }
+      }
+    }
+    // Negative clues: "Y is not X's color"
+    for (var color in _colors) {
+      for (var person in _people) {
+        if (_solution[person] != color) {
+          possibleClues.add('$color is not $person\'s color');
+        }
+      }
+    }
+
+    // Shuffle and pick 2 random clues (in addition to the instruction)
+    possibleClues.shuffle(random);
+    _clues.addAll(possibleClues.take(2));
     
     setState(() {});
   }
