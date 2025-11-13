@@ -39,18 +39,47 @@ class _SudokuDuelGameState extends BaseGameState<SudokuDuelGame> {
   }
 
   void _generateBoard() {
-    // Simplified 4x4 Sudoku for alpha
-    _board = [
-      [1, 2, 3, 4],
-      [3, 4, 1, 2],
-      [2, 1, 4, 3],
-      [4, 3, 2, 1],
+    // Use a random valid 4x4 Sudoku solution as the base
+    final List<List<List<int>>> solutions = [
+      [
+        [1, 2, 3, 4],
+        [3, 4, 1, 2],
+        [2, 1, 4, 3],
+        [4, 3, 2, 1],
+      ],
+      [
+        [2, 1, 4, 3],
+        [3, 4, 1, 2],
+        [1, 2, 3, 4],
+        [4, 3, 2, 1],
+      ],
+      [
+        [4, 3, 2, 1],
+        [2, 1, 4, 3],
+        [1, 2, 3, 4],
+        [3, 4, 1, 2],
+      ],
+      [
+        [3, 4, 1, 2],
+        [1, 2, 3, 4],
+        [4, 3, 2, 1],
+        [2, 1, 4, 3],
+      ],
+      [
+        [1, 3, 4, 2],
+        [4, 2, 1, 3],
+        [2, 4, 3, 1],
+        [3, 1, 2, 4],
+      ],
     ];
+    final random = Random();
+    final solution = solutions[random.nextInt(solutions.length)];
+    // Deep copy to avoid mutating the original solution
+    _board = List.generate(4, (i) => List<int>.from(solution[i]));
     
     _editable = List.generate(4, (_) => List.filled(4, false));
     
     // Remove some numbers
-    final random = Random();
     for (var i = 0; i < 6; i++) {
       final row = random.nextInt(4);
       final col = random.nextInt(4);
