@@ -45,15 +45,18 @@ class _RotationMasterGameState extends BaseGameState<RotationMasterGame> {
     final random = Random();
     _targetShape = _shapes[random.nextInt(_shapes.length)];
     _targetRotation = (random.nextInt(4) * 90).toDouble();
-    
+
+    // Generate all possible rotations
+    List<double> allRotations = [0, 90, 180, 270];
+    // Remove the target rotation to get distractors
+    List<double> distractors = List.from(allRotations)..remove(_targetRotation);
+    // Shuffle distractors and pick three
+    distractors.shuffle(random);
+    List<double> options = distractors.take(3).toList();
+    // Insert the correct answer at a random position
     _correctOption = random.nextInt(4);
-    _options = List.generate(4, (index) {
-      if (index == _correctOption) {
-        return _targetRotation;
-      }
-      return (random.nextInt(4) * 90).toDouble();
-    });
-    
+    options.insert(_correctOption, _targetRotation);
+    _options = options;
     setState(() {});
   }
 
