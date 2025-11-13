@@ -79,14 +79,17 @@ class _ColorRushGameState extends BaseGameState<ColorRushGame> {
   void _startTimer() async {
     while (_timeRemaining > 0 && _timerActive) {
       await Future.delayed(const Duration(seconds: 1));
-      if (mounted && _timerActive) {
-        setState(() {
-          _timeRemaining--;
-        });
-        
-        if (_timeRemaining == 0) {
-          _handleTimeout();
-        }
+      if (!mounted || !_timerActive) {
+        break;
+      }
+      setState(() {
+        _timeRemaining--;
+      });
+
+      if (_timeRemaining == 0) {
+        _timerActive = false;
+        _handleTimeout();
+        break;
       }
     }
   }
