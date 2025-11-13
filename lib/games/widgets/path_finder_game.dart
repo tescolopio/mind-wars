@@ -1,5 +1,5 @@
 /**
- * Path Finder Game Widget
+ * Path Finder Game Widget - Alpha Implementation
  * Navigate mazes and find optimal paths
  * 
  * Category: Spatial
@@ -7,6 +7,7 @@
  */
 
 import 'package:flutter/material.dart';
+import 'dart:math';
 import 'base_game_widget.dart';
 
 class PathFinderGame extends BaseGameWidget {
@@ -25,159 +26,166 @@ class PathFinderGame extends BaseGameWidget {
 }
 
 class _PathFinderGameState extends BaseGameState<PathFinderGame> {
-  // TODO: Implement game state variables
-  // - Maze grid (walls and paths)
-  // - Start position
-  // - End position
-  // - Current player position
-  // - Path taken (for visualization)
-  // - Optimal path length
-  // - Bonus items/checkpoints
-  // - Time limit or move limit
-  // - Current level
+  late List<List<int>> _maze;
+  late int _playerRow;
+  late int _playerCol;
+  late int _exitRow;
+  late int _exitCol;
+  int _moves = 0;
+  int _level = 1;
+  final int _gridSize = 8;
 
   @override
   void initState() {
     super.initState();
-    _initializeGame();
-  }
-
-  void _initializeGame() {
-    // TODO: Initialize path finder game
-    // 1. Generate or load first maze
-    // 2. Set start and end positions
-    // 3. Calculate optimal path length
-    // 4. Place bonus items (optional)
-    // 5. Position player at start
-    // 6. Start timer or initialize move counter
+    _generateMaze();
   }
 
   void _generateMaze() {
-    // TODO: Generate maze
-    // 1. Choose maze size based on difficulty:
-    //    - Easy: 10x10 grid
-    //    - Medium: 15x15 grid
-    //    - Hard: 20x20 grid
-    // 
-    // 2. Use maze generation algorithm:
-    //    - Recursive backtracking
-    //    - Prim's algorithm
-    //    - Eller's algorithm
-    //    - Ensure there's always a solution
-    // 
-    // 3. Set start (top-left) and end (bottom-right)
-    // 4. Calculate optimal path using A* or Dijkstra
-    // 5. Optionally add:
-    //    - Dead ends
-    //    - Multiple paths with varying optimality
-    //    - Bonus items along paths
-    //    - Keys and doors (color-coded)
+    _maze = List.generate(_gridSize, (_) => List.filled(_gridSize, 0));
+    final random = Random();
+    
+    // Add some random walls
+    for (var i = 0; i < _gridSize * 2; i++) {
+      final row = random.nextInt(_gridSize);
+      final col = random.nextInt(_gridSize);
+      _maze[row][col] = 1;
+    }
+    
+    // Set start and end
+    _playerRow = 0;
+    _playerCol = 0;
+    _exitRow = _gridSize - 1;
+    _exitCol = _gridSize - 1;
+    _maze[_playerRow][_playerCol] = 0;
+    _maze[_exitRow][_exitCol] = 0;
+    _moves = 0;
+    
+    setState(() {});
   }
 
-  void _movePlayer(Direction direction) {
-    // TODO: Handle player movement
-    // 1. Calculate new position based on direction
-    // 2. Check if new position is valid:
-    //    - Within maze bounds
-    //    - Not a wall
-    // 3. If valid:
-    //    - Update player position
-    //    - Record move in path
-    //    - Check for bonus items
-    //    - Check if reached end
-    // 4. If invalid:
-    //    - Show error feedback (bump animation)
-    //    - Don't move
-  }
-
-  void _checkCompletion() {
-    // TODO: Check if maze is complete
-    // 1. If player reached end:
-    //    - Calculate path efficiency (moves vs optimal)
-    //    - Award points:
-    //      * Optimal path: 50 points + time bonus
-    //      * Within 10% of optimal: 40 points
-    //      * Within 25% of optimal: 30 points
-    //      * Completed: 20 points
-    //    - Bonus for collecting items
-    //    - Show path comparison (user vs optimal)
-    //    - Load next maze or complete game
+  void _movePlayer(int dRow, int dCol) {
+    final newRow = _playerRow + dRow;
+    final newCol = _playerCol + dCol;
+    
+    if (newRow >= 0 && newRow < _gridSize && newCol >= 0 && newCol < _gridSize) {
+      if (_maze[newRow][newCol] == 0) {
+        setState(() {
+          _playerRow = newRow;
+          _playerCol = newCol;
+          _moves++;
+        });
+        
+        if (_playerRow == _exitRow && _playerCol == _exitCol) {
+          final points = 30 - _moves.clamp(0, 20);
+          addScore(points);
+          showMessage('Maze complete! +$points points', success: true);
+          _level++;
+          
+          if (_level > 5) {
+            completeGame();
+          } else {
+            _generateMaze();
+          }
+        }
+      }
+    }
   }
 
   @override
   Widget buildGame(BuildContext context) {
-    // TODO: Build path finder game UI
-    // 1. Display maze grid:
-    //    - Wall cells (dark)
-    //    - Path cells (light)
-    //    - Player indicator (avatar/dot)
-    //    - Start marker (green)
-    //    - End marker (red/flag)
-    //    - Bonus items (stars, coins)
-    //    - Visited path (trail effect)
-    // 
-    // 2. Add controls:
-    //    - Swipe gestures for movement
-    //    - OR directional buttons (up, down, left, right)
-    //    - Zoom controls for large mazes
-    //    - Reset button (restart maze)
-    // 
-    // 3. Display progress:
-    //    - Moves taken
-    //    - Optimal path length
-    //    - Timer
-    //    - Items collected
-    // 
-    // 4. Visual features:
-    //    - Mini-map (for large mazes)
-    //    - Fog of war (reveals as you explore) - harder
-    //    - Smooth movement animation
-    //    - Path efficiency indicator
-    // 
-    // 5. After completion:
-    //    - Overlay showing user path vs optimal path
-    //    - Stats comparison
-    //    - Continue to next maze button
-    
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.route, size: 80, color: Colors.brown),
-            const SizedBox(height: 24),
-            Text(
-              'Path Finder',
-              style: Theme.of(context).textTheme.headlineMedium,
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Text(
+                    'Level $_level',
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Moves: $_moves',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'Coming Soon!',
-              style: TextStyle(fontSize: 18),
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: _gridSize,
+                childAspectRatio: 1,
+                crossAxisSpacing: 2,
+                mainAxisSpacing: 2,
+              ),
+              itemCount: _gridSize * _gridSize,
+              itemBuilder: (context, index) {
+                final row = index ~/ _gridSize;
+                final col = index % _gridSize;
+                final isPlayer = row == _playerRow && col == _playerCol;
+                final isExit = row == _exitRow && col == _exitCol;
+                final isWall = _maze[row][col] == 1;
+                
+                return Container(
+                  decoration: BoxDecoration(
+                    color: isPlayer
+                        ? Colors.blue
+                        : isExit
+                            ? Colors.green
+                            : isWall
+                                ? Colors.grey[800]
+                                : Colors.grey[200],
+                  ),
+                  child: Center(
+                    child: Text(
+                      isPlayer ? '🎯' : isExit ? '🏁' : '',
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                );
+              },
             ),
-            const SizedBox(height: 32),
-            const Text(
-              'TODO: Implement maze navigation game',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Column(
+                children: [
+                  IconButton.filled(
+                    onPressed: () => _movePlayer(-1, 0),
+                    icon: const Icon(Icons.arrow_upward),
+                  ),
+                  Row(
+                    children: [
+                      IconButton.filled(
+                        onPressed: () => _movePlayer(0, -1),
+                        icon: const Icon(Icons.arrow_back),
+                      ),
+                      const SizedBox(width: 48),
+                      IconButton.filled(
+                        onPressed: () => _movePlayer(0, 1),
+                        icon: const Icon(Icons.arrow_forward),
+                      ),
+                    ],
+                  ),
+                  IconButton.filled(
+                    onPressed: () => _movePlayer(1, 0),
+                    icon: const Icon(Icons.arrow_downward),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
-
-  // TODO: Helper methods to implement
-  // - _generateMazeRecursive(): Recursive backtracking maze generation
-  // - _findOptimalPath(start, end): Calculate shortest path (A* algorithm)
-  // - _isValidMove(position): Check if position is walkable
-  // - _getNeighbors(position): Get adjacent cells
-  // - _calculateEfficiency(): Compare user path to optimal
-  // - _placeBonusItems(count): Randomly place collectible items
-  // - _resetMaze(): Return player to start
-  // - _showSolution(): Briefly highlight optimal path
-  // - _applyFogOfWar(): Limit visible area around player
 }
-
-enum Direction { up, down, left, right }

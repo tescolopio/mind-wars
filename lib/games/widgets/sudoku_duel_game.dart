@@ -1,12 +1,13 @@
 /**
- * Sudoku Duel Game Widget
- * Competitive Sudoku solving with time limits
+ * Sudoku Duel Game Widget - Alpha Implementation
+ * Simple number placement puzzle
  * 
  * Category: Logic
  * Players: 2-4
  */
 
 import 'package:flutter/material.dart';
+import 'dart:math';
 import 'base_game_widget.dart';
 
 class SudokuDuelGame extends BaseGameWidget {
@@ -25,121 +26,177 @@ class SudokuDuelGame extends BaseGameWidget {
 }
 
 class _SudokuDuelGameState extends BaseGameState<SudokuDuelGame> {
-  // TODO: Implement game state variables
-  // - Sudoku puzzle grid (9x9 array)
-  // - Solution grid for validation
-  // - Difficulty level (easy, medium, hard)
-  // - Number of pre-filled cells
-  // - Selected cell position
-  // - Moves/mistakes counter
-  // - Time elapsed
-  // - Hint system state
+  late List<List<int>> _board;
+  late List<List<bool>> _editable;
+  int? _selectedRow;
+  int? _selectedCol;
+  int _level = 1;
 
   @override
   void initState() {
     super.initState();
-    _initializeGame();
+    _generateBoard();
   }
 
-  void _initializeGame() {
-    // TODO: Initialize Sudoku game
-    // 1. Generate complete valid Sudoku puzzle (solved state)
-    // 2. Remove cells based on difficulty:
-    //    - Easy: Remove ~40 cells (40 pre-filled)
-    //    - Medium: Remove ~50 cells (30 pre-filled)
-    //    - Hard: Remove ~60 cells (20 pre-filled)
-    // 3. Ensure puzzle has unique solution
-    // 4. Initialize empty cells as editable
-    // 5. Set timer to track solve time
+  void _generateBoard() {
+    // Simplified 4x4 Sudoku for alpha
+    _board = [
+      [1, 2, 3, 4],
+      [3, 4, 1, 2],
+      [2, 1, 4, 3],
+      [4, 3, 2, 1],
+    ];
+    
+    _editable = List.generate(4, (_) => List.filled(4, false));
+    
+    // Remove some numbers
+    final random = Random();
+    for (var i = 0; i < 6; i++) {
+      final row = random.nextInt(4);
+      final col = random.nextInt(4);
+      _editable[row][col] = true;
+      _board[row][col] = 0;
+    }
+    
+    setState(() {});
   }
 
-  void _generateSudoku() {
-    // TODO: Generate valid Sudoku puzzle
-    // 1. Start with empty 9x9 grid
-    // 2. Fill grid using backtracking algorithm to ensure valid solution
-    // 3. Store the complete solution
-    // 4. Create copy and randomly remove cells for puzzle
-    // 5. Validate that puzzle has unique solution
-    // 
-    // Algorithm considerations:
-    // - Use backtracking for generation
-    // - Ensure each row, column, and 3x3 box contains 1-9 once
-    // - Remove cells symmetrically for aesthetic puzzle
+  void _selectCell(int row, int col) {
+    if (_editable[row][col]) {
+      setState(() {
+        _selectedRow = row;
+        _selectedCol = col;
+      });
+    }
   }
 
-  void _validateMove(int row, int col, int value) {
-    // TODO: Validate Sudoku move
-    // 1. Check if value already exists in same row
-    // 2. Check if value already exists in same column
-    // 3. Check if value already exists in same 3x3 box
-    // 4. If invalid, show error feedback
-    // 5. If valid, update grid and check for completion
-    // 6. Award points for correct placements
+  void _enterNumber(int number) {
+    if (_selectedRow != null && _selectedCol != null) {
+      setState(() {
+        _board[_selectedRow!][_selectedCol!] = number;
+      });
+      
+      if (_isComplete() && _isValid()) {
+        addScore(50);
+        showMessage('Sudoku solved! +50 points', success: true);
+        _level++;
+        
+        if (_level > 3) {
+          completeGame();
+        } else {
+          _generateBoard();
+        }
+      }
+    }
   }
 
-  void _checkCompletion() {
-    // TODO: Check if Sudoku is complete and correct
-    // 1. Verify all cells are filled
-    // 2. Compare filled grid with solution
-    // 3. If correct:
-    //    - Calculate score based on time and mistakes
-    //    - Award bonus for speed
-    //    - Complete game
-    // 4. If incorrect, show which cells are wrong (optional)
+  bool _isComplete() {
+    for (var row in _board) {
+      for (var cell in row) {
+        if (cell == 0) return false;
+      }
+    }
+    return true;
+  }
+
+  bool _isValid() {
+    // Check rows
+    for (var row in _board) {
+      final seen = <int>{};
+      for (var cell in row) {
+        if (cell != 0 && !seen.add(cell)) return false;
+      }
+    }
+    
+    // Check columns
+    for (var col = 0; col < 4; col++) {
+      final seen = <int>{};
+      for (var row = 0; row < 4; row++) {
+        final cell = _board[row][col];
+        if (cell != 0 && !seen.add(cell)) return false;
+      }
+    }
+    
+    return true;
   }
 
   @override
   Widget buildGame(BuildContext context) {
-    // TODO: Build Sudoku game UI
-    // 1. Display 9x9 Sudoku grid with clear 3x3 box separators
-    // 2. Highlight selected cell
-    // 3. Show number pad (1-9) for input
-    // 4. Display timer and mistakes counter
-    // 5. Add hint button (shows valid number for selected cell)
-    // 6. Add undo button
-    // 7. Add note/pencil mode for candidate numbers
-    // 8. Color-code cells:
-    //    - Pre-filled cells (darker/locked)
-    //    - User-filled cells (editable)
-    //    - Conflicting cells (red highlight)
-    // 9. Add difficulty selector at start
-    
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.grid_4x4, size: 80, color: Colors.purple),
-            const SizedBox(height: 24),
-            Text(
-              'Sudoku Duel',
-              style: Theme.of(context).textTheme.headlineMedium,
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'Level $_level',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'Coming Soon!',
-              style: TextStyle(fontSize: 18),
+          ),
+          const SizedBox(height: 24),
+          Expanded(
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4,
+                childAspectRatio: 1,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+              ),
+              itemCount: 16,
+              itemBuilder: (context, index) {
+                final row = index ~/ 4;
+                final col = index % 4;
+                final value = _board[row][col];
+                final isEditable = _editable[row][col];
+                final isSelected = row == _selectedRow && col == _selectedCol;
+                
+                return GestureDetector(
+                  onTap: () => _selectCell(row, col),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? Colors.blue[200]
+                          : isEditable
+                              ? Colors.white
+                              : Colors.grey[300],
+                      border: Border.all(color: Colors.black, width: 2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Center(
+                      child: Text(
+                        value == 0 ? '' : value.toString(),
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: isEditable ? Colors.blue : Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
-            const SizedBox(height: 32),
-            const Text(
-              'TODO: Implement Sudoku puzzle game',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [1, 2, 3, 4].map((num) {
+              return ElevatedButton(
+                onPressed: () => _enterNumber(num),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(60, 60),
+                ),
+                child: Text(
+                  num.toString(),
+                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
       ),
     );
   }
-
-  // TODO: Helper methods to implement
-  // - _isValidPlacement(row, col, value): Check if move is valid
-  // - _getBox(row, col): Get 3x3 box index for cell
-  // - _getConflictingCells(row, col, value): Find cells that conflict
-  // - _useHint(): Show valid number for selected cell
-  // - _undoMove(): Undo last user move
-  // - _toggleNoteMode(): Switch between normal and note entry
-  // - _clearCell(row, col): Clear user-entered value
-  // - _highlightRelatedCells(row, col): Highlight row, col, and box
 }

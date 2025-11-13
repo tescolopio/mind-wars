@@ -1,12 +1,13 @@
 /**
- * Puzzle Race Game Widget
- * Complete jigsaw puzzles against the clock
+ * Puzzle Race Game Widget - Alpha Implementation
+ * Complete sliding puzzles against the clock
  * 
  * Category: Spatial
  * Players: 2-4
  */
 
 import 'package:flutter/material.dart';
+import 'dart:math';
 import 'base_game_widget.dart';
 
 class PuzzleRaceGame extends BaseGameWidget {
@@ -25,149 +26,148 @@ class PuzzleRaceGame extends BaseGameWidget {
 }
 
 class _PuzzleRaceGameState extends BaseGameState<PuzzleRaceGame> {
-  // TODO: Implement game state variables
-  // - Original image/pattern
-  // - Puzzle pieces (scrambled)
-  // - Piece positions (current state)
-  // - Target grid layout
-  // - Puzzle dimensions (e.g., 3x3, 4x4, 5x5)
-  // - Selected piece
-  // - Correct placements counter
-  // - Time elapsed
+  late List<int> _tiles;
+  int _gridSize = 3;
+  int _emptyIndex = 8;
+  int _moves = 0;
+  int _level = 1;
 
   @override
   void initState() {
     super.initState();
-    _initializeGame();
-  }
-
-  void _initializeGame() {
-    // TODO: Initialize puzzle race game
-    // 1. Select or generate source image
-    // 2. Determine puzzle size based on difficulty:
-    //    - Easy: 3x3 (9 pieces)
-    //    - Medium: 4x4 (16 pieces)
-    //    - Hard: 5x5 (25 pieces)
-    // 3. Slice image into puzzle pieces
-    // 4. Scramble pieces randomly
-    // 5. Create empty target grid
-    // 6. Start timer
+    _generatePuzzle();
   }
 
   void _generatePuzzle() {
-    // TODO: Generate puzzle from image
-    // 1. Load source image (asset or procedurally generated)
-    // 2. Calculate piece dimensions (imageWidth / gridSize)
-    // 3. Extract each piece as separate image/widget:
-    //    - Store piece index for validation
-    //    - Optional: Add jigsaw-style interlocking edges
-    // 4. Shuffle pieces in random order
-    // 5. Create piece pool (area where unused pieces sit)
-    // 6. Initialize empty grid for assembly
+    final totalTiles = _gridSize * _gridSize;
+    _tiles = List.generate(totalTiles - 1, (i) => i + 1);
+    _tiles.add(0); // 0 represents empty space
+    
+    // Shuffle
+    final random = Random();
+    for (var i = 0; i < 100; i++) {
+      final validMoves = _getValidMoves();
+      if (validMoves.isNotEmpty) {
+        _moveTile(validMoves[random.nextInt(validMoves.length)]);
+      }
+    }
+    
+    _moves = 0;
+    setState(() {});
   }
 
-  void _handlePieceDrag(int pieceIndex) {
-    // TODO: Handle puzzle piece drag
-    // 1. Detect piece pickup (drag start)
-    // 2. Show piece preview while dragging
-    // 3. Highlight valid drop zones as user drags
-    // 4. On release:
-    //    - If dropped on grid: Attempt to place
-    //    - If dropped on piece pool: Return to pool
-    //    - If dropped on invalid location: Snap back
+  List<int> _getValidMoves() {
+    final moves = <int>[];
+    final row = _emptyIndex ~/ _gridSize;
+    final col = _emptyIndex % _gridSize;
+    
+    if (row > 0) moves.add(_emptyIndex - _gridSize); // Up
+    if (row < _gridSize - 1) moves.add(_emptyIndex + _gridSize); // Down
+    if (col > 0) moves.add(_emptyIndex - 1); // Left
+    if (col < _gridSize - 1) moves.add(_emptyIndex + 1); // Right
+    
+    return moves;
   }
 
-  void _placePiece(int pieceIndex, int gridPosition) {
-    // TODO: Place puzzle piece on grid
-    // 1. Check if grid position is empty
-    // 2. Check if piece belongs in this position (optional: allow free placement)
-    // 3. If correct position:
-    //    - Lock piece in place
-    //    - Award points (+10 per correct piece)
-    //    - Show success feedback
-    //    - Check if puzzle complete
-    // 4. If incorrect but allowing wrong placement:
-    //    - Place piece but mark as incorrect
-    //    - Can be moved again later
-    // 5. If not allowing wrong placement:
-    //    - Return piece to pool
-    //    - Show error feedback
+  void _moveTile(int index) {
+    if (_getValidMoves().contains(index)) {
+      setState(() {
+        _tiles[_emptyIndex] = _tiles[index];
+        _tiles[index] = 0;
+        _emptyIndex = index;
+        _moves++;
+      });
+      
+      if (_isPuzzleSolved()) {
+        final points = 40 - _moves.clamp(0, 30);
+        addScore(points);
+        showMessage('Solved! +$points points', success: true);
+        _level++;
+        
+        if (_level > 5) {
+          completeGame();
+        } else {
+          if (_level == 3) _gridSize = 4;
+          _generatePuzzle();
+        }
+      }
+    }
   }
 
-  void _checkCompletion() {
-    // TODO: Check if puzzle is complete
-    // 1. Verify all pieces are placed
-    // 2. Check if all pieces are in correct positions
-    // 3. If complete:
-    //    - Calculate time-based score
-    //    - Award completion bonus
-    //    - Show completed image
-    //    - Move to next puzzle or end game
+  bool _isPuzzleSolved() {
+    for (var i = 0; i < _tiles.length - 1; i++) {
+      if (_tiles[i] != i + 1) return false;
+    }
+    return _tiles.last == 0;
   }
 
   @override
   Widget buildGame(BuildContext context) {
-    // TODO: Build puzzle race game UI
-    // 1. Display target grid area:
-    //    - Empty grid cells with light borders
-    //    - Ghost image of completed puzzle (optional)
-    //    - Clearly defined drop zones
-    // 2. Show piece pool area:
-    //    - Scrambled puzzle pieces
-    //    - Draggable pieces
-    //    - Organize in scrollable grid or list
-    // 3. Display progress:
-    //    - Pieces placed counter (e.g., "8/16")
-    //    - Timer
-    //    - Current level
-    // 4. Visual feedback:
-    //    - Highlight valid drop zones on drag
-    //    - Snap piece to grid on correct placement
-    //    - Glow or checkmark for correct pieces
-    // 5. Controls:
-    //    - Rotate piece button (if rotation enabled)
-    //    - Show preview button (briefly show completed image)
-    //    - Hint button (highlights next piece to place)
-    //    - Reset button
-    // 6. Consider mobile-friendly drag/drop or tap-to-select
-    
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.extension, size: 80, color: Colors.deepPurple),
-            const SizedBox(height: 24),
-            Text(
-              'Puzzle Race',
-              style: Theme.of(context).textTheme.headlineMedium,
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Text(
+                    'Level $_level',
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Moves: $_moves',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'Coming Soon!',
-              style: TextStyle(fontSize: 18),
+          ),
+          const SizedBox(height: 24),
+          Expanded(
+            child: GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: _gridSize,
+                childAspectRatio: 1,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+              ),
+              itemCount: _gridSize * _gridSize,
+              itemBuilder: (context, index) {
+                final tile = _tiles[index];
+                
+                return GestureDetector(
+                  onTap: () => _moveTile(index),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: tile == 0
+                          ? Colors.grey[300]
+                          : Theme.of(context).colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.outline,
+                        width: 2,
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        tile == 0 ? '' : tile.toString(),
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
-            const SizedBox(height: 32),
-            const Text(
-              'TODO: Implement jigsaw puzzle game',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
-
-  // TODO: Helper methods to implement
-  // - _sliceImage(image, gridSize): Cut image into pieces
-  // - _shufflePieces(pieces): Randomize piece order
-  // - _isCorrectPosition(pieceIndex, gridPosition): Validate placement
-  // - _getPieceAt(gridPosition): Get piece currently at position
-  // - _swapPieces(pos1, pos2): Exchange two pieces
-  // - _rotatePiece(pieceIndex): Rotate piece 90 degrees (if enabled)
-  // - _showPreview(): Briefly display completed puzzle
-  // - _getNextHint(): Find next piece that should be placed
-  // - _calculateScore(): Compute score based on time and moves
 }

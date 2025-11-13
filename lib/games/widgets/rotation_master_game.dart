@@ -1,5 +1,5 @@
 /**
- * Rotation Master Game Widget
+ * Rotation Master Game Widget - Alpha Implementation
  * Identify rotated shapes and objects
  * 
  * Category: Spatial
@@ -7,6 +7,7 @@
  */
 
 import 'package:flutter/material.dart';
+import 'dart:math';
 import 'base_game_widget.dart';
 
 class RotationMasterGame extends BaseGameWidget {
@@ -25,143 +26,152 @@ class RotationMasterGame extends BaseGameWidget {
 }
 
 class _RotationMasterGameState extends BaseGameState<RotationMasterGame> {
-  // TODO: Implement game state variables
-  // - Original shape/object
-  // - Rotated version of shape
-  // - Multiple choice options (correct + distractors)
-  // - Current rotation angle
-  // - Time limit per round
-  // - Current level
-  // - Streak counter for consecutive correct answers
+  late String _targetShape;
+  late double _targetRotation;
+  late int _correctOption;
+  late List<double> _options;
+  int _streak = 0;
+  int _level = 1;
+
+  final List<String> _shapes = ['F', 'R', 'P', 'L', 'Z', 'N', 'G', 'J'];
 
   @override
   void initState() {
     super.initState();
-    _initializeGame();
-  }
-
-  void _initializeGame() {
-    // TODO: Initialize rotation master game
-    // 1. Set initial difficulty level
-    // 2. Generate first shape matching challenge
-    // 3. Set time limit (10-15 seconds per round)
-    // 4. Initialize streak counter
-    // 5. Start timer
+    _generateRound();
   }
 
   void _generateRound() {
-    // TODO: Generate rotation matching round
-    // 1. Create or select base shape:
-    //    - Geometric shapes (triangles, polygons, complex shapes)
-    //    - Letters (especially asymmetric ones: F, R, P, etc.)
-    //    - Abstract shapes or patterns
-    //    - 3D object representations
-    // 
-    // 2. Apply rotation to create target:
-    //    - Random angle (0-360 degrees)
-    //    - Can include 3D rotation for harder levels
-    //    - May include mirror/flip for extra difficulty
-    // 
-    // 3. Generate answer options (4-6 choices):
-    //    - One correct (matches rotation)
-    //    - Distractors (different rotations, mirrors, or similar shapes)
-    // 
-    // 4. Difficulty variations:
-    //    - Easy: Simple shapes, 90-degree rotations, 4 choices
-    //    - Medium: Complex shapes, any angle, 5 choices
-    //    - Hard: 3D shapes, rotations + mirrors, 6 choices
+    final random = Random();
+    _targetShape = _shapes[random.nextInt(_shapes.length)];
+    _targetRotation = (random.nextInt(4) * 90).toDouble();
+    
+    _correctOption = random.nextInt(4);
+    _options = List.generate(4, (index) {
+      if (index == _correctOption) {
+        return _targetRotation;
+      }
+      return (random.nextInt(4) * 90).toDouble();
+    });
+    
+    setState(() {});
   }
 
-  void _selectAnswer(int optionIndex) {
-    // TODO: Handle answer selection
-    // 1. Check if selected option matches target rotation
-    // 2. If correct:
-    //    - Increase streak counter
-    //    - Award points (base + streak bonus)
-    //    - Show success animation
-    //    - Generate next round
-    //    - Slightly increase difficulty
-    // 3. If incorrect:
-    //    - Reset streak counter
-    //    - Show correct answer briefly
-    //    - May apply small penalty
-    //    - Move to next round
-  }
-
-  void _handleTimeout() {
-    // TODO: Handle round timeout
-    // 1. Reset streak counter
-    // 2. Show correct answer
-    // 3. Apply time penalty
-    // 4. Move to next round
-    // 5. Consider game over after multiple timeouts
+  void _selectOption(int optionIndex) {
+    if (optionIndex == _correctOption) {
+      _streak++;
+      final points = 10 + (_streak * 2);
+      addScore(points);
+      showMessage('Correct! +$points points (${_streak}x streak)', success: true);
+      _level++;
+      
+      if (_level > 15) {
+        completeGame();
+      } else {
+        _generateRound();
+      }
+    } else {
+      _streak = 0;
+      showMessage('Wrong! Streak reset');
+      _generateRound();
+    }
   }
 
   @override
   Widget buildGame(BuildContext context) {
-    // TODO: Build rotation master game UI
-    // 1. Display original shape prominently:
-    //    - Large clear display
-    //    - Optional: Show rotation arrow/indicator
-    //    - Label as "Original" or "Match this rotation"
-    // 2. Show rotated target shape:
-    //    - Clear visual separation from choices
-    //    - Label as "Target" or "Find this"
-    // 3. Display answer options grid:
-    //    - 2x2 or 2x3 grid of choices
-    //    - Large tappable areas
-    //    - Clear numbering or selection indicators
-    // 4. Show game info:
-    //    - Timer countdown
-    //    - Streak counter with multiplier
-    //    - Level indicator
-    //    - Score
-    // 5. Visual feedback:
-    //    - Highlight selected option
-    //    - Green checkmark for correct
-    //    - Red X for incorrect
-    //    - Brief animation showing correct rotation
-    // 6. Add help/hint:
-    //    - Option to see animation of rotation
-    //    - Angle indicator (for learning mode)
-    
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.rotate_right, size: 80, color: Colors.cyan),
-            const SizedBox(height: 24),
-            Text(
-              'Rotation Master',
-              style: Theme.of(context).textTheme.headlineMedium,
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Text(
+                    'Level $_level',
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Streak: ${_streak}x',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: _streak > 0 ? Colors.green : null,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'Coming Soon!',
-              style: TextStyle(fontSize: 18),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Find the matching rotation:',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 16),
+          Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primaryContainer,
+              borderRadius: BorderRadius.circular(12),
             ),
-            const SizedBox(height: 32),
-            const Text(
-              'TODO: Implement shape rotation matching game',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
-              textAlign: TextAlign.center,
+            child: Center(
+              child: Transform.rotate(
+                angle: _targetRotation * pi / 180,
+                child: Text(
+                  _targetShape,
+                  style: TextStyle(
+                    fontSize: 72,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  ),
+                ),
+              ),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 32),
+          Expanded(
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 1,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+              ),
+              itemCount: 4,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () => _selectOption(index),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.secondaryContainer,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.outline,
+                        width: 2,
+                      ),
+                    ),
+                    child: Center(
+                      child: Transform.rotate(
+                        angle: _options[index] * pi / 180,
+                        child: Text(
+                          _targetShape,
+                          style: TextStyle(
+                            fontSize: 48,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSecondaryContainer,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
-
-  // TODO: Helper methods to implement
-  // - _createShape(type): Generate base shape
-  // - _rotateShape(shape, angle): Apply rotation transformation
-  // - _mirrorShape(shape, axis): Apply mirror transformation
-  // - _generateDistractors(correct, count): Create wrong answer options
-  // - _calculateStreakBonus(): Compute bonus based on streak
-  // - _getTimeLimit(): Get time limit for current level
-  // - _showRotationAnimation(from, to): Animate rotation
-  // - _areRotationsEqual(shape1, shape2): Compare rotational equivalence
-  // - _getDifficultyParameters(): Get parameters for current level
 }

@@ -1,5 +1,5 @@
 /**
- * Vocabulary Showdown Game Widget
+ * Vocabulary Showdown Game Widget - Alpha Implementation
  * Test vocabulary knowledge in rapid-fire rounds
  * 
  * Category: Language
@@ -7,6 +7,7 @@
  */
 
 import 'package:flutter/material.dart';
+import 'dart:math';
 import 'base_game_widget.dart';
 
 class VocabularyShowdownGame extends BaseGameWidget {
@@ -25,169 +26,149 @@ class VocabularyShowdownGame extends BaseGameWidget {
 }
 
 class _VocabularyShowdownGameState extends BaseGameState<VocabularyShowdownGame> {
-  // TODO: Implement game state variables
-  // - Question word/phrase
-  // - Question type (definition, synonym, antonym, usage)
-  // - Multiple choice answers
-  // - Correct answer index
-  // - Time limit per question
-  // - Current round
-  // - Streak counter
-  // - Difficulty level
+  late String _currentWord;
+  late String _correctDefinition;
+  late List<String> _options;
+  late int _correctIndex;
+  int _streak = 0;
+  int _round = 1;
+
+  final Map<String, String> _vocabulary = {
+    'BENEVOLENT': 'Kind and generous',
+    'ELOQUENT': 'Fluent and persuasive in speaking',
+    'METICULOUS': 'Showing great attention to detail',
+    'RESILIENT': 'Able to withstand or recover quickly',
+    'VERSATILE': 'Able to adapt to many different functions',
+    'PRAGMATIC': 'Dealing with things sensibly and realistically',
+    'AMBIGUOUS': 'Open to more than one interpretation',
+    'DILIGENT': 'Having or showing care in one\'s work',
+    'INNOVATIVE': 'Featuring new methods; advanced and original',
+    'COHESIVE': 'Forming a united whole',
+    'ABUNDANT': 'Existing or available in large quantities',
+    'CYNICAL': 'Believing that people are motivated by self-interest',
+    'ELABORATE': 'Involving many carefully arranged parts',
+    'FUNDAMENTAL': 'Forming a necessary base or core',
+    'INEVITABLE': 'Certain to happen; unavoidable',
+  };
 
   @override
   void initState() {
     super.initState();
-    _initializeGame();
-  }
-
-  void _initializeGame() {
-    // TODO: Initialize vocabulary game
-    // 1. Set initial difficulty level
-    // 2. Load word database or vocabulary list
-    // 3. Generate first question
-    // 4. Set time limit (10-15 seconds per question)
-    // 5. Initialize streak counter
-    // 6. Start timer
+    _generateQuestion();
   }
 
   void _generateQuestion() {
-    // TODO: Generate vocabulary question
-    // 1. Select question type:
-    //    - Definition: "What does [word] mean?"
-    //    - Synonym: "Which word is closest in meaning to [word]?"
-    //    - Antonym: "What is the opposite of [word]?"
-    //    - Usage: "Which sentence uses [word] correctly?"
-    //    - Fill-in-the-blank: "The ___ was beautiful" (context clue)
-    // 
-    // 2. Select target word based on difficulty:
-    //    - Easy: Common words (5000 most frequent)
-    //    - Medium: Less common words
-    //    - Hard: Advanced vocabulary, technical terms
-    // 
-    // 3. Generate answer options (4 choices):
-    //    - One correct answer
-    //    - Three plausible distractors
-    //    - Ensure distractors are related but incorrect
-    // 
-    // 4. Consider word categories:
-    //    - Nouns, verbs, adjectives, adverbs
-    //    - Academic vocabulary
-    //    - Idioms and phrases
+    final random = Random();
+    final words = _vocabulary.keys.toList()..shuffle(random);
+    
+    _currentWord = words[0];
+    _correctDefinition = _vocabulary[_currentWord]!;
+    
+    final wrongDefinitions = _vocabulary.values.where((d) => d != _correctDefinition).toList()
+      ..shuffle(random);
+    
+    _correctIndex = random.nextInt(4);
+    _options = List.generate(4, (index) {
+      if (index == _correctIndex) {
+        return _correctDefinition;
+      }
+      return wrongDefinitions[index < _correctIndex ? index : index - 1];
+    });
+    
+    setState(() {});
   }
 
-  void _selectAnswer(int answerIndex) {
-    // TODO: Handle answer selection
-    // 1. Check if selected answer is correct
-    // 2. If correct:
-    //    - Increase streak counter
-    //    - Award points (base + streak bonus)
-    //    - Show success feedback
-    //    - Generate next question
-    //    - Slightly increase difficulty
-    // 3. If incorrect:
-    //    - Reset streak counter
-    //    - Show correct answer with explanation
-    //    - Small point penalty or no points
-    //    - Move to next question
-  }
-
-  void _handleTimeout() {
-    // TODO: Handle question timeout
-    // 1. Reset streak counter
-    // 2. Show correct answer
-    // 3. Apply time penalty
-    // 4. Generate next question
-    // 5. Consider game over after multiple consecutive timeouts
+  void _selectAnswer(int index) {
+    if (index == _correctIndex) {
+      _streak++;
+      final points = 15 + (_streak * 3);
+      addScore(points);
+      showMessage('Correct! +$points points (${_streak}x streak)', success: true);
+      _round++;
+      
+      if (_round > 15) {
+        completeGame();
+      } else {
+        _generateQuestion();
+      }
+    } else {
+      _streak = 0;
+      showMessage('Wrong! The correct answer was: $_correctDefinition');
+      _generateQuestion();
+    }
   }
 
   @override
   Widget buildGame(BuildContext context) {
-    // TODO: Build vocabulary game UI
-    // 1. Display question prominently:
-    //    - Large clear text
-    //    - Question type indicator
-    //    - Target word highlighted
-    // 
-    // 2. Show answer options:
-    //    - 4 large tappable buttons
-    //    - Clear numbering (A, B, C, D or 1, 2, 3, 4)
-    //    - Responsive to selection
-    // 
-    // 3. Display game stats:
-    //    - Timer countdown with visual urgency
-    //    - Streak counter with multiplier
-    //    - Round/question number
-    //    - Score
-    // 
-    // 4. Visual feedback:
-    //    - Highlight selected answer
-    //    - Green for correct
-    //    - Red for incorrect
-    //    - Show explanation for correct answer
-    // 
-    // 5. Additional features:
-    //    - Hint button (eliminates one wrong answer)
-    //    - Skip button (with penalty)
-    //    - Difficulty selector
-    //    - Category filter (optional)
-    // 
-    // 6. After answer:
-    //    - Brief display of explanation/definition
-    //    - Example sentence using the word
-    //    - Smooth transition to next question
-    
-    return Center(
+    return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.all(32.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.menu_book, size: 80, color: Colors.deepOrange),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    Text(
+                      'Round $_round',
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Streak: ${_streak}x',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: _streak > 0 ? Colors.purple : null,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
             const SizedBox(height: 24),
             Text(
-              'Vocabulary Showdown',
-              style: Theme.of(context).textTheme.headlineMedium,
+              'What does this word mean?',
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Coming Soon!',
-              style: TextStyle(fontSize: 18),
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                _currentWord,
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  letterSpacing: 2,
+                ),
+              ),
             ),
             const SizedBox(height: 32),
-            const Text(
-              'TODO: Implement vocabulary quiz game',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
-              textAlign: TextAlign.center,
-            ),
+            ...List.generate(4, (index) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12.0),
+                child: FilledButton(
+                  onPressed: () => _selectAnswer(index),
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 60),
+                    backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+                    foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
+                  ),
+                  child: Text(
+                    _options[index],
+                    style: const TextStyle(fontSize: 16),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              );
+            }),
           ],
         ),
       ),
     );
   }
-
-  // TODO: Helper methods to implement
-  // - _loadVocabularyDatabase(): Load word lists by difficulty
-  // - _generateDefinitionQuestion(word): Create definition-type question
-  // - _generateSynonymQuestion(word): Create synonym-type question
-  // - _generateAntonymQuestion(word): Create antonym-type question
-  // - _generateUsageQuestion(word): Create usage-type question
-  // - _generateDistractors(word, type): Create plausible wrong answers
-  // - _getWordDefinition(word): Fetch word definition
-  // - _getWordExamples(word): Fetch example sentences
-  // - _calculateStreakBonus(): Compute bonus based on streak
-  // - _eliminateWrongAnswer(): Remove one incorrect option (hint)
-  // - _getDifficultyWordList(): Get word list for current difficulty
-  // - _getRelatedWords(word, relation): Find synonyms/antonyms
-  
-  // TODO: Data structures to implement
-  // - Word database with:
-  //   * Word
-  //   * Part of speech
-  //   * Definition(s)
-  //   * Synonyms
-  //   * Antonyms
-  //   * Example sentences
-  //   * Difficulty rating
-  //   * Frequency score
 }
