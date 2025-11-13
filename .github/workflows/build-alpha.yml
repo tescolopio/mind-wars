@@ -102,7 +102,7 @@ jobs:
             
             ### 📋 What's New
             
-            ${{ github.event.head_commit.message }}
+            ${{ github.event.head_commit.message || 'Manual alpha build triggered for testing' }}
             
             ### ℹ️ Testing Notes
             
