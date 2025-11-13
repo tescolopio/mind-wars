@@ -67,21 +67,23 @@ class _VocabularyShowdownGameState extends BaseGameState<VocabularyShowdownGame>
     // Ensure unique wrong definitions and remove the correct one
     final uniqueWrongDefinitions = Set<String>.from(_vocabulary.values)
         ..remove(_correctDefinition);
-    final wrongDefinitionsList = uniqueWrongDefinitions.toList()..shuffle(random);
-    
-    // Ensure there are at least 3 unique wrong definitions
-    if (wrongDefinitionsList.length < 3) {
-      throw Exception('Not enough unique wrong definitions to generate options.');
-    }
-    
-    // Pick 3 unique wrong definitions
-    final selectedWrongDefs = wrongDefinitionsList.take(3).toList();
-    
+
+    // Ensure there are enough words to generate a question
+    assert(_vocabulary.length >= 4, 'Vocabulary must have at least 4 entries.');
+
+    _currentWord = words[0];
+    _correctDefinition = _vocabulary[_currentWord]!;
+
+    final wrongDefinitions = _vocabulary.values.where((d) => d != _correctDefinition).toList()
+      ..shuffle(random);
+
+    // Take the first 3 wrong definitions
+    final options = wrongDefinitions.take(3).toList();
+
     // Insert the correct definition at a random index
     _correctIndex = random.nextInt(4);
-    _options = List<String>.from(selectedWrongDefs);
-    _options.insert(_correctIndex, _correctDefinition);
-    
+    options.insert(_correctIndex, _correctDefinition);
+    _options = options;
     setState(() {});
   }
 
