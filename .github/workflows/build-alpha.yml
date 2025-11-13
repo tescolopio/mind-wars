@@ -3,6 +3,15 @@ name: Build Alpha APK
 on:
   # Manual trigger
   workflow_dispatch:
+    inputs:
+      create_release:
+        description: 'Create a pre-release for testers'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
   # Trigger on push to main or develop branches (optional)
   push:
     branches:
@@ -50,11 +59,18 @@ jobs:
       - name: Build Alpha APK
         run: flutter build apk --flavor alpha --release --dart-define=FLAVOR=alpha
       
-      - name: Rename APK with version
+      - name: Get version and timestamp
+        id: version
         run: |
           VERSION=$(grep 'version:' pubspec.yaml | sed 's/version: //' | tr -d ' ')
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "tag=alpha-v${VERSION}-build-${{ github.run_number }}" >> $GITHUB_OUTPUT
+          echo "date=$(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_OUTPUT
+      
+      - name: Rename APK with version
+        run: |
           mv build/app/outputs/flutter-apk/app-alpha-release.apk \
-             build/app/outputs/flutter-apk/mind-wars-v${VERSION}-alpha.apk
+             build/app/outputs/flutter-apk/mind-wars-v${{ steps.version.outputs.version }}-alpha.apk
       
       - name: Upload Alpha APK
         uses: actions/upload-artifact@v4
@@ -63,12 +79,44 @@ jobs:
           path: build/app/outputs/flutter-apk/mind-wars-*.apk
           retention-days: 30
       
-      - name: Create Release (if tagged)
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Create Alpha Pre-Release
+        if: github.event.inputs.create_release == 'true' || startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: "Alpha Build v${{ steps.version.outputs.version }} (Build ${{ github.run_number }})"
+          body: |
+            ## Mind Wars Alpha Build
+            
+            **Version:** ${{ steps.version.outputs.version }}-alpha
+            **Build:** ${{ github.run_number }}
+            **Date:** ${{ steps.version.outputs.date }}
+            
+            ### 🚀 For Alpha Testers
+            
+            Download the APK below and install on your Android device:
+            1. Download `mind-wars-v${{ steps.version.outputs.version }}-alpha.apk`
+            2. Enable "Install from unknown sources" in Settings → Security
+            3. Install the APK
+            4. Report issues on GitHub
+            
+            ### 📋 What's New
+            
+            ${{ github.event.head_commit.message || 'Manual alpha build triggered for testing' }}
+            
+            ### ℹ️ Testing Notes
+            
+            - This is an **alpha build** for testing purposes
+            - Data is stored locally (no backend server)
+            - 5 games available: Memory Match, Word Builder, Sequence Recall, Anagram Attack, Code Breaker
+            - See [ALPHA_TESTING.md](https://github.com/${{ github.repository }}/blob/main/ALPHA_TESTING.md) for full testing guide
+            
+            ### 📱 Requirements
+            
+            - Android 8.0 (API 26) or higher
+            - ~50MB storage space
           files: build/app/outputs/flutter-apk/mind-wars-*.apk
-          draft: true
+          draft: false
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

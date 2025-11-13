@@ -10,12 +10,14 @@ Builds an Android APK with the alpha flavor for testing.
 
 **Triggers:**
 - Manual: Go to Actions → Build Alpha APK → Run workflow
+  - Option to create a pre-release for easy distribution to testers
 - Automatic: On push to `main` or `develop` branches (excluding docs changes)
 
 **Output:**
 - Artifact: `mind-wars-alpha-apk`
 - File: `mind-wars-v{version}-alpha.apk`
 - Retention: 30 days
+- Pre-release: Optional (when manually triggered with "Create a pre-release" option)
 
 **Steps:**
 1. Checks out code
@@ -23,12 +25,26 @@ Builds an Android APK with the alpha flavor for testing.
 3. Runs analyzer and tests
 4. Builds alpha APK
 5. Uploads as artifact
+6. (Optional) Creates pre-release for alpha testers
 
-**To download:**
+**To download (Artifacts):**
 1. Go to Actions tab
 2. Click on the workflow run
 3. Scroll to "Artifacts" section
 4. Download `mind-wars-alpha-apk`
+
+**To download (Pre-Release for Testers):**
+1. Go to Releases page
+2. Find the latest alpha pre-release
+3. Download the APK directly
+4. Share the release URL with alpha testers
+
+**Creating a Release for Testers:**
+1. Go to Actions → Build Alpha APK
+2. Click "Run workflow"
+3. Set "Create a pre-release for testers" to **true**
+4. Click "Run workflow"
+5. After completion, a new pre-release will be available on the Releases page
 
 ### 🍎 Build Alpha iOS (`build-alpha-ios.yml`)
 

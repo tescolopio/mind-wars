@@ -17,8 +17,14 @@ An alpha build is a pre-release version of the app that:
 ### For Android Users
 
 1. **Download the APK:**
-   - Go to GitHub Actions and download the latest alpha APK from the artifacts
-   - OR build locally using `./build-alpha.sh android`
+   - **Method 1 (Recommended for testers):** Download from GitHub Releases page
+     - Go to the repository's Releases page
+     - Find the latest alpha pre-release
+     - Download the `mind-wars-v{version}-alpha.apk` file
+   - **Method 2:** Download from GitHub Actions artifacts
+     - Go to Actions tab, click on a completed workflow run
+     - Download from the "Artifacts" section
+   - **Method 3:** Build locally using `./build-alpha.sh android`
 
 2. **Install on your device:**
    - Transfer the APK to your Android device
@@ -86,12 +92,31 @@ flutter build ios --release --no-codesign
 
 ### Using GitHub Actions
 
+**For quick distribution to testers (creates a Release):**
+
 1. Navigate to the repository on GitHub
 2. Click the **Actions** tab
 3. Select **"Build Alpha APK"** workflow
 4. Click **"Run workflow"** button
-5. Wait for the build to complete (~5-10 minutes)
-6. Download the APK from the workflow artifacts
+5. Set "Create a pre-release for testers" to **true**
+6. Click **"Run workflow"** to start
+7. Wait for the build to complete (~5-10 minutes)
+8. Go to the **Releases** page to find the new alpha pre-release
+9. Share the release URL with alpha testers
+
+**For internal testing (artifacts only):**
+
+1. Navigate to the repository on GitHub
+2. Click the **Actions** tab
+3. Select **"Build Alpha APK"** workflow
+4. Click **"Run workflow"** button
+5. Keep "Create a pre-release for testers" as **false** (default)
+6. Wait for the build to complete (~5-10 minutes)
+7. Download the APK from the workflow artifacts section
+
+**Automatic builds:**
+- Alpha APKs are automatically built (as artifacts) when code is pushed to `main` or `develop` branches
+- These automatic builds do NOT create releases - use manual trigger for that
 
 ## Alpha vs Production Builds
 
@@ -145,8 +170,18 @@ The version will be in the format: `1.0.0-alpha+1`
 ## Automated Builds
 
 Alpha builds are automatically generated when:
-- Code is pushed to `main` or `develop` branches
+- Code is pushed to `main` or `develop` branches (artifacts only, retained 30 days)
 - A workflow is manually triggered via GitHub Actions
+  - With "Create pre-release" option: Creates a public pre-release on the Releases page
+  - Without "Create pre-release" option: Only uploads as workflow artifact
+
+**For Alpha Testers:**
+- Check the Releases page for the latest alpha pre-release
+- Each pre-release includes:
+  - Direct APK download
+  - Build notes and version information
+  - Installation instructions
+  - Link to full testing documentation
 
 Artifacts are retained for 30 days and can be downloaded from the Actions page.
 
