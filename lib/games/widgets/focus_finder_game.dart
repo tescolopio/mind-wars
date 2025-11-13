@@ -47,7 +47,7 @@ class _FocusFinderGameState extends BaseGameState<FocusFinderGame> {
     final random = Random();
     
     // Select 3 targets
-    final shuffled = List.from(_itemPool)..shuffle(random);
+    final shuffled = List<String>.from(_itemPool)..shuffle(random);
     _targets = shuffled.take(3).toList();
     
     // Create scene with targets and distractors
