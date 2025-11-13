@@ -61,12 +61,15 @@ class _ColorRushGameState extends BaseGameState<ColorRushGame> {
     _targetColor = _baseColors[random.nextInt(_baseColors.length)];
     
     final gridSize = 16;
-    _colorGrid = List.generate(gridSize, (index) {
-      if (index < 2) {
-        return _targetColor;
-      }
-      return _baseColors[random.nextInt(_baseColors.length)];
-    })..shuffle(random);
+    // Ensure exactly 2 instances of the target color
+    final nonTargetColors = _baseColors.where((c) => c != _targetColor).toList();
+    final List<Color> gridColors = [];
+    gridColors.addAll(List.filled(2, _targetColor));
+    for (int i = 0; i < gridSize - 2; i++) {
+      gridColors.add(nonTargetColors[random.nextInt(nonTargetColors.length)]);
+    }
+    gridColors.shuffle(random);
+    _colorGrid = gridColors;
     
     setState(() {
       _timeRemaining = 3 - (_level ~/ 5).clamp(0, 1);
