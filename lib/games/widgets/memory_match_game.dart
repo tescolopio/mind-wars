@@ -54,6 +54,8 @@ class _MemoryMatchGameState extends BaseGameState<MemoryMatchGame> {
       if (_firstCard == null) {
         _firstCard = index;
       } else {
+        // Prevent double-tapping the same card
+        if (_firstCard == index) return;
         // Check for match
         if (_cards[_firstCard!] == _cards[index]) {
           _matched.add(_firstCard!);
