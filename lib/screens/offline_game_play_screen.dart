@@ -24,23 +24,28 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
   int _score = 0;
   int _hintsUsed = 0;
   bool _gameCompleted = false;
+  bool _gameStarted = false;
+  int _countdown = 0;
   
   // Memory Match game state
   List<String>? _memoryCards;
   List<bool>? _memoryRevealed;
   List<int>? _memoryMatched;
   int? _memoryFirstCard;
+  bool _memoryLocked = false;
   
   // Word Builder game state
   List<String>? _wordLetters;
   String? _wordBuilt;
   Set<String>? _wordsFound;
+  final TextEditingController _wordBuilderController = TextEditingController();
   
   // Sequence Recall game state
   List<int>? _sequence;
   List<int>? _userSequence;
   bool? _sequenceShowing;
   int? _sequenceLevel;
+  int? _currentFlashingButton;
   
   // Anagram Attack game state
   String? _targetWord;
@@ -48,6 +53,7 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
   String? _userAnswer;
   int? _anagramLevel;
   List<String>? _anagramWords;
+  final TextEditingController _anagramController = TextEditingController();
   
   // Code Breaker game state
   List<int>? _secretCode;
@@ -60,6 +66,13 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
     super.initState();
     _startTime = DateTime.now();
     _initializeGame();
+  }
+
+  @override
+  void dispose() {
+    _wordBuilderController.dispose();
+    _anagramController.dispose();
+    super.dispose();
   }
 
   void _initializeGame() {
@@ -115,6 +128,7 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
     _sequence = [];
     _userSequence = [];
     _sequenceShowing = false;
+    _currentFlashingButton = null;
     _generateSequence();
   }
 
@@ -145,12 +159,18 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
     _targetWord = _anagramWords!.removeAt(Random().nextInt(_anagramWords!.length));
     _scrambledWord = _scrambleWord(_targetWord!);
     _userAnswer = '';
+    _anagramController.clear();
   }
 
   String _scrambleWord(String word) {
     final chars = word.split('');
-    chars.shuffle(Random());
-    // Make sure it's actually scrambled
+    var attempts = 0;
+    do {
+      chars.shuffle(Random());
+      attempts++;
+    } while (chars.join() == word && attempts < 10 && word.length > 1);
+    
+    // Final check - if still not scrambled, manually swap
     if (chars.join() == word && word.length > 1) {
       final temp = chars[0];
       chars[0] = chars[1];
@@ -271,6 +291,14 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
       return _buildCompletionScreen(context);
     }
 
+    if (!_gameStarted) {
+      return _buildStartScreen(context);
+    }
+
+    if (_countdown > 0) {
+      return _buildCountdownScreen(context);
+    }
+
     switch (widget.gameTemplate.id) {
       case 'memory_match':
         return _buildMemoryMatchGame(context);
@@ -284,6 +312,119 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
         return _buildCodeBreakerGame(context);
       default:
         return _buildGenericGame(context);
+    }
+  }
+
+  Widget _buildStartScreen(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              widget.gameTemplate.icon,
+              style: const TextStyle(fontSize: 100),
+            ),
+            const SizedBox(height: 32),
+            Text(
+              widget.gameTemplate.name,
+              style: Theme.of(context).textTheme.headlineLarge,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              widget.gameTemplate.description,
+              style: Theme.of(context).textTheme.bodyLarge,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  widget.gameTemplate.rules,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+            const SizedBox(height: 48),
+            FilledButton.icon(
+              onPressed: _startGame,
+              icon: const Icon(Icons.play_arrow, size: 32),
+              label: const Text('START GAME', style: TextStyle(fontSize: 20)),
+              style: FilledButton.styleFrom(
+                minimumSize: const Size(double.infinity, 64),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCountdownScreen(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Get Ready!',
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
+          const SizedBox(height: 48),
+          Container(
+            width: 200,
+            height: 200,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primaryContainer,
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Text(
+                _countdown.toString(),
+                style: TextStyle(
+                  fontSize: 120,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _startGame() {
+    setState(() {
+      _gameStarted = true;
+      _countdown = 3;
+    });
+
+    _runCountdown();
+  }
+
+  void _runCountdown() async {
+    for (int i = 3; i > 0; i--) {
+      await Future.delayed(const Duration(seconds: 1));
+      if (mounted) {
+        setState(() {
+          _countdown = i - 1;
+        });
+      }
+    }
+    
+    // After countdown, start sequence recall if it's that game
+    if (mounted && widget.gameTemplate.id == 'sequence_recall') {
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (mounted) {
+        _showSequence();
+      }
     }
   }
 
@@ -328,6 +469,8 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
   }
 
   void _onMemoryCardTap(int index) {
+    if (_memoryLocked) return;
+    
     setState(() {
       _memoryRevealed![index] = true;
       
@@ -339,24 +482,28 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
           _memoryMatched!.add(_memoryFirstCard!);
           _memoryMatched!.add(index);
           _score += 10;
+          _memoryFirstCard = null;
           
           // Check if game is complete
           if (_memoryMatched!.length == _memoryCards!.length) {
             _completeGame();
           }
         } else {
-          // No match - hide cards after delay
+          // No match - lock cards and hide after delay
+          _memoryLocked = true;
+          final firstCard = _memoryFirstCard!;
+          _memoryFirstCard = null;
+          
           Future.delayed(const Duration(milliseconds: 800), () {
             if (mounted) {
               setState(() {
-                _memoryRevealed![_memoryFirstCard!] = false;
+                _memoryRevealed![firstCard] = false;
                 _memoryRevealed![index] = false;
+                _memoryLocked = false;
               });
             }
           });
         }
-        
-        _memoryFirstCard = null;
       }
     });
   }
@@ -404,6 +551,7 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
                 child: Column(
                   children: [
                     TextField(
+                      controller: _wordBuilderController,
                       decoration: const InputDecoration(
                         labelText: 'Your Word',
                         hintText: 'Type a word...',
@@ -485,6 +633,7 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
       _wordsFound!.add(_wordBuilt!);
       _score += wordLength * 2;
       _wordBuilt = '';
+      _wordBuilderController.clear();
     });
 
     _showMessage('Word accepted! +${wordLength * 2} points', success: true);
@@ -533,18 +682,37 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
                   Colors.yellow,
                 ];
                 
+                final isFlashing = _currentFlashingButton == index;
+                
                 return Card(
                   color: colors[index],
-                  elevation: 4,
+                  elevation: isFlashing ? 12 : 4,
                   child: InkWell(
                     onTap: _sequenceShowing! ? null : () => _onSequenceButtonTap(index),
-                    child: Center(
-                      child: Text(
-                        (index + 1).toString(),
-                        style: const TextStyle(
-                          fontSize: 48,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        border: isFlashing 
+                            ? Border.all(color: Colors.white, width: 4)
+                            : null,
+                        boxShadow: isFlashing
+                            ? [
+                                BoxShadow(
+                                  color: Colors.white.withOpacity(0.8),
+                                  blurRadius: 20,
+                                  spreadRadius: 5,
+                                )
+                              ]
+                            : null,
+                      ),
+                      child: Center(
+                        child: Text(
+                          (index + 1).toString(),
+                          style: TextStyle(
+                            fontSize: isFlashing ? 56 : 48,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
@@ -572,14 +740,30 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
     setState(() {
       _sequenceShowing = true;
       _userSequence = [];
+      _currentFlashingButton = null;
     });
 
+    await Future.delayed(const Duration(milliseconds: 500));
+
     for (var i = 0; i < _sequence!.length; i++) {
-      await Future.delayed(const Duration(milliseconds: 800));
-      // Flash the button (would need more state management for visual feedback)
+      if (!mounted) return;
+      
+      setState(() {
+        _currentFlashingButton = _sequence![i];
+      });
+      
+      await Future.delayed(const Duration(milliseconds: 600));
+      
+      if (!mounted) return;
+      
+      setState(() {
+        _currentFlashingButton = null;
+      });
+      
+      await Future.delayed(const Duration(milliseconds: 300));
     }
 
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 200));
     
     if (mounted) {
       setState(() {
@@ -638,12 +822,21 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
                             color: Theme.of(context).colorScheme.primary,
                           ),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${_targetWord!.length} letters',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Colors.grey[600],
+                          ),
+                    ),
+                    const SizedBox(height: 24),
                     TextField(
-                      decoration: const InputDecoration(
+                      controller: _anagramController,
+                      decoration: InputDecoration(
                         labelText: 'Your Answer',
                         hintText: 'Type the unscrambled word...',
-                        border: OutlineInputBorder(),
+                        border: const OutlineInputBorder(),
+                        helperText: 'Enter ${_targetWord!.length} letters',
                       ),
                       textCapitalization: TextCapitalization.characters,
                       onChanged: (value) {
@@ -680,7 +873,15 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
   }
 
   void _checkAnagram() {
-    if (_userAnswer!.toUpperCase() == _targetWord!.toUpperCase()) {
+    final cleanUserAnswer = _userAnswer!.trim().toUpperCase();
+    final cleanTargetWord = _targetWord!.trim().toUpperCase();
+    
+    if (cleanUserAnswer.length != cleanTargetWord.length) {
+      _showMessage('Your answer has ${cleanUserAnswer.length} letters, but the word has ${cleanTargetWord.length} letters');
+      return;
+    }
+    
+    if (cleanUserAnswer == cleanTargetWord) {
       setState(() {
         _score += 15;
         _anagramLevel = _anagramLevel! + 1;
@@ -695,7 +896,7 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
         }
       });
     } else {
-      _showMessage('Try again! The word is ${_targetWord!.length} letters long');
+      _showMessage('Try again! The word is ${cleanTargetWord.length} letters long');
     }
   }
 
@@ -748,6 +949,7 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
                 
                 return Card(
                   margin: const EdgeInsets.only(bottom: 8),
+                  elevation: 3,
                   child: Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: Row(
@@ -755,19 +957,24 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
                       children: [
                         Row(
                           children: guess.map((digit) => Container(
-                            width: 40,
-                            height: 40,
+                            width: 48,
+                            height: 48,
                             margin: const EdgeInsets.symmetric(horizontal: 4),
                             decoration: BoxDecoration(
-                              color: Colors.grey[200],
+                              color: Theme.of(context).colorScheme.primaryContainer,
                               borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: Theme.of(context).colorScheme.primary,
+                                width: 2,
+                              ),
                             ),
                             child: Center(
                               child: Text(
                                 digit.toString(),
-                                style: const TextStyle(
-                                  fontSize: 20,
+                                style: TextStyle(
+                                  fontSize: 24,
                                   fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).colorScheme.onPrimaryContainer,
                                 ),
                               ),
                             ),
@@ -777,11 +984,11 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
                           children: [
                             ...List.generate(
                               feedback['correct']!,
-                              (_) => const Icon(Icons.check_circle, color: Colors.green, size: 20),
+                              (_) => const Icon(Icons.check_circle, color: Colors.green, size: 24),
                             ),
                             ...List.generate(
                               feedback['wrongPosition']!,
-                              (_) => const Icon(Icons.circle, color: Colors.amber, size: 20),
+                              (_) => const Icon(Icons.circle, color: Colors.amber, size: 24),
                             ),
                           ],
                         ),
@@ -790,6 +997,82 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
                   ),
                 );
               }).toList(),
+              const SizedBox(height: 16),
+            ],
+            // Current guess display
+            if (_currentCodeGuess.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Card(
+                color: Theme.of(context).colorScheme.tertiaryContainer,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Current Guess',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ..._currentCodeGuess.map((digit) => Container(
+                            width: 48,
+                            height: 48,
+                            margin: const EdgeInsets.symmetric(horizontal: 4),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.tertiary,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Center(
+                              child: Text(
+                                digit.toString(),
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).colorScheme.onTertiary,
+                                ),
+                              ),
+                            ),
+                          )).toList(),
+                          ...List.generate(
+                            _codeLength! - _currentCodeGuess.length,
+                            (_) => Container(
+                              width: 48,
+                              height: 48,
+                              margin: const EdgeInsets.symmetric(horizontal: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  '?',
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              OutlinedButton.icon(
+                onPressed: () {
+                  setState(() {
+                    _currentCodeGuess = [];
+                  });
+                },
+                icon: const Icon(Icons.backspace),
+                label: const Text('Clear'),
+              ),
               const SizedBox(height: 16),
             ],
             // Number pad for input
