@@ -528,7 +528,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
               final entry = mockEntries[index + 3];
               return ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+                  backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                   child: Text(
                     '#${entry['rank']}',
                     style: const TextStyle(
@@ -558,9 +558,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen>
 
   Widget _buildPodiumItem(
     BuildContext context,
-    Map<String, dynamic> entry,
-    {required double height},
-  ) {
+    Map<String, dynamic> entry, {
+    required double height,
+  }) {
     final rank = entry['rank'] as int;
     Color color;
     
