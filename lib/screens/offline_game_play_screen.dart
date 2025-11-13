@@ -6,7 +6,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 import '../games/game_catalog.dart';
-import '../models/models.dart';
 
 class OfflineGamePlayScreen extends StatefulWidget {
   final GameTemplate gameTemplate;
@@ -210,7 +209,7 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
 
     return Container(
       padding: const EdgeInsets.all(16),
-      color: Theme.of(context).colorScheme.surfaceVariant,
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
