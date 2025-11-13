@@ -56,8 +56,11 @@ class _FocusFinderGameState extends BaseGameState<FocusFinderGame> {
       _allItems.add(target);
     }
     
-    // Add more distractors
-    final distractors = shuffled.skip(3).take(17).toList();
+    // Add more distractors, ensuring no overlap with targets
+    final distractorPool = List<String>.from(_itemPool)
+      ..removeWhere((item) => _targets.contains(item));
+    distractorPool.shuffle(random);
+    final distractors = distractorPool.take(17).toList();
     _allItems.addAll(distractors);
     _allItems.shuffle(random);
     
