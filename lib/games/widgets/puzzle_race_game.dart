@@ -43,7 +43,10 @@ class _PuzzleRaceGameState extends BaseGameState<PuzzleRaceGame> {
     _tiles = List.generate(totalTiles - 1, (i) => i + 1);
     _tiles.add(0); // 0 represents empty space
     
-    // Shuffle
+    // Shuffle by making 100 random valid moves
+    // Note: This ensures the puzzle is solvable (all shuffles from solved state are solvable)
+    // For alpha: This provides reasonable difficulty. Future enhancement could verify
+    // puzzle difficulty by checking minimum solution length.
     final random = Random();
     for (var i = 0; i < 100; i++) {
       final validMoves = _getValidMoves();

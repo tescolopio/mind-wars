@@ -124,7 +124,7 @@ class _CodeBreakerGameState extends BaseGameState<CodeBreakerGame> {
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
+                      children: [
                         Icon(Icons.check_circle, color: Colors.green, size: 16),
                         Text(' = Correct position   '),
                         Icon(Icons.circle, color: Colors.amber, size: 16),

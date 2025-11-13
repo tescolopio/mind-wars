@@ -79,10 +79,19 @@ class _SudokuDuelGameState extends BaseGameState<SudokuDuelGame> {
     
     _editable = List.generate(4, (_) => List.filled(4, false));
     
-    // Remove some numbers
-    for (var i = 0; i < 6; i++) {
+    // Remove some numbers, ensuring we actually remove 6 unique cells
+    final cellsToRemove = <String>{};
+    while (cellsToRemove.length < 6) {
       final row = random.nextInt(4);
       final col = random.nextInt(4);
+      cellsToRemove.add('$row,$col');
+    }
+    
+    // Apply the removals
+    for (var cell in cellsToRemove) {
+      final parts = cell.split(',');
+      final row = int.parse(parts[0]);
+      final col = int.parse(parts[1]);
       _editable[row][col] = true;
       _board[row][col] = 0;
     }

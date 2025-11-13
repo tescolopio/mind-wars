@@ -32,6 +32,7 @@ class _VocabularyShowdownGameState extends BaseGameState<VocabularyShowdownGame>
   late int _correctIndex;
   int _streak = 0;
   int _round = 1;
+  final Set<String> _usedWords = {}; // Track used words to prevent repetition
 
   final Map<String, String> _vocabulary = {
     'BENEVOLENT': 'Kind and generous',
@@ -59,9 +60,20 @@ class _VocabularyShowdownGameState extends BaseGameState<VocabularyShowdownGame>
 
   void _generateQuestion() {
     final random = Random();
-    final words = _vocabulary.keys.toList()..shuffle(random);
     
-    _currentWord = words[0];
+    // Get available words (not yet used)
+    final availableWords = _vocabulary.keys.where((word) => !_usedWords.contains(word)).toList();
+    
+    // If all words have been used, reset the pool
+    if (availableWords.isEmpty) {
+      _usedWords.clear();
+      availableWords.addAll(_vocabulary.keys);
+    }
+    
+    availableWords.shuffle(random);
+    
+    _currentWord = availableWords[0];
+    _usedWords.add(_currentWord); // Mark word as used
     _correctDefinition = _vocabulary[_currentWord]!;
     
     // Ensure unique wrong definitions and remove the correct one
@@ -71,10 +83,7 @@ class _VocabularyShowdownGameState extends BaseGameState<VocabularyShowdownGame>
     // Ensure there are enough words to generate a question
     assert(_vocabulary.length >= 4, 'Vocabulary must have at least 4 entries.');
 
-    _currentWord = words[0];
-    _correctDefinition = _vocabulary[_currentWord]!;
-
-    final wrongDefinitions = _vocabulary.values.where((d) => d != _correctDefinition).toList()
+    final wrongDefinitions = uniqueWrongDefinitions.toList()
       ..shuffle(random);
 
     // Take the first 3 wrong definitions
