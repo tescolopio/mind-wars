@@ -100,7 +100,9 @@ class _ColorRushGameState extends BaseGameState<ColorRushGame> {
   void _selectColor(Color selectedColor) {
     _timerActive = false;
     
-    if (selectedColor == _targetColor) {
+    // Compare color values to avoid issues with different Color object constructions.
+    // Assumption: selectedColor and _targetColor are from _baseColors, but this is future-proof.
+    if (selectedColor.value == _targetColor.value) {
       _combo++;
       final points = 5 + (_combo * 2);
       addScore(points);
