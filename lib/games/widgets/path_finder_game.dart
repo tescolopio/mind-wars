@@ -42,28 +42,87 @@ class _PathFinderGameState extends BaseGameState<PathFinderGame> {
   }
 
   void _generateMaze() {
-    _maze = List.generate(_gridSize, (_) => List.filled(_gridSize, 0));
     final random = Random();
-    
-    // Add some random walls
-    for (var i = 0; i < _gridSize * 2; i++) {
-      final row = random.nextInt(_gridSize);
-      final col = random.nextInt(_gridSize);
-      _maze[row][col] = 1;
+    const maxAttempts = 100;
+    int attempts = 0;
+    bool solvable = false;
+
+    while (!solvable && attempts < maxAttempts) {
+      // Generate empty maze
+      _maze = List.generate(_gridSize, (_) => List.filled(_gridSize, 0));
+
+      // Add some random walls
+      for (var i = 0; i < _gridSize * 2; i++) {
+        final row = random.nextInt(_gridSize);
+        final col = random.nextInt(_gridSize);
+        _maze[row][col] = 1;
+      }
+
+      // Set start and end
+      _playerRow = 0;
+      _playerCol = 0;
+      _exitRow = _gridSize - 1;
+      _exitCol = _gridSize - 1;
+      _maze[_playerRow][_playerCol] = 0;
+      _maze[_exitRow][_exitCol] = 0;
+      _moves = 0;
+
+      solvable = _hasPathBFS();
+      attempts++;
     }
-    
-    // Set start and end
-    _playerRow = 0;
-    _playerCol = 0;
-    _exitRow = _gridSize - 1;
-    _exitCol = _gridSize - 1;
-    _maze[_playerRow][_playerCol] = 0;
-    _maze[_exitRow][_exitCol] = 0;
-    _moves = 0;
-    
+
+    // If not solvable after maxAttempts, fallback to empty maze
+    if (!solvable) {
+      _maze = List.generate(_gridSize, (_) => List.filled(_gridSize, 0));
+      _playerRow = 0;
+      _playerCol = 0;
+      _exitRow = _gridSize - 1;
+      _exitCol = _gridSize - 1;
+      _moves = 0;
+    }
+
     setState(() {});
   }
 
+  // BFS to check if a path exists from start to exit
+  bool _hasPathBFS() {
+    final visited = List.generate(_gridSize, (_) => List.filled(_gridSize, false));
+    final queue = <List<int>>[];
+    queue.add([_playerRow, _playerCol]);
+    visited[_playerRow][_playerCol] = true;
+
+    final directions = [
+      [0, 1],
+      [1, 0],
+      [0, -1],
+      [-1, 0],
+    ];
+
+    while (queue.isNotEmpty) {
+      final pos = queue.removeAt(0);
+      final row = pos[0];
+      final col = pos[1];
+
+      if (row == _exitRow && col == _exitCol) {
+        return true;
+      }
+
+      for (final dir in directions) {
+        final newRow = row + dir[0];
+        final newCol = col + dir[1];
+        if (newRow >= 0 &&
+            newRow < _gridSize &&
+            newCol >= 0 &&
+            newCol < _gridSize &&
+            _maze[newRow][newCol] == 0 &&
+            !visited[newRow][newCol]) {
+          visited[newRow][newCol] = true;
+          queue.add([newRow, newCol]);
+        }
+      }
+    }
+    return false;
+  }
   void _movePlayer(int dRow, int dCol) {
     final newRow = _playerRow + dRow;
     final newCol = _playerCol + dCol;
