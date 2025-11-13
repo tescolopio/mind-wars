@@ -151,6 +151,7 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
 
   Widget _buildGameWidget(BuildContext context) {
     switch (widget.gameTemplate.id) {
+      // Memory Games
       case 'memory_match':
         return MemoryMatchGame(
           onGameComplete: _onGameComplete,
@@ -161,6 +162,64 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
           onGameComplete: _onGameComplete,
           onScoreUpdate: _onScoreUpdate,
         );
+      case 'pattern_memory':
+        return PatternMemoryGame(
+          onGameComplete: _onGameComplete,
+          onScoreUpdate: _onScoreUpdate,
+        );
+      
+      // Logic Games
+      case 'code_breaker':
+        return CodeBreakerGame(
+          onGameComplete: _onGameComplete,
+          onScoreUpdate: _onScoreUpdate,
+        );
+      case 'sudoku_duel':
+        return SudokuDuelGame(
+          onGameComplete: _onGameComplete,
+          onScoreUpdate: _onScoreUpdate,
+        );
+      case 'logic_grid':
+        return LogicGridGame(
+          onGameComplete: _onGameComplete,
+          onScoreUpdate: _onScoreUpdate,
+        );
+      
+      // Attention Games
+      case 'spot_difference':
+        return SpotDifferenceGame(
+          onGameComplete: _onGameComplete,
+          onScoreUpdate: _onScoreUpdate,
+        );
+      case 'color_rush':
+        return ColorRushGame(
+          onGameComplete: _onGameComplete,
+          onScoreUpdate: _onScoreUpdate,
+        );
+      case 'focus_finder':
+        return FocusFinderGame(
+          onGameComplete: _onGameComplete,
+          onScoreUpdate: _onScoreUpdate,
+        );
+      
+      // Spatial Games
+      case 'puzzle_race':
+        return PuzzleRaceGame(
+          onGameComplete: _onGameComplete,
+          onScoreUpdate: _onScoreUpdate,
+        );
+      case 'rotation_master':
+        return RotationMasterGame(
+          onGameComplete: _onGameComplete,
+          onScoreUpdate: _onScoreUpdate,
+        );
+      case 'path_finder':
+        return PathFinderGame(
+          onGameComplete: _onGameComplete,
+          onScoreUpdate: _onScoreUpdate,
+        );
+      
+      // Language Games
       case 'word_builder':
         return WordBuilderGame(
           onGameComplete: _onGameComplete,
@@ -171,11 +230,12 @@ class _OfflineGamePlayScreenState extends State<OfflineGamePlayScreen> {
           onGameComplete: _onGameComplete,
           onScoreUpdate: _onScoreUpdate,
         );
-      case 'code_breaker':
-        return CodeBreakerGame(
+      case 'vocabulary_showdown':
+        return VocabularyShowdownGame(
           onGameComplete: _onGameComplete,
           onScoreUpdate: _onScoreUpdate,
         );
+      
       default:
         return _buildGenericGame(context);
     }
