@@ -79,7 +79,7 @@ class TileStream {
     switch (difficulty.toLowerCase()) {
       case 'intermediate':
         // Add 1-2 anchor tiles
-        final anchorCount = 1 + _random.nextInt(2);
+        final anchorCount = 1 + _random.nextInt(2); // 1-2 anchor tiles
         for (int i = 0; i < anchorCount; i++) {
           int index;
           do {
