@@ -141,7 +141,7 @@ class GridEngine {
 
     // Check for pangram (all 9 unique letters used)
     final uniqueLetters = pathIndices.map((i) => currentGrid.getTile(i).letter).toSet();
-    final isPangram = uniqueLetters.length == 9 && currentGrid.tiles.map((t) => t.letter).toSet().length == 9;
+    final isPangram = uniqueLetters.length == 9;
 
     // Process grid: remove tiles, apply gravity, refill
     final newGrid = _processGridAfterWord(currentGrid, pathIndices, word);
