@@ -94,7 +94,7 @@ class TileStream {
         int anchorIndex = _random.nextInt(9);
         special[anchorIndex] = 'anchor';
         
-        final goldenCount = 1 + _random.nextInt(2);
+        final goldenCount = 1 + _random.nextInt(2); // 1-2 golden tiles
         for (int i = 0; i < goldenCount; i++) {
           int index;
           do {
@@ -115,7 +115,7 @@ class TileStream {
         } while (special.containsKey(goldenIndex));
         special[goldenIndex] = 'golden';
         
-        final lockedCount = 1 + _random.nextInt(2);
+        final lockedCount = 1 + _random.nextInt(2); // 1-2 locked tiles
         for (int i = 0; i < lockedCount; i++) {
           int index;
           do {

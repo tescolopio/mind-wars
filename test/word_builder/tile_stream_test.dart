@@ -79,8 +79,10 @@ void main() {
       final special = stream.generateSpecialTiles('advanced');
 
       // Should have anchor and golden tiles
-      expect(special.values.where((v) => v == 'anchor').length, equals(1));
-      expect(special.values.where((v) => v == 'golden').length, greaterThan(0));
+      final anchorCount = special.values.where((v) => v == 'anchor').length;
+      final goldenCount = special.values.where((v) => v == 'golden').length;
+      expect(anchorCount, equals(1));
+      expect(goldenCount, greaterThan(0));
     });
 
     test('should generate special tiles for expert difficulty', () {
@@ -88,9 +90,12 @@ void main() {
       final special = stream.generateSpecialTiles('expert');
 
       // Should have anchor, golden, and locked tiles
-      expect(special.values.where((v) => v == 'anchor').length, equals(1));
-      expect(special.values.where((v) => v == 'golden').length, equals(1));
-      expect(special.values.where((v) => v == 'locked').length, greaterThan(0));
+      final anchorCount = special.values.where((v) => v == 'anchor').length;
+      final goldenCount = special.values.where((v) => v == 'golden').length;
+      final lockedCount = special.values.where((v) => v == 'locked').length;
+      expect(anchorCount, equals(1));
+      expect(goldenCount, equals(1));
+      expect(lockedCount, greaterThan(0));
     });
 
     test('should generate no special tiles for beginner difficulty', () {

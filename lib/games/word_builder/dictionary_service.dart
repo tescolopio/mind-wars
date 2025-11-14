@@ -15,7 +15,7 @@ class DictionaryService {
     'EAT', 'BAT', 'RAT', 'HAT', 'MAT', 'SAT', 'FAT', 'TAR', 'CAR', 'BAR',
     'JAR', 'WAR', 'FAR', 'PAN', 'TAN', 'VAN', 'FAN', 'RAN',
     'BAN', 'TEN', 'PEN', 'HEN', 'DEN', 'NET', 'SET', 'WET', 'PET', 'MET',
-    'LET', 'BET', 'GET', 'JET', 'TEA', 'SEA', 'PEA', 'BEE', 'SEE', 'FEE',
+    'BET', 'JET', 'TEA', 'SEA', 'PEA', 'BEE', 'SEE', 'FEE',
     'ATE', 'APE', 'ACE', 'AGE', 'AXE', 'ARE', 'ICE', 'ORE', 'OWE', 'ODE',
     'ZEN', 'JAM', 'VOW', 'ZAX', 'QUA', 'ZUZ', 'QAT', 'JOY', 'ZOO', 'ZIP',
     
