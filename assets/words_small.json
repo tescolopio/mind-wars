@@ -1,0 +1,186 @@
+{
+  "version": "1.0.0",
+  "description": "Vocabulary Showdown word database - MVP set (15 words for alpha testing)",
+  "words": [
+    {
+      "id": "benevolent",
+      "word": "BENEVOLENT",
+      "definition": "Kind and generous",
+      "partOfSpeech": "adjective",
+      "difficulty": 3,
+      "frequencyScore": 0.45,
+      "example": "The benevolent teacher always helped students after class.",
+      "synonyms": ["kind", "generous", "charitable"],
+      "cefr": "B2"
+    },
+    {
+      "id": "eloquent",
+      "word": "ELOQUENT",
+      "definition": "Fluent and persuasive in speaking",
+      "partOfSpeech": "adjective",
+      "difficulty": 3,
+      "frequencyScore": 0.50,
+      "example": "Her eloquent speech moved the entire audience.",
+      "synonyms": ["articulate", "fluent", "persuasive"],
+      "cefr": "B2"
+    },
+    {
+      "id": "meticulous",
+      "word": "METICULOUS",
+      "definition": "Showing great attention to detail",
+      "partOfSpeech": "adjective",
+      "difficulty": 4,
+      "frequencyScore": 0.42,
+      "example": "The scientist was meticulous in recording every observation.",
+      "synonyms": ["careful", "thorough", "precise"],
+      "cefr": "C1"
+    },
+    {
+      "id": "resilient",
+      "word": "RESILIENT",
+      "definition": "Able to withstand or recover quickly",
+      "partOfSpeech": "adjective",
+      "difficulty": 3,
+      "frequencyScore": 0.55,
+      "example": "The community proved resilient after the natural disaster.",
+      "synonyms": ["tough", "adaptable", "flexible"],
+      "cefr": "B2"
+    },
+    {
+      "id": "versatile",
+      "word": "VERSATILE",
+      "definition": "Able to adapt to many different functions",
+      "partOfSpeech": "adjective",
+      "difficulty": 3,
+      "frequencyScore": 0.48,
+      "example": "This versatile tool can be used for many different tasks.",
+      "synonyms": ["adaptable", "flexible", "multi-purpose"],
+      "cefr": "B2"
+    },
+    {
+      "id": "pragmatic",
+      "word": "PRAGMATIC",
+      "definition": "Dealing with things sensibly and realistically",
+      "partOfSpeech": "adjective",
+      "difficulty": 4,
+      "frequencyScore": 0.40,
+      "example": "We need a pragmatic approach to solving this problem.",
+      "synonyms": ["practical", "realistic", "sensible"],
+      "cefr": "C1"
+    },
+    {
+      "id": "ambiguous",
+      "word": "AMBIGUOUS",
+      "definition": "Open to more than one interpretation",
+      "partOfSpeech": "adjective",
+      "difficulty": 4,
+      "frequencyScore": 0.43,
+      "example": "The instructions were ambiguous and hard to follow.",
+      "synonyms": ["unclear", "vague", "uncertain"],
+      "cefr": "C1"
+    },
+    {
+      "id": "diligent",
+      "word": "DILIGENT",
+      "definition": "Having or showing care in one's work",
+      "partOfSpeech": "adjective",
+      "difficulty": 2,
+      "frequencyScore": 0.52,
+      "example": "The diligent student always completed assignments on time.",
+      "synonyms": ["hardworking", "careful", "thorough"],
+      "cefr": "B1"
+    },
+    {
+      "id": "innovative",
+      "word": "INNOVATIVE",
+      "definition": "Featuring new methods; advanced and original",
+      "partOfSpeech": "adjective",
+      "difficulty": 3,
+      "frequencyScore": 0.58,
+      "example": "The company is known for its innovative products.",
+      "synonyms": ["creative", "original", "inventive"],
+      "cefr": "B2"
+    },
+    {
+      "id": "cohesive",
+      "word": "COHESIVE",
+      "definition": "Forming a united whole",
+      "partOfSpeech": "adjective",
+      "difficulty": 4,
+      "frequencyScore": 0.38,
+      "example": "The team worked as a cohesive unit to win the championship.",
+      "synonyms": ["united", "unified", "integrated"],
+      "cefr": "C1"
+    },
+    {
+      "id": "abundant",
+      "word": "ABUNDANT",
+      "definition": "Existing or available in large quantities",
+      "partOfSpeech": "adjective",
+      "difficulty": 2,
+      "frequencyScore": 0.60,
+      "example": "The forest had abundant wildlife and natural resources.",
+      "synonyms": ["plentiful", "ample", "copious"],
+      "cefr": "B1"
+    },
+    {
+      "id": "cynical",
+      "word": "CYNICAL",
+      "definition": "Believing that people are motivated by self-interest",
+      "partOfSpeech": "adjective",
+      "difficulty": 3,
+      "frequencyScore": 0.47,
+      "example": "He became cynical after years of political disappointments.",
+      "synonyms": ["skeptical", "distrustful", "pessimistic"],
+      "cefr": "B2"
+    },
+    {
+      "id": "elaborate",
+      "word": "ELABORATE",
+      "definition": "Involving many carefully arranged parts",
+      "partOfSpeech": "adjective",
+      "difficulty": 3,
+      "frequencyScore": 0.53,
+      "example": "The wedding featured elaborate decorations and entertainment.",
+      "synonyms": ["complex", "detailed", "intricate"],
+      "cefr": "B2"
+    },
+    {
+      "id": "fundamental",
+      "word": "FUNDAMENTAL",
+      "definition": "Forming a necessary base or core",
+      "partOfSpeech": "adjective",
+      "difficulty": 2,
+      "frequencyScore": 0.65,
+      "example": "Reading is a fundamental skill for academic success.",
+      "synonyms": ["basic", "essential", "core"],
+      "cefr": "B1"
+    },
+    {
+      "id": "inevitable",
+      "word": "INEVITABLE",
+      "definition": "Certain to happen; unavoidable",
+      "partOfSpeech": "adjective",
+      "difficulty": 3,
+      "frequencyScore": 0.56,
+      "example": "Change is inevitable in a rapidly evolving industry.",
+      "synonyms": ["unavoidable", "certain", "inescapable"],
+      "cefr": "B2"
+    }
+  ],
+  "metadata": {
+    "totalWords": 15,
+    "difficultyDistribution": {
+      "tier1": 0,
+      "tier2": 4,
+      "tier3": 7,
+      "tier4": 4
+    },
+    "cefrDistribution": {
+      "B1": 4,
+      "B2": 7,
+      "C1": 4
+    },
+    "notes": "Alpha testing set. Production version should include 800-1000 words with broader difficulty range."
+  }
+}
