@@ -148,10 +148,24 @@ class VocabularyGameService {
       difficulty: difficulty,
     );
 
-    // For MVP, only implement multiple choice
-    // Other types can be added later
-    final options = _generateMCQOptions(word, seed);
-    final correctIndex = options.indexOf(word.definition);
+    List<String> options;
+    int correctIndex;
+
+    switch (type) {
+      case QuestionType.multipleChoice:
+        options = _generateMCQOptions(word, seed);
+        correctIndex = options.indexOf(word.definition);
+        break;
+      case QuestionType.fillInBlank:
+        // Fill-in-blank has no options, answer is the word itself
+        options = [];
+        correctIndex = -1;
+        break;
+      case QuestionType.synonymAntonym:
+        options = _generateSynonymAntonymOptions(word, seed);
+        correctIndex = options.indexOf(word.synonyms.isNotEmpty ? word.synonyms.first : word.definition);
+        break;
+    }
 
     return VocabularyQuestion(
       id: 'q_${word.id}_$seed',
@@ -185,10 +199,40 @@ class VocabularyGameService {
     return VocabularyGameUtilities.seededShuffle(options, seed + 1);
   }
 
+  /// Generate synonym/antonym options
+  List<String> _generateSynonymAntonymOptions(VocabularyWord correctWord, int seed) {
+    final options = <String>[];
+    
+    // Add correct synonym if available
+    if (correctWord.synonyms.isNotEmpty) {
+      options.add(correctWord.synonyms.first);
+    } else {
+      // Fallback to definition if no synonyms
+      options.add(correctWord.definition);
+    }
+    
+    // Get wrong synonyms from other words
+    final wrongSynonyms = _wordPool.values
+        .where((w) => w.id != correctWord.id && w.synonyms.isNotEmpty)
+        .expand((w) => w.synonyms)
+        .toSet()
+        .toList();
+
+    // Shuffle with seed
+    final shuffled = VocabularyGameUtilities.seededShuffle(wrongSynonyms, seed);
+    
+    // Take first 3 wrong synonyms
+    options.addAll(shuffled.take(3));
+
+    // Shuffle all options with seed to get deterministic order
+    return VocabularyGameUtilities.seededShuffle(options, seed + 1);
+  }
+
   /// Process an answer and update session
   VocabularyGameSession processAnswer({
     required VocabularyGameSession session,
-    required int selectedOptionIndex,
+    int? selectedOptionIndex,
+    String? textAnswer,
     required double timeTakenMs,
   }) {
     if (session.completed) {
@@ -199,7 +243,20 @@ class VocabularyGameService {
     }
 
     final question = session.questions[session.currentQuestionIndex];
-    final correct = selectedOptionIndex == question.correctIndex;
+    bool correct;
+    
+    // Determine correctness based on question type
+    if (question.type == QuestionType.fillInBlank) {
+      // For fill-in-blank, check if text answer matches the word
+      correct = VocabularyGameUtilities.validateAnswer(
+        correctAnswer: question.word.word,
+        userAnswer: textAnswer,
+        caseSensitive: false,
+      );
+    } else {
+      // For MCQ and synonym/antonym, check option index
+      correct = selectedOptionIndex == question.correctIndex;
+    }
     
     // Calculate score
     final score = VocabularyScoringUtility.computeQuestionScore(
@@ -214,6 +271,7 @@ class VocabularyGameService {
     final answer = VocabularyAnswer(
       questionId: question.id,
       selectedOptionIndex: selectedOptionIndex,
+      textAnswer: textAnswer,
       timeTakenMs: timeTakenMs,
       correct: correct,
       scoreEarned: score,

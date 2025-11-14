@@ -10,15 +10,21 @@
  * - Adaptive difficulty targeting ~70% success rate
  * - Deterministic question generation for multiplayer fairness
  * - Streak bonuses with caps
- * - Per-question timers
+ * - Per-question timers with visual countdown
+ * - Multiple question types (MCQ, fill-in-blank, synonym/antonym)
+ * - Detailed score breakdown display
+ * - Example sentences for learning
  */
 
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'dart:async';
 import 'base_game_widget.dart';
 import '../../services/vocabulary_game_service.dart';
 import '../../models/vocabulary_models.dart';
 import '../../utils/vocabulary_scoring_utility.dart';
+import 'question_timer.dart';
+import 'score_breakdown_dialog.dart';
 
 class VocabularyShowdownGame extends BaseGameWidget {
   const VocabularyShowdownGame({
@@ -44,12 +50,22 @@ class _VocabularyShowdownGameState extends BaseGameState<VocabularyShowdownGame>
   VocabularyQuestion? _currentQuestion;
   DateTime? _questionStartTime;
   bool _answerProcessing = false;
+  bool _timerPaused = false;
+  
+  // For fill-in-blank questions
+  final TextEditingController _textController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _gameService = VocabularyGameService(random: _rng);
     _initializeSession();
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    super.dispose();
   }
 
   void _initializeSession() {
@@ -64,7 +80,21 @@ class _VocabularyShowdownGameState extends BaseGameState<VocabularyShowdownGame>
   void _loadNextQuestion() {
     _currentQuestion = _gameService.getCurrentQuestion(_session);
     _questionStartTime = DateTime.now();
+    _answerProcessing = false;
+    _timerPaused = false;
+    _textController.clear();
     setState(() {});
+  }
+
+  void _onTimeUp() {
+    if (!_answerProcessing) {
+      // Auto-submit with wrong answer when time runs out
+      if (_currentQuestion?.type == QuestionType.fillInBlank) {
+        _submitFillInBlank();
+      } else {
+        _selectAnswer(-1); // Invalid index = wrong answer
+      }
+    }
   }
 
   void _selectAnswer(int index) {
@@ -72,15 +102,32 @@ class _VocabularyShowdownGameState extends BaseGameState<VocabularyShowdownGame>
     
     setState(() {
       _answerProcessing = true;
+      _timerPaused = true;
     });
 
+    _processAnswer(selectedOptionIndex: index);
+  }
+
+  void _submitFillInBlank() {
+    if (_answerProcessing || _currentQuestion == null) return;
+    
+    setState(() {
+      _answerProcessing = true;
+      _timerPaused = true;
+    });
+
+    _processAnswer(textAnswer: _textController.text.trim());
+  }
+
+  void _processAnswer({int? selectedOptionIndex, String? textAnswer}) async {
     // Calculate time taken
     final timeTaken = DateTime.now().difference(_questionStartTime!).inMilliseconds.toDouble();
     
     // Process answer through service
     _session = _gameService.processAnswer(
       session: _session,
-      selectedOptionIndex: index,
+      selectedOptionIndex: selectedOptionIndex,
+      textAnswer: textAnswer,
       timeTakenMs: timeTaken,
     );
 
@@ -100,15 +147,29 @@ class _VocabularyShowdownGameState extends BaseGameState<VocabularyShowdownGame>
       streak: _session.streak,
     );
 
-    // Show feedback
-    if (correct) {
-      showMessage(
-        'Correct! +${answer.scoreEarned} points (${_session.streak}x streak)',
-        success: true,
-      );
+    // Get correct answer text
+    String correctAnswerText;
+    if (_currentQuestion!.type == QuestionType.fillInBlank) {
+      correctAnswerText = _currentQuestion!.word.word;
     } else {
-      showMessage(
-        'Wrong! The correct answer was: ${_currentQuestion!.options[_currentQuestion!.correctIndex]}',
+      correctAnswerText = _currentQuestion!.options[_currentQuestion!.correctIndex];
+    }
+
+    // Show score breakdown dialog
+    if (mounted) {
+      await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => ScoreBreakdownDialog(
+          correct: correct,
+          scoreEarned: answer.scoreEarned,
+          breakdown: breakdown,
+          correctAnswer: correctAnswerText,
+          userAnswer: textAnswer ?? (selectedOptionIndex != null && selectedOptionIndex >= 0 
+              ? _currentQuestion!.options[selectedOptionIndex] 
+              : null),
+          exampleSentence: !correct ? _currentQuestion!.word.example : null,
+        ),
       );
     }
 
@@ -117,22 +178,15 @@ class _VocabularyShowdownGameState extends BaseGameState<VocabularyShowdownGame>
       // Update difficulty for next game
       _gameService.updateDifficulty();
       
-      // Complete the game after a short delay
-      Future.delayed(const Duration(seconds: 2), () {
-        if (mounted) {
-          completeGame();
-        }
-      });
+      // Complete the game
+      if (mounted) {
+        completeGame();
+      }
     } else {
-      // Load next question after a short delay
-      Future.delayed(const Duration(seconds: 2), () {
-        if (mounted) {
-          setState(() {
-            _answerProcessing = false;
-          });
-          _loadNextQuestion();
-        }
-      });
+      // Load next question
+      if (mounted) {
+        _loadNextQuestion();
+      }
     }
   }
 
@@ -153,6 +207,7 @@ class _VocabularyShowdownGameState extends BaseGameState<VocabularyShowdownGame>
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            // Header Card
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -180,12 +235,24 @@ class _VocabularyShowdownGameState extends BaseGameState<VocabularyShowdownGame>
                 ),
               ),
             ),
+            const SizedBox(height: 16),
+            
+            // Timer
+            QuestionTimer(
+              maxTime: question.maxTime,
+              onTimeUp: _onTimeUp,
+              isPaused: _timerPaused,
+            ),
             const SizedBox(height: 24),
+            
+            // Question prompt based on type
             Text(
-              'What does this word mean?',
+              _getQuestionPrompt(question.type),
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 16),
+            
+            // Word display
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
@@ -203,28 +270,110 @@ class _VocabularyShowdownGameState extends BaseGameState<VocabularyShowdownGame>
               ),
             ),
             const SizedBox(height: 32),
-            ...List.generate(question.options.length, (index) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 12.0),
-                child: FilledButton(
-                  onPressed: _answerProcessing ? null : () => _selectAnswer(index),
-                  style: FilledButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 60),
-                    backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-                    foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
-                    disabledBackgroundColor: Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5),
-                  ),
-                  child: Text(
-                    question.options[index],
-                    style: const TextStyle(fontSize: 16),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              );
-            }),
+            
+            // Question type specific UI
+            if (question.type == QuestionType.multipleChoice)
+              _buildMultipleChoiceOptions(question)
+            else if (question.type == QuestionType.fillInBlank)
+              _buildFillInBlankInput()
+            else if (question.type == QuestionType.synonymAntonym)
+              _buildSynonymAntonymOptions(question),
           ],
         ),
       ),
+    );
+  }
+
+  String _getQuestionPrompt(QuestionType type) {
+    switch (type) {
+      case QuestionType.multipleChoice:
+        return 'What does this word mean?';
+      case QuestionType.fillInBlank:
+        return 'Type the word that matches this definition:';
+      case QuestionType.synonymAntonym:
+        return 'Which word is a synonym?';
+    }
+  }
+
+  Widget _buildMultipleChoiceOptions(VocabularyQuestion question) {
+    return Column(
+      children: List.generate(question.options.length, (index) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12.0),
+          child: FilledButton(
+            onPressed: _answerProcessing ? null : () => _selectAnswer(index),
+            style: FilledButton.styleFrom(
+              minimumSize: const Size(double.infinity, 60),
+              backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+              foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
+              disabledBackgroundColor: Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5),
+            ),
+            child: Text(
+              question.options[index],
+              style: const TextStyle(fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _buildFillInBlankInput() {
+    return Column(
+      children: [
+        TextField(
+          controller: _textController,
+          enabled: !_answerProcessing,
+          decoration: InputDecoration(
+            hintText: 'Type your answer here...',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            filled: true,
+            fillColor: Theme.of(context).colorScheme.surfaceVariant,
+          ),
+          style: const TextStyle(fontSize: 18),
+          textAlign: TextAlign.center,
+          textCapitalization: TextCapitalization.characters,
+          onSubmitted: (_) => _submitFillInBlank(),
+        ),
+        const SizedBox(height: 16),
+        FilledButton(
+          onPressed: _answerProcessing ? null : _submitFillInBlank,
+          style: FilledButton.styleFrom(
+            minimumSize: const Size(double.infinity, 60),
+          ),
+          child: const Text(
+            'Submit Answer',
+            style: TextStyle(fontSize: 18),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSynonymAntonymOptions(VocabularyQuestion question) {
+    return Column(
+      children: List.generate(question.options.length, (index) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12.0),
+          child: FilledButton(
+            onPressed: _answerProcessing ? null : () => _selectAnswer(index),
+            style: FilledButton.styleFrom(
+              minimumSize: const Size(double.infinity, 60),
+              backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
+              foregroundColor: Theme.of(context).colorScheme.onTertiaryContainer,
+              disabledBackgroundColor: Theme.of(context).colorScheme.tertiaryContainer.withOpacity(0.5),
+            ),
+            child: Text(
+              question.options[index],
+              style: const TextStyle(fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        );
+      }),
     );
   }
 }
