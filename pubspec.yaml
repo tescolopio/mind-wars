@@ -45,9 +45,8 @@ flutter:
   uses-material-design: true
   
   # Assets
-  # assets:
-  #   - images/
-  #   - icons/
+  assets:
+    - assets/words_small.json
   
   # Fonts
   # fonts:
