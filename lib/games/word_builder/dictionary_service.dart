@@ -13,7 +13,7 @@ class DictionaryService {
     'MAN', 'NEW', 'NOW', 'OLD', 'SEE', 'TWO', 'WAY', 'WHO', 'BOY', 'ITS',
     'LET', 'PUT', 'SAY', 'SHE', 'TOO', 'USE', 'CAT', 'DOG', 'RUN', 'SIT',
     'EAT', 'BAT', 'RAT', 'HAT', 'MAT', 'SAT', 'FAT', 'TAR', 'CAR', 'BAR',
-    'JAR', 'WAR', 'FAR', 'PAN', 'TAN', 'VAN', 'FAN', 'CAN', 'MAN', 'RAN',
+    'JAR', 'WAR', 'FAR', 'PAN', 'TAN', 'VAN', 'FAN', 'RAN',
     'BAN', 'TEN', 'PEN', 'HEN', 'DEN', 'NET', 'SET', 'WET', 'PET', 'MET',
     'LET', 'BET', 'GET', 'JET', 'TEA', 'SEA', 'PEA', 'BEE', 'SEE', 'FEE',
     'ATE', 'APE', 'ACE', 'AGE', 'AXE', 'ARE', 'ICE', 'ORE', 'OWE', 'ODE',
