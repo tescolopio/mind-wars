@@ -69,8 +69,9 @@ void main() {
       final special = stream.generateSpecialTiles('intermediate');
 
       // Should have 1-2 anchor tiles
-      expect(special.values.where((v) => v == 'anchor').length, greaterThan(0));
-      expect(special.values.where((v) => v == 'anchor').length, lessThanOrEqualTo(2));
+      final anchorCount = special.values.where((v) => v == 'anchor').length;
+      expect(anchorCount, greaterThan(0));
+      expect(anchorCount, lessThanOrEqualTo(2));
     });
 
     test('should generate special tiles for advanced difficulty', () {
