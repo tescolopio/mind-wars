@@ -1,0 +1,26 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # API Server metrics
+  - job_name: 'api-server'
+    static_configs:
+      - targets: ['api-server:3000']
+    metrics_path: '/metrics'
+
+  # Socket.io Server metrics
+  - job_name: 'socket-server'
+    static_configs:
+      - targets: ['socket-server:3001']
+    metrics_path: '/metrics'
+
+  # PostgreSQL metrics (requires postgres_exporter)
+  # - job_name: 'postgres'
+  #   static_configs:
+  #     - targets: ['postgres-exporter:9187']
+
+  # Redis metrics (requires redis_exporter)
+  # - job_name: 'redis'
+  #   static_configs:
+  #     - targets: ['redis-exporter:9121']
