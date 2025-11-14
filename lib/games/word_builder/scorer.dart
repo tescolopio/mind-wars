@@ -69,6 +69,9 @@ class Scorer {
 
   /// Get rarity bonus based on word frequency
   int _getRarityBonus(String word) {
+    // If the word is not found in the frequency bucket map, default to bucket 2 ("uncommon").
+    // This is a placeholder for the MVP implementation; in production, the frequency data should be comprehensive,
+    // and the default logic may be revisited.
     final bucket = _frequencyBuckets[word] ?? 2; // Default to uncommon
     
     switch (bucket) {
