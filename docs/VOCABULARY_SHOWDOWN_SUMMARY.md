@@ -236,13 +236,14 @@ All core infrastructure delivered:
 - Testing framework
 - Documentation
 
-### Sprint 2 (Next) - READY
-Foundation in place for:
-- Additional question types
-- Timer UI
-- Score breakdown display
-- Enhanced feedback
-- Example sentences
+### Sprint 2 (Completed) ✅ **DONE**
+Delivered:
+- ✅ Fill-in-blank questions with text input
+- ✅ Synonym/antonym question type
+- ✅ Visual timer with countdown and auto-submit
+- ✅ Score breakdown dialog with detailed points
+- ✅ Example sentences on incorrect answers
+- ✅ Three distinct question type UIs
 
 ### Sprint 3 (Future) - PREPARED
 Architecture supports:

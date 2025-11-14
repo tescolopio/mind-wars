@@ -85,25 +85,51 @@ This prevents rapid swings and provides a smoother player experience.
 - Tracks used words within a session to prevent duplicates
 - Automatically resets pool when exhausted
 
-## Question Types (MVP)
+## Question Types
 
-Current implementation supports **Multiple Choice Questions (MCQ)** only:
-- 60% MCQ (implemented)
-- 30% Fill-in-blank (planned)
-- 10% Synonyms/Antonyms (planned)
+All three question types are now **fully implemented**:
 
-## Timers
+### 1. Multiple Choice Questions (60%)
+- Shows word, asks for definition
+- 4 options: 1 correct + 3 distractors
+- Traditional tap-to-answer interface
+- **Base time**: 25 seconds
 
-Time limits vary by question type and difficulty:
-- **MCQ Base**: 25 seconds
-- **Fill-in Base**: 35 seconds
-- **Syn/Ant Base**: 30 seconds
+### 2. Fill-in-Blank (30%)
+- Shows definition, asks for word
+- Text input field with keyboard
+- Case-insensitive matching
+- Supports Enter key submission
+- **Base time**: 35 seconds
 
-**Difficulty Adjustments**:
-- Tier 1: -5 seconds
-- Tier 2: base time
-- Tier 3: +5 seconds
-- Tier 4: +10 seconds
+### 3. Synonyms/Antonyms (10%)
+- Shows word, asks for synonym
+- 4 synonym options
+- Different styling from MCQ for variety
+- **Base time**: 30 seconds
+
+## Visual Timer
+
+Interactive countdown timer with:
+- **Color transitions**: Green → Orange → Red as time runs out
+- **Progress bar**: Visual representation of remaining time
+- **Percentage display**: Shows time remaining as percentage
+- **Auto-submit**: Submits answer when time expires
+- **Pause support**: Pauses during answer processing
+
+## Score Feedback
+
+Detailed score breakdown shown after each question:
+- **Accuracy points**: Base points for correctness
+- **Speed points**: Time-based bonus
+- **Difficulty multiplier**: Applied based on tier
+- **Streak bonus**: Highlighted when earned
+- **Total score**: Final points earned
+
+Additional feedback:
+- **Correct answer display**: Shows when user is wrong
+- **Example sentences**: Displayed on incorrect answers for learning
+- **Visual feedback**: Color-coded success/failure states
 
 ## Word Database
 
@@ -185,12 +211,12 @@ final service = VocabularyGameService(wordPool: words);
 
 ## Future Enhancements
 
-### Sprint 2 (Weeks 2-3)
-- [ ] Implement fill-in-blank questions
-- [ ] Implement synonym/antonym questions
-- [ ] Add visual timer countdown
-- [ ] Show detailed score breakdown after each question
-- [ ] Display example sentences for incorrect answers
+### Sprint 2 (Weeks 2-3) ✅ **COMPLETED**
+- [x] Implement fill-in-blank questions
+- [x] Implement synonym/antonym questions
+- [x] Add visual timer countdown
+- [x] Show detailed score breakdown after each question
+- [x] Display example sentences for incorrect answers
 
 ### Sprint 3 (Weeks 4-6)
 - [ ] Server-authoritative turn submission
