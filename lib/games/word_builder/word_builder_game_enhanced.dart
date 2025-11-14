@@ -113,16 +113,14 @@ class _WordBuilderGameEnhancedState extends BaseGameState<WordBuilderGameEnhance
 
       // Add to path
       _selectedPath.add(index);
-      _currentWord = _selectedPath
-          .map((i) => _session.currentGrid.getTile(i).letter)
-          .join();
+      // Cache tiles for the current path to avoid redundant lookups
+      final pathTiles = _selectedPath.map((i) => _session.currentGrid.getTile(i)).toList();
+      _currentWord = pathTiles.map((tile) => tile.letter).join();
 
       // Calculate preview score
       if (_currentWord.length >= 3) {
-        final uniqueLetters = _selectedPath
-            .map((i) => _session.currentGrid.getTile(i).letter)
-            .toSet();
-        final hasGolden = _selectedPath.any((i) => _session.currentGrid.getTile(i).isGolden);
+        final uniqueLetters = pathTiles.map((tile) => tile.letter).toSet();
+        final hasGolden = pathTiles.any((tile) => tile.isGolden);
         final breakdown = _scorer.calculateScore(
           _currentWord,
           false, // Not checking pangram in preview
