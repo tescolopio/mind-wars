@@ -290,7 +290,32 @@ Alpha builds have:
 
 ## Beta Testing
 
-Beta testing validates production readiness with real users in a controlled environment. See **[BETA_TESTING_USER_STORIES.md](BETA_TESTING_USER_STORIES.md)** for:
+Beta testing validates production readiness with real users in a controlled environment.
+
+### 🚀 Backend Deployment (NEW!)
+
+**Deploy the complete backend infrastructure in 5 minutes!**
+
+```bash
+git clone https://github.com/tescolopio/mind-wars.git
+cd mind-wars
+cp .env.example .env  # Configure environment
+./deploy.sh start     # Deploy all services
+```
+
+See **[DEPLOYMENT.md](DEPLOYMENT.md)** for quick start guide and **[backend/README.md](backend/README.md)** for full documentation.
+
+**What you get:**
+- ✅ REST API server (authentication, lobbies, games, leaderboards)
+- ✅ WebSocket server (real-time multiplayer)
+- ✅ PostgreSQL database + Redis cache
+- ✅ Nginx reverse proxy (API gateway at http://mwalpha.eskienterprises.com)
+- ✅ Prometheus & Grafana monitoring
+- ✅ Complete Docker Compose setup
+
+### Beta Testing Documentation
+
+See **[BETA_TESTING_USER_STORIES.md](BETA_TESTING_USER_STORIES.md)** for:
 
 - **Beta Testing Program**: Complete epics, features, and tasks for beta testing infrastructure
 - **Beta Tester Journey**: Detailed user journey from invitation through launch
