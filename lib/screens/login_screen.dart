@@ -134,7 +134,6 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
 
-    final email = emailController.text.trim();
     emailController.dispose();
 
     if (result == true && mounted) {
