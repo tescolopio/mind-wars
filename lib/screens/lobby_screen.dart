@@ -39,12 +39,28 @@ class _LobbyScreenState extends State<LobbyScreen> {
   void initState() {
     super.initState();
     _chatScrollController = ScrollController();
-    _lobby = widget.multiplayerService.currentLobby;
-    _setupEventListeners();
-    _isLoading = false;
+    
+    try {
+      _lobby = widget.multiplayerService.currentLobby;
+      _setupEventListeners();
+      _isLoading = false;
 
-    // Start heartbeat for presence tracking
-    widget.multiplayerService.startHeartbeat();
+      // Start heartbeat for presence tracking
+      widget.multiplayerService.startHeartbeat();
+    } catch (e) {
+      // Show error message and navigate away gracefully
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to initialize lobby: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          Navigator.of(context).pop();
+        }
+      });
+    }
   }
 
   @override
