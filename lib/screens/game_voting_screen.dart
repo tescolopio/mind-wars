@@ -287,16 +287,55 @@ class _GameVotingScreenState extends State<GameVotingScreen>
     // Don't show button if skip session already active
     if (_activeSkipSession != null) return null;
 
-    // TODO: This requires access to lobby player list and their voting status
-    // For now, this is a placeholder that would need to be populated with
-    // actual player data from the lobby state or voting service
-    // Expected format: {'id': playerId, 'name': playerName}
+    // Get current lobby from multiplayer service
+    final lobby = widget.multiplayerService.currentLobby;
+    if (lobby == null) return null;
 
-    // In production, this would check:
-    // 1. Get all lobby players
-    // 2. Check who hasn't voted (or voted in last X hours based on lobby config)
-    // 3. Exclude current player
-    // 4. Return first AFK player
+    // Get lobby skip time configuration (hours of inactivity before AFK)
+    final skipTimeLimitHours = lobby.skipTimeLimitHours ?? 24;
+    final now = DateTime.now();
+
+    // Check each player in the lobby
+    for (final player in lobby.players) {
+      // Skip self (can't initiate skip for yourself)
+      if (player.id == widget.playerId) continue;
+
+      // Check if player has any votes in current session
+      final playerVotes = widget.votingService.getPlayerVotes(player.id);
+      final hasVoted = playerVotes.isNotEmpty;
+
+      // If player hasn't voted at all, they're AFK
+      if (!hasVoted) {
+        // Check if voting session has been active long enough
+        final votingStartTime = _session?.createdAt;
+        if (votingStartTime != null) {
+          final hoursSinceVotingStarted = now.difference(votingStartTime).inHours;
+
+          // Only show skip button if voting has been open for configured time
+          if (hoursSinceVotingStarted >= skipTimeLimitHours) {
+            return {
+              'id': player.id,
+              'name': player.displayName ?? 'Player',
+            };
+          }
+        }
+      } else {
+        // Player has voted - check last vote time
+        final lastVoteTime = _playerLastVoteTime[player.id];
+        if (lastVoteTime != null) {
+          final hoursSinceLastVote = now.difference(lastVoteTime).inHours;
+
+          // If player hasn't updated votes in configured time, they might be AFK
+          // (This handles cases where player voted but left before finalizing)
+          if (hoursSinceLastVote >= skipTimeLimitHours) {
+            return {
+              'id': player.id,
+              'name': player.displayName ?? 'Player',
+            };
+          }
+        }
+      }
+    }
 
     return null;
   }
