@@ -163,6 +163,8 @@ class GameLobby {
   final bool isPrivate; // Private lobbies require code to join
   final int numberOfRounds; // Number of rounds to play
   final int votingPointsPerPlayer; // Points each player gets for voting
+  final SkipRule skipRule; // Vote-to-skip rule (majority, unanimous, time_based)
+  final int skipTimeLimitHours; // Time limit for time-based skip rule
 
   GameLobby({
     required this.id,
@@ -177,6 +179,8 @@ class GameLobby {
     this.isPrivate = true,
     this.numberOfRounds = 3,
     this.votingPointsPerPlayer = 10,
+    this.skipRule = SkipRule.majority,
+    this.skipTimeLimitHours = 24,
   });
 
   Map<String, dynamic> toJson() => {
@@ -192,6 +196,8 @@ class GameLobby {
         'isPrivate': isPrivate,
         'numberOfRounds': numberOfRounds,
         'votingPointsPerPlayer': votingPointsPerPlayer,
+        'skipRule': skipRule.value,
+        'skipTimeLimitHours': skipTimeLimitHours,
       };
 
   factory GameLobby.fromJson(Map<String, dynamic> json) => GameLobby(
@@ -211,6 +217,10 @@ class GameLobby {
         isPrivate: json['isPrivate'] ?? true,
         numberOfRounds: json['numberOfRounds'] ?? 3,
         votingPointsPerPlayer: json['votingPointsPerPlayer'] ?? 10,
+        skipRule: json['skipRule'] != null
+            ? SkipRuleExtension.fromString(json['skipRule'])
+            : SkipRule.majority,
+        skipTimeLimitHours: json['skipTimeLimitHours'] ?? 24,
       );
   
   /// Create a copy of this lobby with updated values
@@ -227,6 +237,8 @@ class GameLobby {
     bool? isPrivate,
     int? numberOfRounds,
     int? votingPointsPerPlayer,
+    SkipRule? skipRule,
+    int? skipTimeLimitHours,
   }) {
     return GameLobby(
       id: id ?? this.id,
@@ -241,6 +253,8 @@ class GameLobby {
       isPrivate: isPrivate ?? this.isPrivate,
       numberOfRounds: numberOfRounds ?? this.numberOfRounds,
       votingPointsPerPlayer: votingPointsPerPlayer ?? this.votingPointsPerPlayer,
+      skipRule: skipRule ?? this.skipRule,
+      skipTimeLimitHours: skipTimeLimitHours ?? this.skipTimeLimitHours,
     );
   }
   
@@ -483,29 +497,194 @@ class UserProgress {
       );
 }
 
-/// Vote to skip model
-class VoteToSkip {
-  final String gameId;
-  final Map<String, bool> votes;
-  final int required;
+/// Skip rule enum for vote-to-skip configuration
+enum SkipRule {
+  majority,    // 50% + 1 of eligible voters
+  unanimous,   // 100% of eligible voters
+  timeBased,   // Auto-skip after X hours
+}
 
-  VoteToSkip({
-    required this.gameId,
+extension SkipRuleExtension on SkipRule {
+  String get value {
+    switch (this) {
+      case SkipRule.majority:
+        return 'majority';
+      case SkipRule.unanimous:
+        return 'unanimous';
+      case SkipRule.timeBased:
+        return 'time_based';
+    }
+  }
+
+  String get displayName {
+    switch (this) {
+      case SkipRule.majority:
+        return 'Majority (50%+1)';
+      case SkipRule.unanimous:
+        return 'Unanimous (100%)';
+      case SkipRule.timeBased:
+        return 'Time-Based';
+    }
+  }
+
+  static SkipRule fromString(String value) {
+    switch (value) {
+      case 'majority':
+        return SkipRule.majority;
+      case 'unanimous':
+        return SkipRule.unanimous;
+      case 'time_based':
+        return SkipRule.timeBased;
+      default:
+        return SkipRule.majority;
+    }
+  }
+}
+
+/// Vote-to-skip session model (Selection Phase only)
+class VoteToSkipSession {
+  final String id;
+  final String lobbyId;
+  final int battleNumber;
+  final String playerIdToSkip;
+  final String playerNameToSkip;
+  final String initiatedBy;
+  final String initiatorName;
+  final SkipRule skipRule;
+  final int votesRequired;
+  final int votesCount;
+  final Map<String, bool> votes; // userId → voted
+  final String status; // 'active', 'executed', 'cancelled'
+  final String phase; // Always 'selection' for MVP
+  final DateTime createdAt;
+  final DateTime? executedAt;
+  final DateTime? cancelledAt;
+  final int? timeLimitHours;
+
+  VoteToSkipSession({
+    required this.id,
+    required this.lobbyId,
+    required this.battleNumber,
+    required this.playerIdToSkip,
+    required this.playerNameToSkip,
+    required this.initiatedBy,
+    required this.initiatorName,
+    required this.skipRule,
+    required this.votesRequired,
+    required this.votesCount,
     required this.votes,
-    required this.required,
+    required this.status,
+    required this.phase,
+    required this.createdAt,
+    this.executedAt,
+    this.cancelledAt,
+    this.timeLimitHours,
   });
 
+  bool get isExecuted => status == 'executed';
+  bool get isActive => status == 'active';
+  bool get isCancelled => status == 'cancelled';
+  int get votesRemaining => votesRequired - votesCount;
+  bool get majorityReached => votesCount >= votesRequired;
+
+  // Check if time-based skip has expired
+  bool get isTimeExpired {
+    if (skipRule != SkipRule.timeBased || timeLimitHours == null) {
+      return false;
+    }
+    final expiryTime = createdAt.add(Duration(hours: timeLimitHours!));
+    return DateTime.now().isAfter(expiryTime);
+  }
+
+  Duration get timeRemaining {
+    if (skipRule != SkipRule.timeBased || timeLimitHours == null) {
+      return Duration.zero;
+    }
+    final expiryTime = createdAt.add(Duration(hours: timeLimitHours!));
+    return expiryTime.difference(DateTime.now());
+  }
+
   Map<String, dynamic> toJson() => {
-        'gameId': gameId,
+        'id': id,
+        'lobbyId': lobbyId,
+        'battleNumber': battleNumber,
+        'playerIdToSkip': playerIdToSkip,
+        'playerNameToSkip': playerNameToSkip,
+        'initiatedBy': initiatedBy,
+        'initiatorName': initiatorName,
+        'skipRule': skipRule.value,
+        'votesRequired': votesRequired,
+        'votesCount': votesCount,
         'votes': votes,
-        'required': required,
+        'status': status,
+        'phase': phase,
+        'createdAt': createdAt.toIso8601String(),
+        'executedAt': executedAt?.toIso8601String(),
+        'cancelledAt': cancelledAt?.toIso8601String(),
+        'timeLimitHours': timeLimitHours,
       };
 
-  factory VoteToSkip.fromJson(Map<String, dynamic> json) => VoteToSkip(
-        gameId: json['gameId'],
-        votes: Map<String, bool>.from(json['votes']),
-        required: json['required'],
-      );
+  factory VoteToSkipSession.fromJson(Map<String, dynamic> json) {
+    return VoteToSkipSession(
+      id: json['id'] as String? ?? json['sessionId'] as String,
+      lobbyId: json['lobbyId'] as String,
+      battleNumber: json['battleNumber'] as int,
+      playerIdToSkip: json['playerIdToSkip'] as String,
+      playerNameToSkip: json['playerNameToSkip'] as String,
+      initiatedBy: json['initiatedBy'] as String,
+      initiatorName: json['initiatorName'] as String,
+      skipRule: SkipRuleExtension.fromString(json['skipRule'] as String),
+      votesRequired: json['votesRequired'] as int,
+      votesCount: json['votesCount'] as int,
+      votes: Map<String, bool>.from(json['votes'] as Map? ?? {}),
+      status: json['status'] as String? ?? 'active',
+      phase: json['phase'] as String? ?? 'selection',
+      createdAt: DateTime.parse(json['createdAt'] as String? ?? json['timestamp'] as String),
+      executedAt: json['executedAt'] != null ? DateTime.parse(json['executedAt'] as String) : null,
+      cancelledAt: json['cancelledAt'] != null ? DateTime.parse(json['cancelledAt'] as String) : null,
+      timeLimitHours: json['timeLimitHours'] as int?,
+    );
+  }
+
+  VoteToSkipSession copyWith({
+    String? id,
+    String? lobbyId,
+    int? battleNumber,
+    String? playerIdToSkip,
+    String? playerNameToSkip,
+    String? initiatedBy,
+    String? initiatorName,
+    SkipRule? skipRule,
+    int? votesRequired,
+    int? votesCount,
+    Map<String, bool>? votes,
+    String? status,
+    String? phase,
+    DateTime? createdAt,
+    DateTime? executedAt,
+    DateTime? cancelledAt,
+    int? timeLimitHours,
+  }) {
+    return VoteToSkipSession(
+      id: id ?? this.id,
+      lobbyId: lobbyId ?? this.lobbyId,
+      battleNumber: battleNumber ?? this.battleNumber,
+      playerIdToSkip: playerIdToSkip ?? this.playerIdToSkip,
+      playerNameToSkip: playerNameToSkip ?? this.playerNameToSkip,
+      initiatedBy: initiatedBy ?? this.initiatedBy,
+      initiatorName: initiatorName ?? this.initiatorName,
+      skipRule: skipRule ?? this.skipRule,
+      votesRequired: votesRequired ?? this.votesRequired,
+      votesCount: votesCount ?? this.votesCount,
+      votes: votes ?? this.votes,
+      status: status ?? this.status,
+      phase: phase ?? this.phase,
+      createdAt: createdAt ?? this.createdAt,
+      executedAt: executedAt ?? this.executedAt,
+      cancelledAt: cancelledAt ?? this.cancelledAt,
+      timeLimitHours: timeLimitHours ?? this.timeLimitHours,
+    );
+  }
 }
 
 /// Game vote model - represents a player's vote for a game
