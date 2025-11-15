@@ -19,10 +19,10 @@ class ProfanityFilterService {
   /**
    * Filter a message and return filtered version with metadata
    * @param {string} message - The message to filter
-   * @returns {object} - Object with filtered message and metadata
-   * @returns {object.filtered} - Filtered message (empty string if input is null/invalid)
-   * @returns {object.hasProfanity} - Whether profanity was detected
-   * @returns {object.originalLength} - Length of original message (0 if input is null/invalid)
+   * @returns {{filtered: string, hasProfanity: boolean, originalLength: number}} - Object with filtered message and metadata
+   *   - filtered: Filtered message (empty string if input is null/invalid)
+   *   - hasProfanity: Whether profanity was detected
+   *   - originalLength: Length of original message (0 if input is null/invalid)
    * 
    * Note: For null or invalid input, returns an "empty" object with default values.
    * This is consistent with the clean() method which returns an empty string for null input.
