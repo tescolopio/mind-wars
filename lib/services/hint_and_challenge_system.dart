@@ -309,7 +309,7 @@ class DailyChallengeSystem {
     ];
 
     // Generate challenges for the last N days (excluding today, which has its own method)
-    for (var i = 1; i < days; i++) {
+    for (var i = 1; i <= days; i++) {
       final date = today.subtract(Duration(days: i));
       final dateKey = '${date.year}${date.month.toString().padLeft(2, '0')}${date.day.toString().padLeft(2, '0')}';
 
