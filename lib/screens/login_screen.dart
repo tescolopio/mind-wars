@@ -134,9 +134,11 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
 
-    // Capture email before disposing controller
-    final email = emailController.text;
-    emailController.dispose();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        emailController.dispose();
+      }
+    });
 
     if (result == true && mounted) {
       // Call auth service to request password reset
