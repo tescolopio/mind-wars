@@ -47,9 +47,18 @@ class _LobbyScreenState extends State<LobbyScreen> {
       // Start heartbeat for presence tracking
       widget.multiplayerService.startHeartbeat();
     } catch (e) {
-      // Ensure scroll controller is disposed if initialization fails
-      _chatScrollController.dispose();
-      rethrow;
+      // Show error message and navigate away gracefully
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to initialize lobby: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          Navigator.of(context).pop();
+        }
+      });
     }
   }
 
