@@ -51,9 +51,22 @@ const deleteCache = async (key) => {
   await redisClient.del(key);
 };
 
+// FIX: Use SCAN instead of KEYS for non-blocking iteration (Comment #1)
 const deleteCachePattern = async (pattern) => {
   const redisClient = await getRedisClient();
-  const keys = await redisClient.keys(pattern);
+  const keys = [];
+  let cursor = '0';
+
+  // Use SCAN instead of KEYS to avoid blocking Redis
+  do {
+    const result = await redisClient.scan(cursor, {
+      MATCH: pattern,
+      COUNT: 100
+    });
+    cursor = result.cursor;
+    keys.push(...result.keys);
+  } while (cursor !== '0');
+
   if (keys.length > 0) {
     await redisClient.del(keys);
   }
