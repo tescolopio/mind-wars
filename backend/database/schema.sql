@@ -1,0 +1,193 @@
+-- Mind Wars Database Schema
+-- PostgreSQL 15+
+
+-- Enable UUID extension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- Users table
+CREATE TABLE IF NOT EXISTS users (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    display_name VARCHAR(50) NOT NULL,
+    avatar_url TEXT,
+    level INTEGER DEFAULT 1,
+    total_score INTEGER DEFAULT 0,
+    current_streak INTEGER DEFAULT 0,
+    longest_streak INTEGER DEFAULT 0,
+    games_played INTEGER DEFAULT 0,
+    games_won INTEGER DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    last_login_at TIMESTAMP,
+    last_played_at TIMESTAMP
+);
+
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_total_score ON users(total_score DESC);
+
+-- Lobbies table
+CREATE TABLE IF NOT EXISTS lobbies (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    code VARCHAR(20) UNIQUE NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    host_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    max_players INTEGER NOT NULL DEFAULT 10,
+    is_private BOOLEAN DEFAULT true,
+    status VARCHAR(20) DEFAULT 'waiting', -- waiting, playing, completed, closed
+    current_round INTEGER DEFAULT 1,
+    total_rounds INTEGER DEFAULT 3,
+    voting_points_per_player INTEGER DEFAULT 10,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    started_at TIMESTAMP,
+    completed_at TIMESTAMP
+);
+
+CREATE INDEX idx_lobbies_code ON lobbies(code);
+CREATE INDEX idx_lobbies_status ON lobbies(status);
+CREATE INDEX idx_lobbies_host_id ON lobbies(host_id);
+
+-- Lobby players table (many-to-many relationship)
+CREATE TABLE IF NOT EXISTS lobby_players (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    lobby_id UUID NOT NULL REFERENCES lobbies(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    joined_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    UNIQUE(lobby_id, user_id)
+);
+
+CREATE INDEX idx_lobby_players_lobby_id ON lobby_players(lobby_id);
+CREATE INDEX idx_lobby_players_user_id ON lobby_players(user_id);
+
+-- Game results table
+CREATE TABLE IF NOT EXISTS game_results (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    lobby_id UUID NOT NULL REFERENCES lobbies(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    game_id VARCHAR(50) NOT NULL,
+    score INTEGER NOT NULL DEFAULT 0,
+    time_taken INTEGER, -- milliseconds
+    hints_used INTEGER DEFAULT 0,
+    perfect BOOLEAN DEFAULT false,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_game_results_lobby_id ON game_results(lobby_id);
+CREATE INDEX idx_game_results_user_id ON game_results(user_id);
+CREATE INDEX idx_game_results_created_at ON game_results(created_at DESC);
+
+-- Badges table
+CREATE TABLE IF NOT EXISTS badges (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    category VARCHAR(50), -- first_victory, streak, games_played, category_mastery, social
+    icon TEXT,
+    criteria JSONB, -- Flexible criteria storage
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- User badges table (many-to-many relationship)
+CREATE TABLE IF NOT EXISTS user_badges (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    badge_id UUID NOT NULL REFERENCES badges(id) ON DELETE CASCADE,
+    earned_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    UNIQUE(user_id, badge_id)
+);
+
+CREATE INDEX idx_user_badges_user_id ON user_badges(user_id);
+CREATE INDEX idx_user_badges_badge_id ON user_badges(badge_id);
+
+-- Voting sessions table
+CREATE TABLE IF NOT EXISTS voting_sessions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    lobby_id UUID NOT NULL REFERENCES lobbies(id) ON DELETE CASCADE,
+    status VARCHAR(20) DEFAULT 'active', -- active, completed, cancelled
+    points_per_player INTEGER DEFAULT 10,
+    started_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    ended_at TIMESTAMP
+);
+
+CREATE INDEX idx_voting_sessions_lobby_id ON voting_sessions(lobby_id);
+
+-- Votes table
+CREATE TABLE IF NOT EXISTS votes (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    voting_id UUID NOT NULL REFERENCES voting_sessions(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    game_id VARCHAR(50) NOT NULL,
+    points INTEGER NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    UNIQUE(voting_id, user_id, game_id)
+);
+
+CREATE INDEX idx_votes_voting_id ON votes(voting_id);
+CREATE INDEX idx_votes_user_id ON votes(user_id);
+
+-- Leaderboards view (weekly)
+CREATE OR REPLACE VIEW weekly_leaderboard AS
+SELECT
+    u.id,
+    u.display_name,
+    u.avatar_url,
+    u.level,
+    SUM(gr.score) as weekly_score,
+    COUNT(gr.id) as games_played,
+    ROW_NUMBER() OVER (ORDER BY SUM(gr.score) DESC) as rank
+FROM users u
+JOIN game_results gr ON u.id = gr.user_id
+WHERE gr.created_at >= date_trunc('week', CURRENT_DATE)
+GROUP BY u.id, u.display_name, u.avatar_url, u.level
+ORDER BY weekly_score DESC;
+
+-- Leaderboards view (all-time)
+CREATE OR REPLACE VIEW alltime_leaderboard AS
+SELECT
+    id,
+    display_name,
+    avatar_url,
+    level,
+    total_score,
+    games_played,
+    games_won,
+    ROW_NUMBER() OVER (ORDER BY total_score DESC) as rank
+FROM users
+WHERE total_score > 0
+ORDER BY total_score DESC;
+
+-- Function to update user stats
+CREATE OR REPLACE FUNCTION update_user_stats()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE users
+    SET
+        games_played = games_played + 1,
+        total_score = total_score + NEW.score,
+        last_played_at = NEW.created_at
+    WHERE id = NEW.user_id;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger to automatically update user stats when game result is added
+CREATE TRIGGER trigger_update_user_stats
+AFTER INSERT ON game_results
+FOR EACH ROW
+EXECUTE FUNCTION update_user_stats();
+
+-- Function to update updated_at timestamp
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger to automatically update updated_at
+CREATE TRIGGER trigger_users_updated_at
+BEFORE UPDATE ON users
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();

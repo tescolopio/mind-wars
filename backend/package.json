@@ -1,0 +1,33 @@
+{
+  "name": "mind-wars-backend",
+  "version": "1.0.0",
+  "description": "Mind Wars Backend - REST API and Socket.io Multiplayer Server",
+  "private": true,
+  "workspaces": [
+    "api-server",
+    "multiplayer-server"
+  ],
+  "scripts": {
+    "install:all": "npm install && npm run install:api && npm run install:multiplayer",
+    "install:api": "cd api-server && npm install",
+    "install:multiplayer": "cd multiplayer-server && npm install",
+    "dev:api": "cd api-server && npm run dev",
+    "dev:multiplayer": "cd multiplayer-server && npm run dev",
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:multiplayer\"",
+    "start:api": "cd api-server && npm start",
+    "start:multiplayer": "cd multiplayer-server && npm start",
+    "start": "concurrently \"npm run start:api\" \"npm run start:multiplayer\"",
+    "test": "npm run test:api && npm run test:multiplayer",
+    "test:api": "cd api-server && npm test",
+    "test:multiplayer": "cd multiplayer-server && npm test",
+    "migrate": "cd database && node migrate.js",
+    "seed": "cd database && node seed.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
