@@ -2,6 +2,8 @@
  * Game Voting Screen - Feature 3.2.2
  * Allows players to vote on games using a point allocation system
  * with blind voting, search/filter, and random allocation support
+ *
+ * Integrated with vote-to-skip feature for Selection Phase
  */
 
 import 'package:flutter/material.dart';
@@ -9,6 +11,7 @@ import '../models/models.dart';
 import '../games/game_catalog.dart';
 import '../services/voting_service.dart';
 import '../services/multiplayer_service.dart';
+import '../widgets/vote_to_skip_widgets.dart';
 
 class GameVotingScreen extends StatefulWidget {
   final String lobbyId;
@@ -36,6 +39,10 @@ class _GameVotingScreenState extends State<GameVotingScreen>
   String _searchQuery = '';
   CognitiveCategory? _filterCategory;
   final TextEditingController _searchController = TextEditingController();
+
+  // Vote-to-skip state
+  VoteToSkipSession? _activeSkipSession;
+  final Map<String, DateTime> _playerLastVoteTime = {};
 
   @override
   void initState() {
@@ -68,7 +75,52 @@ class _GameVotingScreenState extends State<GameVotingScreen>
       if (mounted && data['lobbyId'] == widget.lobbyId) {
         setState(() {
           // Refresh voting session state
+          // Track when players vote
+          if (data['playerId'] != null) {
+            _playerLastVoteTime[data['playerId']] = DateTime.now();
+          }
         });
+      }
+    });
+
+    // Listen for skip vote initiated
+    widget.multiplayerService.onSkipVoteInitiated((data) {
+      if (mounted && data['lobbyId'] == widget.lobbyId) {
+        setState(() {
+          _activeSkipSession = VoteToSkipSession.fromJson(data['session']);
+        });
+        _showSkipVoteDialog();
+      }
+    });
+
+    // Listen for skip vote updates
+    widget.multiplayerService.onSkipVoteUpdated((data) {
+      if (mounted && data['lobbyId'] == widget.lobbyId) {
+        setState(() {
+          if (data['session'] != null) {
+            _activeSkipSession = VoteToSkipSession.fromJson(data['session']);
+          }
+        });
+      }
+    });
+
+    // Listen for skip vote executed
+    widget.multiplayerService.onSkipVoteExecuted((data) {
+      if (mounted && data['lobbyId'] == widget.lobbyId) {
+        setState(() {
+          _activeSkipSession = null;
+        });
+        _showSkipExecutedNotification(data['playerNameSkipped'] ?? 'Player');
+      }
+    });
+
+    // Listen for time-based skip executed
+    widget.multiplayerService.onTimeSkipExecuted((data) {
+      if (mounted && data['lobbyId'] == widget.lobbyId) {
+        _showSkipExecutedNotification(
+          data['playerNameSkipped'] ?? 'Player',
+          isTimeBased: true,
+        );
       }
     });
   }
@@ -110,6 +162,145 @@ class _GameVotingScreenState extends State<GameVotingScreen>
     return filtered;
   }
 
+  // ========== Vote-to-Skip Methods ==========
+
+  void _showSkipVoteDialog() {
+    if (_activeSkipSession == null) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          return VoteToSkipDialog(
+            session: _activeSkipSession!,
+            currentUserId: widget.playerId,
+            onVoteToSkip: (sessionId) async {
+              try {
+                await widget.multiplayerService.castSkipVote(sessionId);
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Vote cast successfully'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error casting vote: $e'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              }
+            },
+            onCancelVote: (sessionId) async {
+              try {
+                await widget.multiplayerService.cancelSkipVote(sessionId);
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Vote cancelled'),
+                      backgroundColor: Colors.orange,
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error cancelling vote: $e'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              }
+            },
+            onDismiss: () {
+              Navigator.of(context).pop();
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  Future<void> _initiateSkipVote(String playerIdToSkip, String playerNameToSkip) async {
+    try {
+      final session = await widget.multiplayerService.initiateSkipVote(
+        lobbyId: widget.lobbyId,
+        battleNumber: _session?.currentRound ?? 1,
+        playerIdToSkip: playerIdToSkip,
+      );
+
+      setState(() {
+        _activeSkipSession = session;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Skip vote initiated for $playerNameToSkip'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error initiating skip vote: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  void _showSkipExecutedNotification(String playerName, {bool isTimeBased = false}) {
+    if (!mounted) return;
+
+    final message = isTimeBased
+        ? '$playerName was auto-skipped (time limit reached)'
+        : '$playerName was skipped by vote';
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.orange,
+        duration: const Duration(seconds: 5),
+        action: SnackBarAction(
+          label: 'OK',
+          textColor: Colors.white,
+          onPressed: () {},
+        ),
+      ),
+    );
+  }
+
+  /// Get AFK player info (player who hasn't voted for configurable hours)
+  /// Returns null if no AFK player detected or skip already active
+  Map<String, String>? _getAfkPlayerToSkip() {
+    // Don't show button if skip session already active
+    if (_activeSkipSession != null) return null;
+
+    // TODO: This requires access to lobby player list and their voting status
+    // For now, this is a placeholder that would need to be populated with
+    // actual player data from the lobby state or voting service
+    // Expected format: {'id': playerId, 'name': playerName}
+
+    // In production, this would check:
+    // 1. Get all lobby players
+    // 2. Check who hasn't voted (or voted in last X hours based on lobby config)
+    // 3. Exclude current player
+    // 4. Return first AFK player
+
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_session == null) {
@@ -123,6 +314,8 @@ class _GameVotingScreenState extends State<GameVotingScreen>
         ),
       );
     }
+
+    final afkPlayer = _getAfkPlayerToSkip();
 
     return Scaffold(
       appBar: AppBar(
@@ -144,6 +337,16 @@ class _GameVotingScreenState extends State<GameVotingScreen>
           _buildBottomActions(),
         ],
       ),
+      // Vote-to-skip FAB (shown when AFK player detected)
+      floatingActionButton: afkPlayer != null
+          ? VoteToSkipButton(
+              playerNameToSkip: afkPlayer['name']!,
+              enabled: true,
+              onPressed: () {
+                _initiateSkipVote(afkPlayer['id']!, afkPlayer['name']!);
+              },
+            )
+          : null,
     );
   }
 
