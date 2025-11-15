@@ -134,7 +134,11 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
 
-    emailController.dispose();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        emailController.dispose();
+      }
+    });
 
     if (result == true && mounted) {
       // Show success message

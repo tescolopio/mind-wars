@@ -1,6 +1,7 @@
 const { query } = require('../utils/database');
 const { createLogger } = require('../utils/logger');
 const profanityFilterService = require('../utils/profanityFilter');
+const encryptionService = require('../utils/encryption');
 
 const logger = createLogger('chat-handlers');
 
@@ -40,6 +41,10 @@ module.exports = (io, socket) => {
       const filterResult = profanityFilterService.filterMessage(message);
       const filteredMessage = filterResult.filtered;
 
+      // Encrypt the original message for secure storage
+      // Only store encrypted original if it differs from filtered (i.e., profanity was detected)
+      const encryptedOriginal = filterResult.hasProfanity ? encryptionService.encrypt(message) : null;
+
       // Save message to database
       const messageResult = await query(
         `INSERT INTO chat_messages (lobby_id, user_id, message, filtered_message, flagged_for_review, flagged_reason)
@@ -48,7 +53,7 @@ module.exports = (io, socket) => {
         [
           lobbyId,
           socket.userId,
-          message,
+          encryptedOriginal,
           filteredMessage,
           filterResult.hasProfanity,
           filterResult.hasProfanity ? 'Profanity detected' : null
