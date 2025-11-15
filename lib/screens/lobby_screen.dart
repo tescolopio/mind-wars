@@ -208,13 +208,14 @@ class _LobbyScreenState extends State<LobbyScreen> {
   }
 
   Future<void> _startGame() async {
-    if (_lobby == null) return;
+    final lobby = _lobby;
+    if (lobby == null) return;
 
     // Navigate to game voting screen where players vote on games
     final selectedGameId = await Navigator.of(context).push<String>(
       MaterialPageRoute(
         builder: (context) => GameVotingScreen(
-          lobby: _lobby!,
+          lobby: lobby,
           multiplayerService: widget.multiplayerService,
         ),
       ),
@@ -327,19 +328,22 @@ class _LobbyScreenState extends State<LobbyScreen> {
   }
 
   Future<void> _navigateToSettings() async {
-    if (_lobby == null) return;
+    final lobby = _lobby;
+    if (lobby == null) return;
 
     await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => LobbySettingsScreen(
-          lobby: _lobby!,
+          lobby: lobby,
           onSave: (maxPlayers, totalRounds, votingPoints) {
-            // Update lobby settings via multiplayer service
-            widget.multiplayerService.updateLobbySettings(
-              maxPlayers: maxPlayers,
-              totalRounds: totalRounds,
-              votingPointsPerPlayer: votingPoints,
-            );
+            // Only update if lobby still exists
+            if (_lobby != null) {
+              widget.multiplayerService.updateLobbySettings(
+                maxPlayers: maxPlayers,
+                totalRounds: totalRounds,
+                votingPointsPerPlayer: votingPoints,
+              );
+            }
           },
         ),
       ),
