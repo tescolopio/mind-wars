@@ -61,7 +61,9 @@ module.exports = (io, socket) => {
           status: 'waiting',
           currentRound: 1,
           totalRounds,
-          votingPointsPerPlayer
+          votingPointsPerPlayer,
+          skipRule: 'majority',  // Default skip rule
+          skipTimeLimitHours: 24  // Default time limit
         }
       });
     } catch (error) {
@@ -331,7 +333,14 @@ module.exports = (io, socket) => {
   // Update lobby settings (host only)
   socket.on('update-lobby-settings', async (settings, callback) => {
     try {
-      const { lobbyId, maxPlayers, totalRounds, votingPointsPerPlayer } = settings;
+      const {
+        lobbyId,
+        maxPlayers,
+        totalRounds,
+        votingPointsPerPlayer,
+        skipRule,
+        skipTimeLimitHours
+      } = settings;
 
       // Verify requester is host
       const lobbyResult = await query(
@@ -345,6 +354,16 @@ module.exports = (io, socket) => {
 
       if (lobbyResult.rows[0].host_id !== socket.userId) {
         return callback({ success: false, error: 'Only host can update settings' });
+      }
+
+      // Validate skip rule if provided
+      if (skipRule && !['majority', 'unanimous', 'time_based'].includes(skipRule)) {
+        return callback({ success: false, error: 'Invalid skip rule. Must be majority, unanimous, or time_based' });
+      }
+
+      // Validate skip time limit if provided
+      if (skipTimeLimitHours !== undefined && (skipTimeLimitHours < 1 || skipTimeLimitHours > 72)) {
+        return callback({ success: false, error: 'Skip time limit must be between 1 and 72 hours' });
       }
 
       // Update settings
@@ -367,6 +386,16 @@ module.exports = (io, socket) => {
         values.push(votingPointsPerPlayer);
       }
 
+      if (skipRule) {
+        updates.push(`skip_rule = $${paramCount++}`);
+        values.push(skipRule);
+      }
+
+      if (skipTimeLimitHours !== undefined) {
+        updates.push(`skip_time_limit_hours = $${paramCount++}`);
+        values.push(skipTimeLimitHours);
+      }
+
       values.push(lobbyId);
 
       if (updates.length > 0) {
@@ -381,10 +410,15 @@ module.exports = (io, socket) => {
         maxPlayers,
         totalRounds,
         votingPointsPerPlayer,
+        skipRule,
+        skipTimeLimitHours,
         timestamp: new Date().toISOString()
       });
 
-      logger.info(`Lobby ${lobbyId} settings updated by host ${socket.userId}`);
+      logger.info(`Lobby ${lobbyId} settings updated by host ${socket.userId}`, {
+        skipRule,
+        skipTimeLimitHours
+      });
 
       callback({ success: true, message: 'Settings updated successfully' });
     } catch (error) {
@@ -417,7 +451,9 @@ module.exports = (io, socket) => {
         maxPlayers: lobby.max_players,
         playerCount: parseInt(lobby.player_count),
         status: lobby.status,
-        createdAt: lobby.created_at
+        createdAt: lobby.created_at,
+        skipRule: lobby.skip_rule || 'majority',
+        skipTimeLimitHours: lobby.skip_time_limit_hours || 24
       }));
 
       callback({ success: true, lobbies });
