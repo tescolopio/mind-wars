@@ -82,6 +82,19 @@ class ApiService {
     _authToken = null;
   }
 
+  /// Request password reset
+  Future<Map<String, dynamic>> requestPasswordReset(String email) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/auth/request-password-reset'),
+      headers: _headers,
+      body: jsonEncode({
+        'email': email,
+      }),
+    );
+
+    return _handleResponse(response);
+  }
+
   // ============== Lobbies ==============
 
   /// Get available lobbies
