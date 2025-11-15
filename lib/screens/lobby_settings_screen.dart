@@ -29,8 +29,8 @@ class _LobbySettingsScreenState extends State<LobbySettingsScreen> {
   void initState() {
     super.initState();
     _maxPlayers = widget.lobby.maxPlayers;
-    _totalRounds = widget.lobby.totalRounds ?? 3;
-    _votingPoints = widget.lobby.votingPointsPerPlayer ?? 10;
+    _totalRounds = widget.lobby.numberOfRounds;
+    _votingPoints = widget.lobby.votingPointsPerPlayer;
   }
 
   @override
@@ -209,6 +209,17 @@ class _LobbySettingsScreenState extends State<LobbySettingsScreen> {
   }
 
   void _saveSettings() {
+    // Validate that maxPlayers is not less than current player count
+    if (_maxPlayers < widget.lobby.players.length) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Max players cannot be less than current player count (${widget.lobby.players.length})'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     // Call the onSave callback if provided
     widget.onSave?.call(_maxPlayers, _totalRounds, _votingPoints);
 

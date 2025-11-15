@@ -9,6 +9,7 @@ import '../models/models.dart';
 import '../services/multiplayer_service.dart';
 import '../widgets/chat_widgets.dart';
 import 'game_selection_screen.dart';
+import '../services/voting_service.dart';
 import 'game_voting_screen.dart';
 import 'lobby_settings_screen.dart';
 
@@ -208,13 +209,16 @@ class _LobbyScreenState extends State<LobbyScreen> {
   }
 
   Future<void> _startGame() async {
-    if (_lobby == null) return;
+    final lobby = _lobby;
+    if (lobby == null) return;
 
     // Navigate to game voting screen where players vote on games
     final selectedGameId = await Navigator.of(context).push<String>(
       MaterialPageRoute(
         builder: (context) => GameVotingScreen(
-          lobby: _lobby!,
+          lobbyId: _lobby!.id,
+          playerId: widget.currentUserId,
+          votingService: VotingService(),
           multiplayerService: widget.multiplayerService,
         ),
       ),
@@ -327,17 +331,18 @@ class _LobbyScreenState extends State<LobbyScreen> {
   }
 
   Future<void> _navigateToSettings() async {
-    if (_lobby == null) return;
+    final lobby = _lobby;
+    if (lobby == null) return;
 
     await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => LobbySettingsScreen(
-          lobby: _lobby!,
+          lobby: lobby,
           onSave: (maxPlayers, totalRounds, votingPoints) {
             // Update lobby settings via multiplayer service
             widget.multiplayerService.updateLobbySettings(
               maxPlayers: maxPlayers,
-              totalRounds: totalRounds,
+              numberOfRounds: totalRounds,
               votingPointsPerPlayer: votingPoints,
             );
           },
