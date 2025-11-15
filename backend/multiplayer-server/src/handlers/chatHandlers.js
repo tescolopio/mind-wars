@@ -37,8 +37,8 @@ module.exports = (io, socket) => {
 
       const user = userResult.rows[0];
 
-      // Apply profanity filter
-      const filterResult = profanityFilterService.filterMessage(message);
+      // Apply profanity filter with lobby-specific configuration
+      const filterResult = profanityFilterService.filterMessage(message, lobbyId);
       const filteredMessage = filterResult.filtered;
 
       // Encrypt the original message for secure storage
