@@ -98,8 +98,8 @@ class _ChatListViewState extends State<ChatListView> {
     // Scroll to bottom when new messages arrive
     if (widget.messages.length > oldWidget.messages.length) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (widget.scrollController?.hasClients ?? false) {
-          widget.scrollController?.animateTo(
+        if (widget.scrollController != null && widget.scrollController!.hasClients) {
+          widget.scrollController!.animateTo(
             widget.scrollController!.position.maxScrollExtent,
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeOut,
