@@ -1,18 +1,8 @@
 const { query } = require('../utils/database');
 const { createLogger } = require('../utils/logger');
+const profanityFilterService = require('../utils/profanityFilter');
 
 const logger = createLogger('chat-handlers');
-
-// Simple profanity filter (you should use a better one in production)
-const profanityFilter = (message) => {
-  const badWords = ['badword1', 'badword2']; // Add your list
-  let filtered = message;
-  badWords.forEach(word => {
-    const regex = new RegExp(word, 'gi');
-    filtered = filtered.replace(regex, '***');
-  });
-  return filtered;
-};
 
 module.exports = (io, socket) => {
   // Send chat message
@@ -47,19 +37,37 @@ module.exports = (io, socket) => {
       const user = userResult.rows[0];
 
       // Apply profanity filter
-      const filteredMessage = profanityFilter(message);
+      const filterResult = profanityFilterService.filterMessage(message);
+      const filteredMessage = filterResult.filtered;
+
+      // Save message to database
+      const messageResult = await query(
+        `INSERT INTO chat_messages (lobby_id, user_id, message, filtered_message, flagged_for_review, flagged_reason)
+         VALUES ($1, $2, $3, $4, $5, $6)
+         RETURNING id, timestamp`,
+        [
+          lobbyId,
+          socket.userId,
+          message,
+          filteredMessage,
+          filterResult.hasProfanity,
+          filterResult.hasProfanity ? 'Profanity detected' : null
+        ]
+      );
+
+      const savedMessage = messageResult.rows[0];
 
       // Broadcast message to lobby
       io.to(`lobby:${lobbyId}`).emit('chat-message', {
-        id: Date.now().toString(),
+        id: savedMessage.id,
         userId: socket.userId,
         displayName: user.display_name,
         avatarUrl: user.avatar_url,
         message: filteredMessage,
-        timestamp: new Date().toISOString()
+        timestamp: savedMessage.timestamp.toISOString()
       });
 
-      logger.info(`Chat message in lobby ${lobbyId} from user ${socket.userId}`);
+      logger.info(`Chat message in lobby ${lobbyId} from user ${socket.userId}${filterResult.hasProfanity ? ' (filtered)' : ''}`);
 
       callback({ success: true });
     } catch (error) {
@@ -97,12 +105,23 @@ module.exports = (io, socket) => {
 
       const user = userResult.rows[0];
 
+      // Save reaction to database
+      const reactionResult = await query(
+        `INSERT INTO emoji_reactions (lobby_id, user_id, emoji)
+         VALUES ($1, $2, $3)
+         RETURNING id, timestamp`,
+        [lobbyId, socket.userId, emoji]
+      );
+
+      const savedReaction = reactionResult.rows[0];
+
       // Broadcast reaction to lobby
       io.to(`lobby:${lobbyId}`).emit('emoji-reaction', {
+        id: savedReaction.id,
         userId: socket.userId,
         displayName: user.display_name,
         emoji,
-        timestamp: new Date().toISOString()
+        timestamp: savedReaction.timestamp.toISOString()
       });
 
       logger.info(`Emoji reaction ${emoji} in lobby ${lobbyId} from user ${socket.userId}`);

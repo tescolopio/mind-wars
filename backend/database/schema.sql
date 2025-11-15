@@ -191,3 +191,33 @@ CREATE TRIGGER trigger_users_updated_at
 BEFORE UPDATE ON users
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
+
+-- Chat messages table
+CREATE TABLE IF NOT EXISTS chat_messages (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    lobby_id UUID NOT NULL REFERENCES lobbies(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    message TEXT NOT NULL,
+    filtered_message TEXT,
+    timestamp TIMESTAMP NOT NULL DEFAULT NOW(),
+    flagged_for_review BOOLEAN DEFAULT false,
+    flagged_reason VARCHAR(255)
+);
+
+CREATE INDEX idx_chat_messages_lobby_id ON chat_messages(lobby_id);
+CREATE INDEX idx_chat_messages_user_id ON chat_messages(user_id);
+CREATE INDEX idx_chat_messages_timestamp ON chat_messages(timestamp DESC);
+CREATE INDEX idx_chat_messages_flagged ON chat_messages(flagged_for_review);
+CREATE INDEX idx_chat_messages_flagged_reason ON chat_messages(flagged_reason) WHERE flagged_for_review = true;
+
+-- Emoji reactions table
+CREATE TABLE IF NOT EXISTS emoji_reactions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    lobby_id UUID NOT NULL REFERENCES lobbies(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    emoji VARCHAR(20) NOT NULL,
+    timestamp TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_emoji_reactions_lobby_id ON emoji_reactions(lobby_id);
+CREATE INDEX idx_emoji_reactions_timestamp ON emoji_reactions(timestamp DESC);
