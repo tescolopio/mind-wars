@@ -38,12 +38,19 @@ class _LobbyScreenState extends State<LobbyScreen> {
   void initState() {
     super.initState();
     _chatScrollController = ScrollController();
-    _lobby = widget.multiplayerService.currentLobby;
-    _setupEventListeners();
-    _isLoading = false;
+    
+    try {
+      _lobby = widget.multiplayerService.currentLobby;
+      _setupEventListeners();
+      _isLoading = false;
 
-    // Start heartbeat for presence tracking
-    widget.multiplayerService.startHeartbeat();
+      // Start heartbeat for presence tracking
+      widget.multiplayerService.startHeartbeat();
+    } catch (e) {
+      // Ensure scroll controller is disposed if initialization fails
+      _chatScrollController.dispose();
+      rethrow;
+    }
   }
 
   @override
