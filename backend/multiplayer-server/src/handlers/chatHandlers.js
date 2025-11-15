@@ -1,6 +1,7 @@
 const { query } = require('../utils/database');
 const { createLogger } = require('../utils/logger');
 const profanityFilterService = require('../utils/profanityFilter');
+const encryptionService = require('../utils/encryption');
 
 const logger = createLogger('chat-handlers');
 
@@ -40,31 +41,38 @@ module.exports = (io, socket) => {
       const filterResult = profanityFilterService.filterMessage(message);
       const filteredMessage = filterResult.filtered;
 
-      // Save message to database with explicit error handling
-      let savedMessage;
-      try {
-        const messageResult = await query(
-          `INSERT INTO chat_messages (lobby_id, user_id, message, filtered_message, flagged_for_review, flagged_reason)
-           VALUES ($1, $2, $3, $4, $5, $6)
-           RETURNING id, timestamp`,
-          [
-            lobbyId,
-            socket.userId,
-            message,
-            filteredMessage,
-            filterResult.hasProfanity,
-            filterResult.hasProfanity ? 'Profanity detected' : null
-          ]
-        );
-        savedMessage = messageResult.rows[0];
-      } catch (dbError) {
-        logger.error('Database insertion failed for chat message', { error: dbError, lobbyId, userId: socket.userId });
-        return callback({ 
-          success: false, 
-          error: 'Failed to save message. Please try again.',
-          errorType: 'database_error'
-        });
-      }
+      // Encrypt the original message for secure storage
+      // Only store encrypted original if it differs from filtered (i.e., profanity was detected)
+      const encryptedOriginal = filterResult.hasProfanity ? encryptionService.encrypt(message) : null;
+
+      // Save message to database
+      const messageResult = await query(
+        `INSERT INTO chat_messages (lobby_id, user_id, message, filtered_message, flagged_for_review, flagged_reason)
+         VALUES ($1, $2, $3, $4, $5, $6)
+         RETURNING id, timestamp`,
+        [
+          lobbyId,
+          socket.userId,
+          encryptedOriginal,
+          filteredMessage,
+          filterResult.hasProfanity,
+          filterResult.hasProfanity ? 'Profanity detected' : null
+        ]
+      );
+
+      const savedMessage = messageResult.rows[0];
+
+      // Broadcast message to lobby
+      io.to(`lobby:${lobbyId}`).emit('chat-message', {
+        id: savedMessage.id,
+        userId: socket.userId,
+        displayName: user.display_name,
+        avatarUrl: user.avatar_url,
+        message: filteredMessage,
+        timestamp: savedMessage.timestamp.toISOString()
+      });
+
+      logger.info(`Chat message in lobby ${lobbyId} from user ${socket.userId}${filterResult.hasProfanity ? ' (filtered)' : ''}`);
 
       // Only broadcast after successful database insertion
       try {
