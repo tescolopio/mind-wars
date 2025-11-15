@@ -7,6 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/models.dart';
 import '../services/multiplayer_service.dart';
+import '../services/voting_service.dart';
+import 'game_voting_screen.dart';
+import 'lobby_settings_screen.dart';
 
 class LobbyScreen extends StatefulWidget {
   final MultiplayerService multiplayerService;
@@ -168,8 +171,24 @@ class _LobbyScreenState extends State<LobbyScreen> {
   }
 
   Future<void> _startGame() async {
-    // TODO: Show game selection dialog or navigate to voting
-    _showSnackBar('Game starting...');
+    if (_lobby == null) return;
+
+    // Navigate to game voting screen where players vote on games
+    final selectedGameId = await Navigator.of(context).push<String>(
+      MaterialPageRoute(
+        builder: (context) => GameVotingScreen(
+          lobbyId: _lobby!.id,
+          playerId: widget.currentUserId,
+          votingService: VotingService(),
+          multiplayerService: widget.multiplayerService,
+        ),
+      ),
+    );
+
+    if (selectedGameId != null && mounted) {
+      _showSnackBar('Starting game: $selectedGameId');
+      // Game voting screen handles the voting and game start
+    }
   }
 
   Future<void> _kickPlayer(Player player) async {
@@ -272,6 +291,26 @@ class _LobbyScreenState extends State<LobbyScreen> {
     }
   }
 
+  Future<void> _navigateToSettings() async {
+    if (_lobby == null) return;
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => LobbySettingsScreen(
+          lobby: _lobby!,
+          onSave: (maxPlayers, totalRounds, votingPoints) {
+            // Update lobby settings via multiplayer service
+            widget.multiplayerService.updateLobbySettings(
+              maxPlayers: maxPlayers,
+              numberOfRounds: totalRounds,
+              votingPointsPerPlayer: votingPoints,
+            );
+          },
+        ),
+      ),
+    );
+  }
+
   Widget _buildPlayerStatusIcon(PlayerStatus status) {
     switch (status) {
       case PlayerStatus.active:
@@ -314,7 +353,7 @@ class _LobbyScreenState extends State<LobbyScreen> {
               onSelected: (value) {
                 switch (value) {
                   case 'settings':
-                    // TODO: Navigate to lobby settings
+                    _navigateToSettings();
                     break;
                   case 'close':
                     _closeLobby();

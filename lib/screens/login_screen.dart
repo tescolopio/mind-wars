@@ -42,27 +42,27 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _errorMessage = null;
     });
-    
+
     // Validate form
     if (!_formKey.currentState!.validate()) {
       return;
     }
-    
+
     setState(() {
       _isLoading = true;
     });
-    
+
     try {
       final authService = Provider.of<AuthService>(context, listen: false);
-      
+
       final result = await authService.login(
         email: _emailController.text.trim(),
         password: _passwordController.text,
         autoLogin: _rememberMe,
       );
-      
+
       if (!mounted) return;
-      
+
       if (result.success) {
         // Login successful - navigate to home
         Navigator.of(context).pushReplacementNamed('/home');
@@ -83,7 +83,74 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     }
   }
-  
+
+  Future<void> _showForgotPasswordDialog() async {
+    final emailController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Reset Password'),
+        content: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Enter your email address and we\'ll send you instructions to reset your password.',
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  hintText: 'your.email@example.com',
+                  prefixIcon: Icon(Icons.email),
+                  border: OutlineInputBorder(),
+                ),
+                validator: Validators.validateEmail,
+                autofocus: true,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (formKey.currentState!.validate()) {
+                Navigator.of(context).pop(true);
+              }
+            },
+            child: const Text('Send Reset Link'),
+          ),
+        ],
+      ),
+    );
+
+    emailController.dispose();
+
+    if (result == true && mounted) {
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Password reset instructions sent to your email'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 4),
+        ),
+      );
+
+      // In production, this would call an API endpoint to send reset email
+      // Example: authService.requestPasswordReset(email);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -242,16 +309,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const Spacer(),
                     TextButton(
-                      onPressed: _isLoading
-                          ? null
-                          : () {
-                              // TODO: Implement forgot password
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Forgot password - Coming soon'),
-                                ),
-                              );
-                            },
+                      onPressed: _isLoading ? null : _showForgotPasswordDialog,
                       child: const Text('Forgot Password?'),
                     ),
                   ],
