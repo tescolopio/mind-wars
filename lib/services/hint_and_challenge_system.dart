@@ -278,24 +278,62 @@ class DailyChallengeSystem {
     return completedChallenges.contains('${playerId}_$challengeId');
   }
 
-  /// Get challenge history (last 7 days)
+  /// Get challenge history (last N days)
   /// Date: 2025-11-10
   /// Function: Fixed unused variable warning by removing unused 'today' variable
+  /// Date: 2025-11-15
+  /// Function: Enhanced to generate consistent challenges for past dates using seed logic
   List<DailyChallenge> getChallengeHistory({
     required GameContentGenerator generator,
     int days = 7,
   }) {
     final challenges = <DailyChallenge>[];
-    // Date: 2025-11-10 - Removed unused 'today' variable
-    // TODO: This would need to be enhanced to generate consistent challenges
-    // for past dates using the same seed logic as getTodaysChallenge
+    final today = DateTime.now();
 
-    for (var i = 0; i < days; i++) {
-      // Note: This would need to be enhanced to generate consistent challenges
-      // for past dates using the same seed logic as getTodaysChallenge
+    final gameTypes = [
+      'memory_match',
+      'sequence_recall',
+      'pattern_memory',
+      'sudoku_duel',
+      'logic_grid',
+      'code_breaker',
+      'spot_difference',
+      'color_rush',
+      'focus_finder',
+      'puzzle_race',
+      'rotation_master',
+      'path_finder',
+      'word_builder',
+      'anagram_attack',
+      'vocabulary_showdown',
+    ];
+
+    // Generate challenges for the last N days (excluding today, which has its own method)
+    for (var i = 1; i < days; i++) {
+      final date = today.subtract(Duration(days: i));
+      final dateKey = '${date.year}${date.month.toString().padLeft(2, '0')}${date.day.toString().padLeft(2, '0')}';
+
+      // Use date as seed for consistent daily challenge (same logic as getTodaysChallenge)
+      final seed = dateKey.hashCode;
+      final gameType = gameTypes[seed.abs() % gameTypes.length];
+
+      // Generate challenge puzzle (always hard difficulty for daily challenge)
+      final puzzle = generator.generatePuzzle(
+        gameType: gameType,
+        difficulty: Difficulty.hard,
+      );
+
+      challenges.add(DailyChallenge(
+        id: '$challengePrefix$dateKey',
+        date: date,
+        puzzle: puzzle,
+        bonusMultiplier: 1.5,
+        expiresAt: DateTime(date.year, date.month, date.day, 23, 59, 59),
+      ));
     }
 
-    return challenges;
+    // Return in reverse chronological order (most recent first)
+    return challenges.reversed.toList();
   }
 
   /// Get streak count
