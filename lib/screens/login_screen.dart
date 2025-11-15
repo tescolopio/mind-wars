@@ -141,17 +141,33 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     if (result == true && mounted) {
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Password reset instructions sent to your email'),
-          backgroundColor: Colors.green,
-          duration: Duration(seconds: 4),
-        ),
-      );
-
-      // In production, this would call an API endpoint to send reset email
-      // Example: authService.requestPasswordReset(email);
+      // Call auth service to request password reset
+      final authService = Provider.of<AuthService>(context, listen: false);
+      final resetResult = await authService.requestPasswordReset(email);
+      
+      if (resetResult.success) {
+        // Show success message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Password reset instructions sent to your email'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 4),
+            ),
+          );
+        }
+      } else {
+        // Show error message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(resetResult.error ?? 'Failed to send reset email'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 4),
+            ),
+          );
+        }
+      }
     }
   }
 
