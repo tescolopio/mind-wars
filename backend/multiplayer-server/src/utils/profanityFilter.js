@@ -20,6 +20,12 @@ class ProfanityFilterService {
    * Filter a message and return filtered version with metadata
    * @param {string} message - The message to filter
    * @returns {object} - Object with filtered message and metadata
+   * @returns {object.filtered} - Filtered message (empty string if input is null/invalid)
+   * @returns {object.hasProfanity} - Whether profanity was detected
+   * @returns {object.originalLength} - Length of original message (0 if input is null/invalid)
+   * 
+   * Note: For null or invalid input, returns an "empty" object with default values.
+   * This is consistent with the clean() method which returns an empty string for null input.
    */
   filterMessage(message) {
     if (!message || typeof message !== 'string') {
@@ -54,7 +60,11 @@ class ProfanityFilterService {
   /**
    * Clean a message (replace profanity with asterisks)
    * @param {string} message - The message to clean
-   * @returns {string} - Cleaned message
+   * @returns {string} - Cleaned message (empty string if input is null/invalid)
+   * 
+   * Note: For null or invalid input, returns an empty string as a safe default.
+   * This is consistent with the filterMessage() method which returns an object with empty values.
+   * Both methods treat null/invalid input as "empty" in their respective return types.
    */
   clean(message) {
     if (!message || typeof message !== 'string') {
