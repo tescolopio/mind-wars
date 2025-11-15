@@ -9,6 +9,7 @@ import '../models/models.dart';
 import '../services/multiplayer_service.dart';
 import '../widgets/chat_widgets.dart';
 import 'game_selection_screen.dart';
+import '../services/voting_service.dart';
 import 'game_voting_screen.dart';
 import 'lobby_settings_screen.dart';
 
@@ -215,7 +216,9 @@ class _LobbyScreenState extends State<LobbyScreen> {
     final selectedGameId = await Navigator.of(context).push<String>(
       MaterialPageRoute(
         builder: (context) => GameVotingScreen(
-          lobby: lobby,
+          lobbyId: _lobby!.id,
+          playerId: widget.currentUserId,
+          votingService: VotingService(),
           multiplayerService: widget.multiplayerService,
         ),
       ),
@@ -336,14 +339,12 @@ class _LobbyScreenState extends State<LobbyScreen> {
         builder: (context) => LobbySettingsScreen(
           lobby: lobby,
           onSave: (maxPlayers, totalRounds, votingPoints) {
-            // Only update if lobby still exists
-            if (_lobby != null) {
-              widget.multiplayerService.updateLobbySettings(
-                maxPlayers: maxPlayers,
-                totalRounds: totalRounds,
-                votingPointsPerPlayer: votingPoints,
-              );
-            }
+            // Update lobby settings via multiplayer service
+            widget.multiplayerService.updateLobbySettings(
+              maxPlayers: maxPlayers,
+              numberOfRounds: totalRounds,
+              votingPointsPerPlayer: votingPoints,
+            );
           },
         ),
       ),
