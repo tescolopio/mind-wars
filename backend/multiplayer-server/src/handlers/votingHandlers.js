@@ -277,7 +277,7 @@ module.exports = (io, socket) => {
       // Calculate votes required based on skip rule
       let votesRequired;
       if (lobby.skip_rule === 'majority') {
-        votesRequired = Math.ceil(eligibleVoters * 0.5) + 1; // 50% + 1
+        votesRequired = Math.floor(eligibleVoters / 2) + 1; // strict majority
       } else if (lobby.skip_rule === 'unanimous') {
         votesRequired = eligibleVoters; // 100%
       } else if (lobby.skip_rule === 'time_based') {
