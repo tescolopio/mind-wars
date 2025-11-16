@@ -38,6 +38,8 @@ CREATE TABLE IF NOT EXISTS lobbies (
     current_round INTEGER DEFAULT 1,
     total_rounds INTEGER DEFAULT 3,
     voting_points_per_player INTEGER DEFAULT 10,
+    skip_rule VARCHAR(20) DEFAULT 'majority', -- majority, unanimous, time_based
+    skip_time_limit_hours INTEGER DEFAULT 24, -- For time_based skip rule
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     started_at TIMESTAMP,
     completed_at TIMESTAMP
@@ -221,3 +223,37 @@ CREATE TABLE IF NOT EXISTS emoji_reactions (
 
 CREATE INDEX idx_emoji_reactions_lobby_id ON emoji_reactions(lobby_id);
 CREATE INDEX idx_emoji_reactions_timestamp ON emoji_reactions(timestamp DESC);
+
+-- Vote-to-skip sessions (Selection Phase only)
+CREATE TABLE IF NOT EXISTS vote_to_skip_sessions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    lobby_id UUID NOT NULL REFERENCES lobbies(id) ON DELETE CASCADE,
+    battle_number INTEGER NOT NULL,
+    player_id_to_skip UUID NOT NULL REFERENCES users(id),
+    initiated_by UUID NOT NULL REFERENCES users(id),
+    skip_rule VARCHAR(20) NOT NULL, -- 'majority', 'unanimous', 'time_based'
+    votes_required INTEGER NOT NULL,
+    votes_count INTEGER DEFAULT 0,
+    status VARCHAR(20) DEFAULT 'active', -- active, executed, cancelled
+    phase VARCHAR(20) DEFAULT 'selection', -- Always 'selection' for MVP
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    executed_at TIMESTAMP,
+    cancelled_at TIMESTAMP,
+    time_limit_hours INTEGER -- For time-based skip rule
+);
+
+CREATE INDEX idx_vote_to_skip_sessions_lobby_id ON vote_to_skip_sessions(lobby_id);
+CREATE INDEX idx_vote_to_skip_sessions_status ON vote_to_skip_sessions(status);
+CREATE INDEX idx_vote_to_skip_sessions_battle ON vote_to_skip_sessions(battle_number);
+
+-- Individual skip votes
+CREATE TABLE IF NOT EXISTS vote_to_skip_votes (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    session_id UUID NOT NULL REFERENCES vote_to_skip_sessions(id) ON DELETE CASCADE,
+    voter_id UUID NOT NULL REFERENCES users(id),
+    voted_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    UNIQUE(session_id, voter_id)
+);
+
+CREATE INDEX idx_vote_to_skip_votes_session_id ON vote_to_skip_votes(session_id);
+CREATE INDEX idx_vote_to_skip_votes_voter_id ON vote_to_skip_votes(voter_id);

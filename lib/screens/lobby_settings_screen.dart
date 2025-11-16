@@ -1,14 +1,22 @@
 /**
  * Lobby Settings Screen
  * Allows host to configure lobby settings such as max players, rounds, etc.
+ * Includes vote-to-skip rule configuration
  */
 
 import 'package:flutter/material.dart';
 import '../models/models.dart';
+import '../widgets/vote_to_skip_widgets.dart';
 
 class LobbySettingsScreen extends StatefulWidget {
   final GameLobby lobby;
-  final Function(int maxPlayers, int totalRounds, int votingPoints)? onSave;
+  final Function(
+    int maxPlayers,
+    int totalRounds,
+    int votingPoints,
+    SkipRule skipRule,
+    int skipTimeLimitHours,
+  )? onSave;
 
   const LobbySettingsScreen({
     Key? key,
@@ -24,6 +32,8 @@ class _LobbySettingsScreenState extends State<LobbySettingsScreen> {
   late int _maxPlayers;
   late int _totalRounds;
   late int _votingPoints;
+  late SkipRule _skipRule;
+  late int _skipTimeLimitHours;
 
   @override
   void initState() {
@@ -111,6 +121,48 @@ class _LobbySettingsScreenState extends State<LobbySettingsScreen> {
             trailing: Text(
               _votingPoints.toString(),
               style: Theme.of(context).textTheme.headlineSmall,
+            ),
+          ),
+          const SizedBox(height: 24),
+          // Vote-to-Skip Rule Configuration
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.skip_next, color: Colors.orange),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Vote-to-Skip Rule',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Configure how AFK players are skipped during Selection Phase',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  const SizedBox(height: 16),
+                  SkipRuleSelector(
+                    selectedRule: _skipRule,
+                    onRuleChanged: (rule) {
+                      setState(() {
+                        _skipRule = rule;
+                      });
+                    },
+                    timeLimitHours: _skipTimeLimitHours,
+                    onTimeLimitChanged: (hours) {
+                      setState(() {
+                        _skipTimeLimitHours = hours;
+                      });
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 32),
@@ -221,7 +273,13 @@ class _LobbySettingsScreenState extends State<LobbySettingsScreen> {
     }
 
     // Call the onSave callback if provided
-    widget.onSave?.call(_maxPlayers, _totalRounds, _votingPoints);
+    widget.onSave?.call(
+      _maxPlayers,
+      _totalRounds,
+      _votingPoints,
+      _skipRule,
+      _skipTimeLimitHours,
+    );
 
     // Show confirmation
     ScaffoldMessenger.of(context).showSnackBar(

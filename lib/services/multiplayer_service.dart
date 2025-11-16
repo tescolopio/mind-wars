@@ -453,22 +453,26 @@ class MultiplayerService {
     bool? isPrivate,
     int? numberOfRounds,
     int? votingPointsPerPlayer,
+    SkipRule? skipRule,
+    int? skipTimeLimitHours,
   }) async {
     if (_socket == null || _currentLobby == null) {
       throw Exception('Not in a lobby');
     }
 
     final completer = Completer<GameLobby>();
-    
+
     final settings = <String, dynamic>{
       'lobbyId': _currentLobby!.id,
     };
-    
+
     if (name != null) settings['name'] = name;
     if (maxPlayers != null) settings['maxPlayers'] = maxPlayers;
     if (isPrivate != null) settings['isPrivate'] = isPrivate;
     if (numberOfRounds != null) settings['numberOfRounds'] = numberOfRounds;
     if (votingPointsPerPlayer != null) settings['votingPointsPerPlayer'] = votingPointsPerPlayer;
+    if (skipRule != null) settings['skipRule'] = skipRule.value;
+    if (skipTimeLimitHours != null) settings['skipTimeLimitHours'] = skipTimeLimitHours;
 
     _socket!.emitWithAck('update-lobby-settings', settings, ack: (data) {
       if (data['success']) {
@@ -575,6 +579,22 @@ class MultiplayerService {
       _emit('voting-ended', data);
     });
 
+    _socket!.on('skip-vote-initiated', (data) {
+      _emit('skip-vote-initiated', data);
+    });
+
+    _socket!.on('skip-vote-updated', (data) {
+      _emit('skip-vote-updated', data);
+    });
+
+    _socket!.on('skip-vote-executed', (data) {
+      _emit('skip-vote-executed', data);
+    });
+
+    _socket!.on('time-skip-executed', (data) {
+      _emit('time-skip-executed', data);
+    });
+
     _socket!.on('disconnect', (_) {
       _emit('disconnected', {});
     });
@@ -656,6 +676,97 @@ class MultiplayerService {
   /// Listen for vote cast - Feature 3.2.3
   void onVoteCast(Function(Map<String, dynamic>) callback) {
     on('vote-cast', callback);
+  }
+
+  // ========== Vote-to-Skip Methods ==========
+
+  /// Initiate a vote-to-skip session for a player during Selection Phase
+  Future<VoteToSkipSession> initiateSkipVote({
+    required String lobbyId,
+    required int battleNumber,
+    required String playerIdToSkip,
+  }) async {
+    if (_socket == null) {
+      throw Exception('Not connected to server');
+    }
+
+    final completer = Completer<VoteToSkipSession>();
+
+    _socket!.emitWithAck('initiate-skip-vote', {
+      'lobbyId': lobbyId,
+      'battleNumber': battleNumber,
+      'playerIdToSkip': playerIdToSkip,
+    }, ack: (data) {
+      if (data['success']) {
+        completer.complete(VoteToSkipSession.fromJson(data['session']));
+      } else {
+        completer.completeError(Exception(data['error']));
+      }
+    });
+
+    return completer.future;
+  }
+
+  /// Cast a vote in an active skip session
+  Future<void> castSkipVote(String sessionId) async {
+    if (_socket == null) {
+      throw Exception('Not connected to server');
+    }
+
+    final completer = Completer<void>();
+
+    _socket!.emitWithAck('cast-skip-vote', {
+      'sessionId': sessionId,
+    }, ack: (data) {
+      if (data['success']) {
+        completer.complete();
+      } else {
+        completer.completeError(Exception(data['error']));
+      }
+    });
+
+    return completer.future;
+  }
+
+  /// Cancel a vote in an active skip session
+  Future<void> cancelSkipVote(String sessionId) async {
+    if (_socket == null) {
+      throw Exception('Not connected to server');
+    }
+
+    final completer = Completer<void>();
+
+    _socket!.emitWithAck('cancel-skip-vote', {
+      'sessionId': sessionId,
+    }, ack: (data) {
+      if (data['success']) {
+        completer.complete();
+      } else {
+        completer.completeError(Exception(data['error']));
+      }
+    });
+
+    return completer.future;
+  }
+
+  /// Listen for skip vote initiated events
+  void onSkipVoteInitiated(Function(Map<String, dynamic>) callback) {
+    on('skip-vote-initiated', callback);
+  }
+
+  /// Listen for skip vote update events
+  void onSkipVoteUpdated(Function(Map<String, dynamic>) callback) {
+    on('skip-vote-updated', callback);
+  }
+
+  /// Listen for skip vote executed events
+  void onSkipVoteExecuted(Function(Map<String, dynamic>) callback) {
+    on('skip-vote-executed', callback);
+  }
+
+  /// Listen for time-based skip executed events
+  void onTimeSkipExecuted(Function(Map<String, dynamic>) callback) {
+    on('time-skip-executed', callback);
   }
 
   /// Emit events to listeners
