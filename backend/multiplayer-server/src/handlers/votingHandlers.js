@@ -317,8 +317,8 @@ module.exports = (io, socket) => {
 
       // Get player names
       const playerNamesResult = await query(
-        `SELECT id, display_name FROM users WHERE id IN ($1, $2)`,
-        [playerIdToSkip, socket.userId]
+        `SELECT id, display_name FROM users WHERE id IN (SELECT unnest($1::uuid[]))`,
+        [[playerIdToSkip, socket.userId]]
       );
 
       const playerNames = {};
