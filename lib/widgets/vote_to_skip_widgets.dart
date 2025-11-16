@@ -586,7 +586,9 @@ class _TimeBasedSkipCountdownState extends State<TimeBasedSkipCountdown> {
             ),
             const SizedBox(height: 12),
             LinearProgressIndicator(
-              value: 1 - (_timeRemaining!.inSeconds / (widget.session.timeLimitHours! * 3600)),
+              value: (widget.session.timeLimitHours != null && widget.session.timeLimitHours! > 0)
+                  ? 1 - (_timeRemaining!.inSeconds / (widget.session.timeLimitHours! * 3600))
+                  : 0,
               backgroundColor: Colors.grey[300],
               valueColor: AlwaysStoppedAnimation<Color>(color),
             ),
