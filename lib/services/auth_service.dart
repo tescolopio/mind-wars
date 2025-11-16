@@ -149,6 +149,34 @@ class AuthService {
     _currentUser = null;
   }
   
+  /// Request password reset email
+  Future<AuthResult> requestPasswordReset(String email) async {
+    // In alpha mode, simulate success
+    if (_isAlphaMode) {
+      // Validate email format
+      if (!_isValidEmail(email)) {
+        return AuthResult(success: false, error: 'Please enter a valid email address');
+      }
+      
+      // Simulate API delay
+      await Future.delayed(const Duration(milliseconds: 500));
+      return AuthResult(success: true);
+    }
+    
+    // Use API in production mode
+    try {
+      // Validate email format
+      if (!_isValidEmail(email)) {
+        return AuthResult(success: false, error: 'Please enter a valid email address');
+      }
+      
+      await _apiService.requestPasswordReset(email);
+      return AuthResult(success: true);
+    } catch (e) {
+      return AuthResult(success: false, error: _handleError(e));
+    }
+  }
+  
   /// Attempt to restore session from stored token
   /// Used for auto-login on app launch
   Future<bool> restoreSession() async {

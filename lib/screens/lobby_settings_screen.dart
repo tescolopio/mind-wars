@@ -39,10 +39,8 @@ class _LobbySettingsScreenState extends State<LobbySettingsScreen> {
   void initState() {
     super.initState();
     _maxPlayers = widget.lobby.maxPlayers;
-    _totalRounds = widget.lobby.totalRounds ?? 3;
-    _votingPoints = widget.lobby.votingPointsPerPlayer ?? 10;
-    _skipRule = widget.lobby.skipRule ?? SkipRule.majority;
-    _skipTimeLimitHours = widget.lobby.skipTimeLimitHours ?? 24;
+    _totalRounds = widget.lobby.numberOfRounds;
+    _votingPoints = widget.lobby.votingPointsPerPlayer;
   }
 
   @override
@@ -263,11 +261,11 @@ class _LobbySettingsScreenState extends State<LobbySettingsScreen> {
   }
 
   void _saveSettings() {
-    // Validate skip rule configuration
-    if (_skipRule == SkipRule.timeBased && _skipTimeLimitHours < 1) {
+    // Validate that maxPlayers is not less than current player count
+    if (_maxPlayers < widget.lobby.players.length) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Time limit must be at least 1 hour'),
+        SnackBar(
+          content: Text('Max players cannot be less than current player count (${widget.lobby.players.length})'),
           backgroundColor: Colors.red,
         ),
       );

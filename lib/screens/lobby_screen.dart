@@ -9,6 +9,7 @@ import '../models/models.dart';
 import '../services/multiplayer_service.dart';
 import '../widgets/chat_widgets.dart';
 import 'game_selection_screen.dart';
+import '../services/voting_service.dart';
 import 'game_voting_screen.dart';
 import 'lobby_settings_screen.dart';
 
@@ -38,12 +39,28 @@ class _LobbyScreenState extends State<LobbyScreen> {
   void initState() {
     super.initState();
     _chatScrollController = ScrollController();
-    _lobby = widget.multiplayerService.currentLobby;
-    _setupEventListeners();
-    _isLoading = false;
+    
+    try {
+      _lobby = widget.multiplayerService.currentLobby;
+      _setupEventListeners();
+      _isLoading = false;
 
-    // Start heartbeat for presence tracking
-    widget.multiplayerService.startHeartbeat();
+      // Start heartbeat for presence tracking
+      widget.multiplayerService.startHeartbeat();
+    } catch (e) {
+      // Show error message and navigate away gracefully
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to initialize lobby: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          Navigator.of(context).pop();
+        }
+      });
+    }
   }
 
   @override
@@ -208,13 +225,16 @@ class _LobbyScreenState extends State<LobbyScreen> {
   }
 
   Future<void> _startGame() async {
-    if (_lobby == null) return;
+    final lobby = _lobby;
+    if (lobby == null) return;
 
     // Navigate to game voting screen where players vote on games
     final selectedGameId = await Navigator.of(context).push<String>(
       MaterialPageRoute(
         builder: (context) => GameVotingScreen(
-          lobby: _lobby!,
+          lobbyId: _lobby!.id,
+          playerId: widget.currentUserId,
+          votingService: VotingService(),
           multiplayerService: widget.multiplayerService,
         ),
       ),
@@ -327,17 +347,18 @@ class _LobbyScreenState extends State<LobbyScreen> {
   }
 
   Future<void> _navigateToSettings() async {
-    if (_lobby == null) return;
+    final lobby = _lobby;
+    if (lobby == null) return;
 
     await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => LobbySettingsScreen(
-          lobby: _lobby!,
+          lobby: lobby,
           onSave: (maxPlayers, totalRounds, votingPoints) {
             // Update lobby settings via multiplayer service
             widget.multiplayerService.updateLobbySettings(
               maxPlayers: maxPlayers,
-              totalRounds: totalRounds,
+              numberOfRounds: totalRounds,
               votingPointsPerPlayer: votingPoints,
             );
           },

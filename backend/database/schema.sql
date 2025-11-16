@@ -210,6 +210,7 @@ CREATE INDEX idx_chat_messages_lobby_id ON chat_messages(lobby_id);
 CREATE INDEX idx_chat_messages_user_id ON chat_messages(user_id);
 CREATE INDEX idx_chat_messages_timestamp ON chat_messages(timestamp DESC);
 CREATE INDEX idx_chat_messages_flagged ON chat_messages(flagged_for_review);
+CREATE INDEX idx_chat_messages_flagged_reason ON chat_messages(flagged_reason) WHERE flagged_for_review = true;
 
 -- Emoji reactions table
 CREATE TABLE IF NOT EXISTS emoji_reactions (

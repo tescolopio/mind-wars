@@ -1,6 +1,7 @@
 const { query } = require('../utils/database');
 const { createLogger } = require('../utils/logger');
 const profanityFilterService = require('../utils/profanityFilter');
+const encryptionService = require('../utils/encryption');
 
 const logger = createLogger('chat-handlers');
 
@@ -36,9 +37,13 @@ module.exports = (io, socket) => {
 
       const user = userResult.rows[0];
 
-      // Apply profanity filter
-      const filterResult = profanityFilterService.filterMessage(message);
+      // Apply profanity filter with lobby-specific configuration
+      const filterResult = profanityFilterService.filterMessage(message, lobbyId);
       const filteredMessage = filterResult.filtered;
+
+      // Encrypt the original message for secure storage
+      // Only store encrypted original if it differs from filtered (i.e., profanity was detected)
+      const encryptedOriginal = filterResult.hasProfanity ? encryptionService.encrypt(message) : null;
 
       // Save message to database
       const messageResult = await query(
@@ -48,7 +53,7 @@ module.exports = (io, socket) => {
         [
           lobbyId,
           socket.userId,
-          message,
+          encryptedOriginal,
           filteredMessage,
           filterResult.hasProfanity,
           filterResult.hasProfanity ? 'Profanity detected' : null
@@ -69,7 +74,25 @@ module.exports = (io, socket) => {
 
       logger.info(`Chat message in lobby ${lobbyId} from user ${socket.userId}${filterResult.hasProfanity ? ' (filtered)' : ''}`);
 
-      callback({ success: true });
+      // Only broadcast after successful database insertion
+      try {
+        io.to(`lobby:${lobbyId}`).emit('chat-message', {
+          id: savedMessage.id,
+          userId: socket.userId,
+          displayName: user.display_name,
+          avatarUrl: user.avatar_url,
+          message: filteredMessage,
+          timestamp: savedMessage.timestamp.toISOString()
+        });
+
+        logger.info(`Chat message in lobby ${lobbyId} from user ${socket.userId}${filterResult.hasProfanity ? ' (filtered)' : ''}`);
+
+        callback({ success: true });
+      } catch (broadcastError) {
+        // Message was saved but broadcast failed - log but don't fail the request
+        logger.error('Failed to broadcast message after successful save', { error: broadcastError, messageId: savedMessage.id });
+        callback({ success: true, warning: 'Message saved but some users may not receive it immediately' });
+      }
     } catch (error) {
       logger.error('Chat message error', error);
       callback({ success: false, error: error.message });
@@ -105,28 +128,43 @@ module.exports = (io, socket) => {
 
       const user = userResult.rows[0];
 
-      // Save reaction to database
-      const reactionResult = await query(
-        `INSERT INTO emoji_reactions (lobby_id, user_id, emoji)
-         VALUES ($1, $2, $3)
-         RETURNING id, timestamp`,
-        [lobbyId, socket.userId, emoji]
-      );
+      // Save reaction to database with explicit error handling
+      let savedReaction;
+      try {
+        const reactionResult = await query(
+          `INSERT INTO emoji_reactions (lobby_id, user_id, emoji)
+           VALUES ($1, $2, $3)
+           RETURNING id, timestamp`,
+          [lobbyId, socket.userId, emoji]
+        );
+        savedReaction = reactionResult.rows[0];
+      } catch (dbError) {
+        logger.error('Database insertion failed for emoji reaction', { error: dbError, lobbyId, userId: socket.userId });
+        return callback({ 
+          success: false, 
+          error: 'Failed to save reaction. Please try again.',
+          errorType: 'database_error'
+        });
+      }
 
-      const savedReaction = reactionResult.rows[0];
+      // Only broadcast after successful database insertion
+      try {
+        io.to(`lobby:${lobbyId}`).emit('emoji-reaction', {
+          id: savedReaction.id,
+          userId: socket.userId,
+          displayName: user.display_name,
+          emoji,
+          timestamp: savedReaction.timestamp.toISOString()
+        });
 
-      // Broadcast reaction to lobby
-      io.to(`lobby:${lobbyId}`).emit('emoji-reaction', {
-        id: savedReaction.id,
-        userId: socket.userId,
-        displayName: user.display_name,
-        emoji,
-        timestamp: savedReaction.timestamp.toISOString()
-      });
+        logger.info(`Emoji reaction ${emoji} in lobby ${lobbyId} from user ${socket.userId}`);
 
-      logger.info(`Emoji reaction ${emoji} in lobby ${lobbyId} from user ${socket.userId}`);
-
-      callback({ success: true });
+        callback({ success: true });
+      } catch (broadcastError) {
+        // Reaction was saved but broadcast failed - log but don't fail the request
+        logger.error('Failed to broadcast reaction after successful save', { error: broadcastError, reactionId: savedReaction.id });
+        callback({ success: true, warning: 'Reaction saved but some users may not receive it immediately' });
+      }
     } catch (error) {
       logger.error('Emoji reaction error', error);
       callback({ success: false, error: error.message });
