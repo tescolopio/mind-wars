@@ -427,6 +427,7 @@ module.exports = (io, socket) => {
       // Check if majority reached
       if (newVotesCount >= session.votes_required) {
         await executeSkip(io, session, sessionId);
+        return;
       }
 
       callback({ success: true, votesCount: newVotesCount });
