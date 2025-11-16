@@ -120,7 +120,7 @@ class _VoteToSkipDialogState extends State<VoteToSkipDialog> {
               ),
               const SizedBox(height: 8),
               LinearProgressIndicator(
-                value: session.votesCount / session.votesRequired,
+                value: session.votesRequired > 0 ? session.votesCount / session.votesRequired : 0,
                 backgroundColor: Colors.grey[300],
                 valueColor: AlwaysStoppedAnimation<Color>(
                   session.majorityReached ? Colors.green : Colors.orange,
