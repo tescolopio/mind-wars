@@ -68,25 +68,34 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     try {
       final authService = Provider.of<AuthService>(context, listen: false);
       
+      // [2025-11-17 Bugfix] Added detailed logging for registration debugging
+      print('[Registration] Starting registration for: ${_emailController.text.trim()}');
+      print('[Registration] Username: ${_usernameController.text.trim()}');
+      
       final result = await authService.register(
         username: _usernameController.text.trim(),
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
       
+      print('[Registration] Result: success=${result.success}, error=${result.error}');
+      
       if (!mounted) return;
       
       if (result.success) {
+        print('[Registration] Registration successful, navigating to onboarding');
         // Registration successful - navigate to onboarding or home
         Navigator.of(context).pushReplacementNamed('/onboarding');
       } else {
+        print('[Registration] Registration failed: ${result.error}');
         setState(() {
           _errorMessage = result.error;
         });
       }
     } catch (e) {
+      print('[Registration] Exception during registration: $e');
       setState(() {
-        _errorMessage = 'Registration failed. Please try again.';
+        _errorMessage = 'Registration failed: $e';
       });
     } finally {
       if (mounted) {

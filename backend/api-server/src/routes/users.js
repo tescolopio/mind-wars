@@ -127,7 +127,8 @@ router.get('/:id/progress', async (req, res, next) => {
 // PATCH /api/users/:id - Update user profile
 router.patch('/:id', [
   body('displayName').optional().trim().isLength({ min: 2, max: 50 }),
-  body('avatarUrl').optional().isURL()
+  body('avatarUrl').optional().isURL(),
+  body('avatar').optional().isString().trim() // [2025-11-16 Integration] Accept avatar name or emoji
 ], async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -145,7 +146,7 @@ router.patch('/:id', [
       });
     }
 
-    const { displayName, avatarUrl } = req.body;
+    const { displayName, avatarUrl, avatar } = req.body;
     const updates = [];
     const values = [];
     let paramCount = 1;
@@ -158,6 +159,12 @@ router.patch('/:id', [
     if (avatarUrl) {
       updates.push(`avatar_url = $${paramCount++}`);
       values.push(avatarUrl);
+    }
+    
+    // [2025-11-16 Integration] Store avatar emoji or name in avatar_url field
+    if (avatar) {
+      updates.push(`avatar_url = $${paramCount++}`);
+      values.push(avatar);
     }
 
     if (updates.length === 0) {

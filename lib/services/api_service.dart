@@ -41,17 +41,26 @@ class ApiService {
     String email,
     String password,
   ) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/auth/register'),
-      headers: _headers,
-      body: jsonEncode({
-        'username': username,
-        'email': email,
-        'password': password,
-      }),
-    );
-
-    return _handleResponse(response);
+    // [2025-11-17 Bugfix] Added comprehensive logging for registration debugging
+    try {
+      final url = '$baseUrl/auth/register';
+      print('[API] Attempting registration for: $email at $url');
+      final response = await http.post(
+        Uri.parse(url),
+        headers: _headers,
+        body: jsonEncode({
+          'username': username,
+          'email': email,
+          'password': password,
+        }),
+      );
+      print('[API] Registration response status: ${response.statusCode}');
+      print('[API] Registration response body: ${response.body}');
+      return _handleResponse(response);
+    } catch (e) {
+      print('[API] Registration error: $e');
+      rethrow;
+    }
   }
 
   /// Login user

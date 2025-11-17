@@ -143,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (result == true && mounted) {
       // Call auth service to request password reset
       final authService = Provider.of<AuthService>(context, listen: false);
-      final resetResult = await authService.requestPasswordReset(email);
+      final resetResult = await authService.requestPasswordReset(emailController.text);
       
       if (resetResult.success) {
         // Show success message

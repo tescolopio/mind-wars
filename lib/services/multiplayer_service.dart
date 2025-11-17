@@ -6,11 +6,19 @@
 import 'dart:async';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import '../models/models.dart';
+import '../utils/build_config.dart';
 
 class MultiplayerService {
   IO.Socket? _socket;
   GameLobby? _currentLobby;
   final Map<String, List<Function>> _listeners = {};
+  String? _serverUrl;
+
+  /// [2025-11-16 Integration] Initialize multiplayer service with gateway URL
+  /// Uses BuildConfig to get the correct server URL based on build flavor
+  MultiplayerService({String? serverUrl}) {
+    _serverUrl = serverUrl ?? BuildConfig.wsBaseUrl;
+  }
 
   /// Connect to the multiplayer server
   Future<void> connect(String serverUrl, String playerId) async {
@@ -229,18 +237,18 @@ class MultiplayerService {
   }
 
   /// Vote to skip current turn/game
-  Future<VoteToSkip> voteToSkip() async {
+  Future<VoteToSkipSession> voteToSkip() async {
     if (_socket == null || _currentLobby == null) {
       throw Exception('Not in a game');
     }
 
-    final completer = Completer<VoteToSkip>();
+    final completer = Completer<VoteToSkipSession>();
 
     _socket!.emitWithAck('vote-skip', {
       'lobbyId': _currentLobby!.id,
     }, ack: (data) {
       if (data['success']) {
-        completer.complete(VoteToSkip.fromJson(data['voteStatus']));
+        completer.complete(VoteToSkipSession.fromJson(data['voteStatus']));
       } else {
         completer.completeError(Exception(data['error']));
       }

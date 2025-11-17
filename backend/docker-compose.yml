@@ -4,7 +4,7 @@ services:
   # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
-    container_name: mindwars-postgres
+    container_name: eskienterprises-postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-mindwars}
@@ -17,7 +17,7 @@ services:
       - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
       - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
     networks:
-      - mindwars-network
+      - eskienterprises-mindwars-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-mindwars}"]
       interval: 10s
@@ -27,7 +27,7 @@ services:
   # Redis Cache
   redis:
     image: redis:7-alpine
-    container_name: mindwars-redis
+    container_name: eskienterprises-redis
     restart: unless-stopped
     command: redis-server --appendonly yes
     ports:
@@ -35,7 +35,7 @@ services:
     volumes:
       - redis_data:/data
     networks:
-      - mindwars-network
+      - eskienterprises-mindwars-network
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -47,7 +47,7 @@ services:
     build:
       context: ./api-server
       dockerfile: Dockerfile
-    container_name: mindwars-api
+    container_name: eskienterprises-mindwars-api
     restart: unless-stopped
     environment:
       NODE_ENV: ${NODE_ENV:-development}
@@ -74,7 +74,7 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - mindwars-network
+      - eskienterprises-mindwars-network
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health"]
       interval: 30s
@@ -86,7 +86,7 @@ services:
     build:
       context: ./multiplayer-server
       dockerfile: Dockerfile
-    container_name: mindwars-multiplayer
+    container_name: eskienterprises-mindwars-multiplayer
     restart: unless-stopped
     environment:
       NODE_ENV: ${NODE_ENV:-development}
@@ -110,26 +110,7 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - mindwars-network
-
-  # Nginx Reverse Proxy (Optional - for production)
-  nginx:
-    image: nginx:alpine
-    container_name: mindwars-nginx
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./docker/nginx/ssl:/etc/nginx/ssl:ro
-    depends_on:
-      - api-server
-      - multiplayer-server
-    networks:
-      - mindwars-network
-    profiles:
-      - production
+      - eskienterprises-mindwars-network
 
 volumes:
   postgres_data:
@@ -138,5 +119,5 @@ volumes:
     driver: local
 
 networks:
-  mindwars-network:
+  eskienterprises-mindwars-network:
     driver: bridge

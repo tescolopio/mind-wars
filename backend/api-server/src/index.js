@@ -21,6 +21,10 @@ const logger = createLogger('api-server');
 const PORT = process.env.API_PORT || 3000;
 const HOST = process.env.API_HOST || '0.0.0.0';
 
+// [2025-11-17 Bugfix] Trust proxy for X-Forwarded-For header from nginx gateway
+// Required for express-rate-limit to correctly identify clients behind proxy
+app.set('trust proxy', 1);
+
 // Middleware
 app.use(helmet());
 app.use(cors({

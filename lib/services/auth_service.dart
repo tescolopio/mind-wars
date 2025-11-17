@@ -62,28 +62,39 @@ class AuthService {
     
     // Use API auth in production mode
     try {
+      // [2025-11-17 Bugfix] Added detailed logging for auth service debugging
+      print('[AuthService] Starting registration for: $email');
+      
       // Client-side validation before API call
       final validationError = _validateRegistration(username, email, password);
       if (validationError != null) {
+        print('[AuthService] Validation failed: $validationError');
         return AuthResult(success: false, error: validationError);
       }
       
+      print('[AuthService] Validation passed, calling API register method');
       // Call API
       final response = await _apiService.register(username, email, password);
+      
+      print('[AuthService] API returned: success=${response['token'] != null}');
       
       // Store token and user info
       if (response['token'] != null && response['user'] != null) {
         final token = response['token'] as String;
         final userData = response['user'] as Map<String, dynamic>;
         
+        print('[AuthService] Storing auth data and creating user object');
         await _storeAuthData(token, userData);
         _currentUser = User.fromJson(userData);
         
+        print('[AuthService] Registration successful for: $email');
         return AuthResult(success: true, user: _currentUser);
       }
       
+      print('[AuthService] Response missing token or user data');
       return AuthResult(success: false, error: 'Registration failed');
     } catch (e) {
+      print('[AuthService] Registration exception: $e');
       return AuthResult(success: false, error: _handleError(e));
     }
   }

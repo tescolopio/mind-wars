@@ -22,8 +22,11 @@ import 'screens/offline_game_play_screen.dart';
 import 'games/game_catalog.dart';
 import 'models/models.dart';
 
-// Alpha mode flag - set to false when backend is ready
-const bool kAlphaMode = true;
+/// [2025-11-16 Feature] Alpha mode flag for authentication method
+/// When true: Uses local authentication (offline testing only)
+/// When false: Authenticates through backend API at war.e-mothership.com:3000
+/// Status: Disabled to enable backend API connectivity through unified gateway
+const bool kAlphaMode = false;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,9 +55,11 @@ class _MindWarsAppState extends State<MindWarsApp> {
   }
 
   Future<void> _initializeServices() async {
+    // [2025-11-17 Integration] Updated API endpoint to use production gateway on port 4000
+    // Single gateway at http://war.e-mothership.com:4000 handles both REST and Socket.io
     // Initialize services
     _apiService = ApiService(
-      baseUrl: 'https://api.mindwars.app', // Configure your API endpoint
+      baseUrl: 'http://war.e-mothership.com:4000/api',
     );
     
     _offlineService = OfflineService();
@@ -138,7 +143,7 @@ class _MindWarsAppState extends State<MindWarsApp> {
                 ),
               ),
               
-              cardTheme: CardTheme(
+              cardTheme: CardThemeData(
                 elevation: 2,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),

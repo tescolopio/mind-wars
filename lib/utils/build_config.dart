@@ -56,10 +56,9 @@ class BuildConfig {
   }
 
   static String get wsBaseUrl {
-    if (isAlpha) {
-      return 'wss://multiplayer-alpha.mindwars.app';
-    }
-    return 'wss://multiplayer.mindwars.app';
+    // [2025-11-17 Integration] Updated to single gateway URL on port 4000
+    // Socket.io is available at http://war.e-mothership.com:4000/socket.io
+    return 'http://war.e-mothership.com:4000';
   }
 
   // Display build information

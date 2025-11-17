@@ -1424,7 +1424,7 @@ version: '3.8'
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: mindwars-postgres
+    container_name: eskienterprises-postgres
     environment:
       POSTGRES_DB: mindwars_beta
       POSTGRES_USER: mindwars
@@ -1441,7 +1441,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: mindwars-redis
+    container_name: eskienterprises-redis
     command: redis-server --requirepass ${REDIS_PASSWORD}
     volumes:
       - redis_data:/data
@@ -1457,7 +1457,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.api
-    container_name: mindwars-api
+    container_name: eskienterprises-mindwars-api
     environment:
       NODE_ENV: production
       DB_HOST: postgres
