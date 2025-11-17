@@ -55,11 +55,11 @@ class _MindWarsAppState extends State<MindWarsApp> {
   }
 
   Future<void> _initializeServices() async {
-    // [2025-11-17 Integration] Updated API endpoint to use production gateway on port 4000
-    // Single gateway at http://war.e-mothership.com:4000 handles both REST and Socket.io
-    // Initialize services
+    // [2025-11-17 Bugfix] Updated API endpoint to use localhost with explicit scheme
+    // Uses localhost:8080 which is tunneled to host:4000 via ADB reverse port forward
+    // HTTP client will properly resolve localhost through ADB tunnel
     _apiService = ApiService(
-      baseUrl: 'http://war.e-mothership.com:4000/api',
+      baseUrl: 'http://localhost:8080/api',
     );
     
     _offlineService = OfflineService();

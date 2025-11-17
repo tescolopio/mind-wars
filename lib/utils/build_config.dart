@@ -56,9 +56,10 @@ class BuildConfig {
   }
 
   static String get wsBaseUrl {
-    // [2025-11-17 Integration] Updated to single gateway URL on port 4000
-    // Socket.io is available at http://war.e-mothership.com:4000/socket.io
-    return 'http://war.e-mothership.com:4000';
+    // [2025-11-17 Bugfix] Updated Socket.io endpoint to use localhost (instead of 127.0.0.1)
+    // localhost is properly resolved through ADB reverse port forward tunnel
+    // Tunnels from device:8080 to host:4000 via: adb reverse tcp:8080 tcp:4000
+    return 'http://localhost:8080';
   }
 
   // Display build information

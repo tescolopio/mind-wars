@@ -58,6 +58,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     
     // Validate form
     if (!_formKey.currentState!.validate()) {
+      print('[Registration] Form validation failed.');
       return;
     }
     
