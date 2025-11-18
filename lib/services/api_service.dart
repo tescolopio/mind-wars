@@ -438,24 +438,50 @@ class ApiService {
   }
 
   /// Handle API response
+  /// [2025-11-18 Feature] Enhanced with detailed logging for error diagnosis
   Map<String, dynamic> _handleResponse(http.Response response) {
+    print('[API._handleResponse] Processing response with status ${response.statusCode}');
+    
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      return jsonDecode(response.body);
+      print('[API._handleResponse] Success status code, decoding JSON');
+      try {
+        final decoded = jsonDecode(response.body);
+        print('[API._handleResponse] JSON decoded successfully: ${decoded.keys}');
+        return decoded;
+      } catch (e) {
+        print('[API._handleResponse] JSON decode error: $e');
+        print('[API._handleResponse] Raw body: ${response.body}');
+        rethrow;
+      }
     } else if (response.statusCode == 401) {
+      print('[API._handleResponse] 401 Unauthorized - clearing auth token');
       _authToken = null;
-      throw ApiException('Unauthorized', 401);
+      throw ApiException('Unauthorized - Please log in again', 401);
     } else if (response.statusCode == 403) {
-      throw ApiException('Forbidden', 403);
+      print('[API._handleResponse] 403 Forbidden');
+      throw ApiException('Access forbidden', 403);
     } else if (response.statusCode == 404) {
-      throw ApiException('Not Found', 404);
+      print('[API._handleResponse] 404 Not Found');
+      throw ApiException('Resource not found - Check API endpoint', 404);
     } else if (response.statusCode >= 500) {
-      throw ApiException('Server Error', response.statusCode);
+      print('[API._handleResponse] ${response.statusCode} Server Error');
+      print('[API._handleResponse] Response body: ${response.body}');
+      throw ApiException('Server error - Please try again later', response.statusCode);
     } else {
-      final error = jsonDecode(response.body);
-      throw ApiException(
-        error['message'] ?? 'Unknown error',
-        response.statusCode,
-      );
+      print('[API._handleResponse] Error status ${response.statusCode}');
+      print('[API._handleResponse] Response body: ${response.body}');
+      
+      try {
+        final error = jsonDecode(response.body);
+        print('[API._handleResponse] Error JSON: $error');
+        final message = error['message'] ?? error['error'] ?? 'Unknown error';
+        print('[API._handleResponse] Error message: $message');
+        throw ApiException(message, response.statusCode);
+      } catch (e) {
+        if (e is ApiException) rethrow;
+        print('[API._handleResponse] Could not parse error JSON: $e');
+        throw ApiException('Request failed: ${response.body}', response.statusCode);
+      }
     }
   }
 

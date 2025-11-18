@@ -51,59 +51,97 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
   
   Future<void> _handleRegistration() async {
+    print('\n========== REGISTRATION SCREEN HANDLER START ==========');
+    print('[RegistrationScreen] Timestamp: ${DateTime.now().toIso8601String()}');
+    
     // Clear previous error
     setState(() {
       _errorMessage = null;
     });
+    print('[RegistrationScreen] Previous error cleared');
     
     // Validate form
+    print('[RegistrationScreen] Validating form...');
     if (!_formKey.currentState!.validate()) {
-      print('[Registration] Form validation failed.');
+      print('[RegistrationScreen] Form validation FAILED');
+      print('========== REGISTRATION SCREEN HANDLER END ==========\n');
       return;
     }
+    print('[RegistrationScreen] Form validation PASSED ✓');
+    
+    final username = _usernameController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    
+    print('[RegistrationScreen] Username: $username');
+    print('[RegistrationScreen] Email: $email');
+    print('[RegistrationScreen] Password length: ${password.length}');
     
     setState(() {
       _isLoading = true;
     });
+    print('[RegistrationScreen] Loading state set to true');
     
     try {
+      print('[RegistrationScreen] Getting AuthService from Provider...');
       final authService = Provider.of<AuthService>(context, listen: false);
+      print('[RegistrationScreen] AuthService obtained: ${authService.runtimeType}');
+      print('[RegistrationScreen] Is alpha mode: ${authService.isAlphaMode}');
       
-      // [2025-11-17 Bugfix] Added detailed logging for registration debugging
-      print('[Registration] Starting registration for: ${_emailController.text.trim()}');
-      print('[Registration] Username: ${_usernameController.text.trim()}');
-      
+      print('[RegistrationScreen] Calling authService.register()...');
       final result = await authService.register(
-        username: _usernameController.text.trim(),
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
+        username: username,
+        email: email,
+        password: password,
       );
       
-      print('[Registration] Result: success=${result.success}, error=${result.error}');
+      print('[RegistrationScreen] Register call completed');
+      print('[RegistrationScreen] Result success: ${result.success}');
+      print('[RegistrationScreen] Result error: ${result.error}');
+      print('[RegistrationScreen] Result user: ${result.user?.username}');
       
-      if (!mounted) return;
+      if (!mounted) {
+        print('[RegistrationScreen] Widget not mounted, aborting');
+        return;
+      }
       
       if (result.success) {
-        print('[Registration] Registration successful, navigating to onboarding');
-        // Registration successful - navigate to onboarding or home
+        print('[RegistrationScreen] ✓ REGISTRATION SUCCESSFUL');
+        print('[RegistrationScreen] Navigating to /onboarding...');
         Navigator.of(context).pushReplacementNamed('/onboarding');
+        print('[RegistrationScreen] Navigation called');
+        print('========== REGISTRATION SCREEN HANDLER SUCCESS ==========\n');
       } else {
-        print('[Registration] Registration failed: ${result.error}');
+        print('[RegistrationScreen] ✗ REGISTRATION FAILED');
+        print('[RegistrationScreen] Error message: ${result.error}');
         setState(() {
-          _errorMessage = result.error;
+          _errorMessage = result.error ?? 'Registration failed - Unknown error';
         });
+        print('[RegistrationScreen] Error state updated');
+        print('========== REGISTRATION SCREEN HANDLER FAILED ==========\n');
       }
-    } catch (e) {
-      print('[Registration] Exception during registration: $e');
-      setState(() {
-        _errorMessage = 'Registration failed: $e';
-      });
+    } catch (e, stackTrace) {
+      print('\n========== REGISTRATION SCREEN EXCEPTION ==========');
+      print('[RegistrationScreen] Exception type: ${e.runtimeType}');
+      print('[RegistrationScreen] Exception message: $e');
+      print('[RegistrationScreen] Stack trace:');
+      print(stackTrace);
+      
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'Registration error: $e';
+        });
+        print('[RegistrationScreen] Error state set: $_errorMessage');
+      }
+      print('========== REGISTRATION SCREEN EXCEPTION END ==========\n');
     } finally {
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
+        print('[RegistrationScreen] Loading state set to false');
       }
+      print('========== REGISTRATION SCREEN HANDLER END ==========\n');
     }
   }
   

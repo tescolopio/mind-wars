@@ -42,13 +42,23 @@ class AuthService {
   
   /// Register a new user
   /// Validates email, password strength, and handles errors
+  /// [2025-11-18 Feature] Enhanced with comprehensive logging
   Future<AuthResult> register({
     required String username,
     required String email,
     required String password,
   }) async {
+    print('\n========== AUTH SERVICE REGISTRATION START ==========');
+    print('[AuthService] Timestamp: ${DateTime.now().toIso8601String()}');
+    print('[AuthService] Alpha mode: $_isAlphaMode');
+    print('[AuthService] Has local auth service: ${_localAuthService != null}');
+    print('[AuthService] Username: $username');
+    print('[AuthService] Email: $email');
+    print('[AuthService] Password length: ${password.length}');
+    
     // Use local auth in alpha mode
     if (_isAlphaMode && _localAuthService != null) {
+      print('[AuthService] Using local authentication (alpha mode)');
       final result = await _localAuthService!.register(
         username: username,
         email: email,
@@ -56,46 +66,74 @@ class AuthService {
       );
       if (result.success) {
         _currentUser = result.user;
+        print('[AuthService] Local auth successful');
+      } else {
+        print('[AuthService] Local auth failed: ${result.error}');
       }
+      print('========== AUTH SERVICE REGISTRATION END ==========\n');
       return result;
     }
     
     // Use API auth in production mode
     try {
-      // [2025-11-17 Bugfix] Added detailed logging for auth service debugging
-      print('[AuthService] Starting registration for: $email');
+      print('[AuthService] Using API authentication (production mode)');
       
       // Client-side validation before API call
+      print('[AuthService] Running client-side validation...');
       final validationError = _validateRegistration(username, email, password);
       if (validationError != null) {
         print('[AuthService] Validation failed: $validationError');
+        print('========== AUTH SERVICE REGISTRATION FAILED ==========\n');
         return AuthResult(success: false, error: validationError);
       }
+      print('[AuthService] Validation passed ✓');
       
-      print('[AuthService] Validation passed, calling API register method');
+      print('[AuthService] Calling API service register method...');
       // Call API
       final response = await _apiService.register(username, email, password);
       
-      print('[AuthService] API returned: success=${response['token'] != null}');
+      print('[AuthService] API call completed');
+      print('[AuthService] Response keys: ${response.keys}');
+      print('[AuthService] Has token: ${response['token'] != null}');
+      print('[AuthService] Has user: ${response['user'] != null}');
       
       // Store token and user info
       if (response['token'] != null && response['user'] != null) {
         final token = response['token'] as String;
         final userData = response['user'] as Map<String, dynamic>;
         
-        print('[AuthService] Storing auth data and creating user object');
+        print('[AuthService] Token received (length: ${token.length})');
+        print('[AuthService] User data keys: ${userData.keys}');
+        print('[AuthService] Storing authentication data...');
+        
         await _storeAuthData(token, userData);
+        print('[AuthService] Auth data stored ✓');
+        
+        print('[AuthService] Creating User object from JSON...');
         _currentUser = User.fromJson(userData);
+        print('[AuthService] User object created: ${_currentUser?.username}');
         
         print('[AuthService] Registration successful for: $email');
+        print('========== AUTH SERVICE REGISTRATION SUCCESS ==========\n');
         return AuthResult(success: true, user: _currentUser);
       }
       
-      print('[AuthService] Response missing token or user data');
-      return AuthResult(success: false, error: 'Registration failed');
-    } catch (e) {
-      print('[AuthService] Registration exception: $e');
-      return AuthResult(success: false, error: _handleError(e));
+      print('[AuthService] ERROR: Response missing token or user data');
+      print('[AuthService] Response: $response');
+      print('========== AUTH SERVICE REGISTRATION FAILED ==========\n');
+      return AuthResult(success: false, error: 'Registration failed - Invalid response from server');
+    } catch (e, stackTrace) {
+      print('\n========== AUTH SERVICE REGISTRATION EXCEPTION ==========');
+      print('[AuthService] Exception type: ${e.runtimeType}');
+      print('[AuthService] Exception message: $e');
+      print('[AuthService] Stack trace:');
+      print(stackTrace);
+      
+      final errorMessage = _handleError(e);
+      print('[AuthService] Formatted error message: $errorMessage');
+      print('========== AUTH SERVICE REGISTRATION EXCEPTION END ==========\n');
+      
+      return AuthResult(success: false, error: errorMessage);
     }
   }
   
@@ -305,14 +343,48 @@ class AuthService {
   }
   
   /// Handle and format errors
+  /// [2025-11-18 Feature] Enhanced error handling with comprehensive pattern matching
   String _handleError(dynamic error) {
-    if (error.toString().contains('duplicate')) {
-      return 'Email already registered';
-    } else if (error.toString().contains('invalid')) {
-      return 'Invalid email or password';
-    } else if (error.toString().contains('network')) {
-      return 'Network error. Please check your connection';
+    print('[AuthService._handleError] Processing error');
+    print('[AuthService._handleError] Error type: ${error.runtimeType}');
+    print('[AuthService._handleError] Error string: $error');
+    
+    // Check for ApiException first
+    if (error is ApiException) {
+      print('[AuthService._handleError] ApiException detected');
+      print('[AuthService._handleError] Status: ${error.statusCode}, Message: ${error.message}');
+      return '${error.message} (Error ${error.statusCode})';
     }
-    return 'An error occurred. Please try again';
+    
+    final errorString = error.toString();
+    print('[AuthService._handleError] Error as string: $errorString');
+    
+    // Check for specific error patterns
+    if (errorString.contains('duplicate')) {
+      print('[AuthService._handleError] Detected: Duplicate entry');
+      return 'Email already registered';
+    } else if (errorString.contains('invalid')) {
+      print('[AuthService._handleError] Detected: Invalid input');
+      return 'Invalid email or password';
+    } else if (errorString.contains('network') || errorString.contains('SocketException')) {
+      print('[AuthService._handleError] Detected: Network error');
+      return 'Network error. Please check your connection';
+    } else if (errorString.contains('Connection refused')) {
+      print('[AuthService._handleError] Detected: Connection refused');
+      return 'Cannot connect to server at war.e-mothership.com:4000. Is the backend running?';
+    } else if (errorString.contains('Failed host lookup')) {
+      print('[AuthService._handleError] Detected: DNS lookup failed');
+      return 'Cannot reach war.e-mothership.com. Please check your internet connection';
+    } else if (errorString.contains('TimeoutException') || errorString.contains('timeout')) {
+      print('[AuthService._handleError] Detected: Timeout');
+      return 'Request timeout. Server took too long to respond';
+    } else if (errorString.contains('FormatException')) {
+      print('[AuthService._handleError] Detected: Format exception (likely JSON parsing)');
+      return 'Invalid response from server. Please try again';
+    }
+    
+    print('[AuthService._handleError] No specific pattern matched, returning full error');
+    // Return detailed error for debugging
+    return 'Error: $errorString';
   }
 }
