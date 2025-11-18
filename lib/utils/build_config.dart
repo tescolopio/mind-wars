@@ -56,10 +56,10 @@ class BuildConfig {
   }
 
   static String get wsBaseUrl {
-    // [2025-11-17 Bugfix] Updated Socket.io endpoint to use localhost (instead of 127.0.0.1)
-    // localhost is properly resolved through ADB reverse port forward tunnel
-    // Tunnels from device:8080 to host:4000 via: adb reverse tcp:8080 tcp:4000
-    return 'http://localhost:8080';
+    // [2025-11-18 Feature] Updated Socket.io endpoint to use public domain
+    // Uses war.e-mothership.com:4000 for WebSocket connections
+    // Direct access without ADB port forwarding
+    return 'http://war.e-mothership.com:4000';
   }
 
   // Display build information

@@ -55,11 +55,11 @@ class _MindWarsAppState extends State<MindWarsApp> {
   }
 
   Future<void> _initializeServices() async {
-    // [2025-11-17 Bugfix] Updated API endpoint to use localhost with explicit scheme
-    // Uses localhost:8080 which is tunneled to host:4000 via ADB reverse port forward
-    // HTTP client will properly resolve localhost through ADB tunnel
+    // [2025-11-18 Feature] Updated to use public domain endpoint
+    // Uses war.e-mothership.com:4000 for direct backend access
+    // No longer requires ADB reverse port forward for testing
     _apiService = ApiService(
-      baseUrl: 'http://localhost:8080/api',
+      baseUrl: 'http://war.e-mothership.com:4000/api',
     );
     
     _offlineService = OfflineService();
