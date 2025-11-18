@@ -41,7 +41,8 @@ class ApiService {
     String email,
     String password,
   ) async {
-    // [2025-11-17 Bugfix] Added comprehensive logging for registration debugging
+    // [2025-11-17 Bugfix] Updated to send displayName instead of username (backend expects this field)
+    // Also added response normalization to match expected format (token/user instead of accessToken/data)
     try {
       final url = '$baseUrl/auth/register';
       print('[API] Attempting registration for: $email at $url');
@@ -49,14 +50,28 @@ class ApiService {
         Uri.parse(url),
         headers: _headers,
         body: jsonEncode({
-          'username': username,
+          'displayName': username,  // Backend expects displayName, not username
           'email': email,
           'password': password,
         }),
       );
       print('[API] Registration response status: ${response.statusCode}');
       print('[API] Registration response body: ${response.body}');
-      return _handleResponse(response);
+      
+      final data = _handleResponse(response);
+      
+      // [2025-11-17 Bugfix] Normalize response format - backend returns {success, data: {user, accessToken}}
+      // but app expects {token, user}
+      if (data['success'] == true && data['data'] != null) {
+        final responseData = data['data'];
+        return {
+          'token': responseData['accessToken'],  // Map accessToken to token
+          'refreshToken': responseData['refreshToken'],
+          'user': responseData['user'],
+        };
+      }
+      
+      return data;
     } catch (e) {
       print('[API] Registration error: $e');
       rethrow;
@@ -65,6 +80,7 @@ class ApiService {
 
   /// Login user
   Future<Map<String, dynamic>> login(String email, String password) async {
+    // [2025-11-17 Bugfix] Updated to normalize backend response format
     final response = await http.post(
       Uri.parse('$baseUrl/auth/login'),
       headers: _headers,
@@ -75,6 +91,20 @@ class ApiService {
     );
 
     final data = _handleResponse(response);
+    
+    // [2025-11-17 Bugfix] Normalize response format - backend returns {success, data: {user, accessToken}}
+    // but app expects {token, user}
+    if (data['success'] == true && data['data'] != null) {
+      final responseData = data['data'];
+      final token = responseData['accessToken'];
+      setAuthToken(token);
+      return {
+        'token': token,
+        'refreshToken': responseData['refreshToken'],
+        'user': responseData['user'],
+      };
+    }
+    
     if (data['token'] != null) {
       setAuthToken(data['token']);
     }

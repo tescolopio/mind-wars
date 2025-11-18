@@ -34,10 +34,11 @@ class User {
   
   factory User.fromJson(Map<String, dynamic> json) => User(
         id: json['id'],
-        username: json['username'],
+        // [2025-11-17 Bugfix] Backend returns displayName, use it as username if username not provided
+        username: json['username'] ?? json['displayName'] ?? '',
         email: json['email'],
         displayName: json['displayName'],
-        avatar: json['avatar'],
+        avatar: json['avatar'] ?? json['avatarUrl'],  // Backend uses avatarUrl
         createdAt: json['createdAt'] != null 
             ? DateTime.parse(json['createdAt']) 
             : null,
